@@ -1212,15 +1212,29 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// Initial session check
+// Initial session check with timeout fallback
+let sessionChecked = false;
 sb.auth.getSession().then(async ({ data: { session } }) => {
+  sessionChecked = true;
   if (session?.user) {
     currentUser = session.user;
     await loadUserProfile();
   } else {
     showScreen('authScreen');
   }
+}).catch(err => {
+  console.warn('Supabase connection error:', err);
+  sessionChecked = true;
+  showScreen('authScreen');
 });
+
+// Fallback: if session check takes more than 5 seconds, show login anyway
+setTimeout(() => {
+  if (!sessionChecked) {
+    console.warn('Session check timeout — showing login screen');
+    showScreen('authScreen');
+  }
+}, 5000);
 </script>
 </body>
 </html>
