@@ -314,10 +314,13 @@ select.field option { background: var(--dark2); color: var(--white); }
 <!-- PENDING SCREEN -->
 <!-- ══════════════════════════════════════════ -->
 <div id="pendingScreen" class="screen" style="display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px; text-align:center;">
-  <div style="font-size:48px; margin-bottom:16px;">⏳</div>
-  <h2 style="font-family:'Cinzel',serif; font-size:22px; color:var(--gold-bright);">Profile Under Review</h2>
-  <p id="pendingMsg" style="color:var(--white70); font-size:14px; margin-top:8px; max-width:340px; line-height:1.6;"></p>
-  <p style="font-family:'EB Garamond',serif; font-style:italic; color:var(--gold); font-size:14px; margin-top:20px;">"Wait for the Lord; be strong, and let your heart take courage." — Psalm 27:14</p>
+  <div style="font-size:48px; margin-bottom:16px;">🕊️✨</div>
+  <h2 style="font-family:'Cinzel',serif; font-size:22px; color:var(--gold-bright);">Your Journey Has Begun</h2>
+  <p id="pendingMsg" style="color:var(--white70); font-size:14px; margin-top:8px; max-width:400px; line-height:1.8;"></p>
+  <div style="background:var(--white08); border:1px solid rgba(212,160,23,0.3); border-radius:16px; padding:20px; margin-top:20px; max-width:400px;">
+    <p style="color:var(--white70); font-size:13px; line-height:1.7;">🔔 <strong style="color:var(--gold-bright);">What happens next?</strong><br/>Our team is carefully reviewing your profile. Once approved, we'll personally reach out to let you know we're ready — so you can be among the very first to find your God-ordained match.</p>
+  </div>
+  <p style="font-family:'EB Garamond',serif; font-style:italic; color:var(--gold); font-size:15px; margin-top:24px; max-width:380px; line-height:1.7;">"Delight yourself in the Lord, and He will give you the desires of your heart."<br/>— Psalm 37:4</p>
   <div style="margin-top:32px; width:200px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
 </div>
 
@@ -552,7 +555,14 @@ async function handleAuth() {
       if (password !== confirm) throw new Error("Passwords don't match");
       const { error } = await sb.auth.signUp({ email, password });
       if (error) throw error;
-      sucEl.innerHTML = '🙏 <strong>Thank you for signing up!</strong><br/>Please check your email for a confirmation link. Once confirmed, you can sign in and create your profile.';
+      sucEl.innerHTML = `
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🙏✨</div>
+          <strong style="font-size:16px;color:var(--gold-bright);">Welcome to the Begin Forever Family!</strong><br/><br/>
+          <span style="color:var(--white70);">Your account has been created. Please check your email for a confirmation link.</span><br/><br/>
+          <span style="color:var(--white70);">Once confirmed, you can sign in and create your profile. We'll personally reach out to you when we're ready to go live — so you can be among the very first to discover the one God has set apart for you.</span><br/><br/>
+          <em style="color:var(--gold);font-family:'EB Garamond',serif;">"Two are better than one, because they have a good reward for their toil. For if they fall, one will lift up the other."<br/>— Ecclesiastes 4:9-10</em>
+        </div>`;
       sucEl.style.display = '';
       // Hide the form fields after successful signup
       document.getElementById('authEmail').value = '';
@@ -1168,7 +1178,7 @@ async function loadUserProfile() {
   }
 
   if (myProfile.status === 'pending') {
-    document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile has been submitted and is being reviewed by our team. You'll receive an email once it's approved.`;
+    document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile has been submitted and our team is reviewing it with care. This is just the beginning of something beautiful — God is writing your love story, and we're honoured to be part of it.`;
     showScreen('pendingScreen');
     return;
   }
