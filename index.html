@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="Begin Forever"/>
 <meta name="theme-color" content="#0D0118"/>
 <title>Begin Forever</title>
+<meta name="description" content="India's first 100% ID-verified Christian matrimony platform. Faith-first!"/>
+<meta name="keywords" content="Christian matrimony, Indian Christian wedding, faith-based matchmaking, Begin Forever, True Love, Find Love, Find your soulmate, your Truematch"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -233,11 +235,15 @@ select.field option { background: var(--dark2); color: var(--white); }
           </div>
         </div>
         <div class="field-group"><label class="field-label">Denomination *</label>
-          <select class="field" id="setupDenom"><option value="">Select...</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Orthodox</option><option>Other</option></select>
+          <select class="field" id="setupDenom"><option value="">Select...</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Seventh-day Adventist</option><option>Church of God</option><option>Assemblies of God</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Presbyterian</option><option>Anglican</option><option>Non-Denominational</option><option>Other</option></select>
         </div>
         <div class="field-row">
-          <div class="field-group"><label class="field-label">City *</label><input class="field" id="setupCity" placeholder="Your city"/></div>
-          <div class="field-group"><label class="field-label">State</label><input class="field" id="setupState" placeholder="State"/></div>
+          <div class="field-group"><label class="field-label">State *</label>
+            <select class="field" id="setupState" onchange="populateSetupCities()"><option value="">Select state...</option><option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Other / Outside India</option></select>
+          </div>
+          <div class="field-group"><label class="field-label">City *</label>
+            <select class="field" id="setupCity"><option value="">Select city...</option></select>
+          </div>
         </div>
         <div class="field-group"><label class="field-label">Phone</label><input class="field" id="setupPhone" placeholder="+91 XXXXX XXXXX"/></div>
         <div class="field-group"><label class="field-label">Registering for</label>
@@ -260,7 +266,10 @@ select.field option { background: var(--dark2); color: var(--white); }
       </div>
       <!-- Step 3 -->
       <div id="setupStep3" style="display:none;">
-        <p style="font-size:13px; color:var(--white70); margin-bottom:16px;">Upload up to 3 photos. Your primary photo will be shown on your profile card.</p>
+        <p style="font-size:13px; color:var(--white70); margin-bottom:12px;">Upload up to 3 photos. Your primary photo will be shown on your profile card.</p>
+        <div style="background:var(--white08); border:1px solid var(--gold); border-radius:10px; padding:12px; margin-bottom:16px;">
+          <p style="font-size:12px; color:var(--gold); margin:0;">🔒 <strong>Photo Privacy:</strong> Your photos are private until your profile is approved. Only verified members can see your photos. You can change privacy settings anytime from your profile.</p>
+        </div>
         <div class="photo-grid">
           <div class="photo-slot" id="photoSlot0" onclick="document.getElementById('photoInput0').click();">
             <span style="font-size:28px; opacity:0.4;">📷</span>
@@ -543,8 +552,12 @@ async function handleAuth() {
       if (password !== confirm) throw new Error("Passwords don't match");
       const { error } = await sb.auth.signUp({ email, password });
       if (error) throw error;
-      sucEl.textContent = 'Check your email for a confirmation link!';
+      sucEl.innerHTML = '🙏 <strong>Thank you for signing up!</strong><br/>Please check your email for a confirmation link. Once confirmed, you can sign in and create your profile.';
       sucEl.style.display = '';
+      // Hide the form fields after successful signup
+      document.getElementById('authEmail').value = '';
+      document.getElementById('authPassword').value = '';
+      document.getElementById('authConfirm').value = '';
     } else if (authMode === 'login') {
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -573,6 +586,49 @@ async function signOut() {
 function toggleCandidate() {
   const v = document.getElementById('setupRegFor').value;
   document.getElementById('setupCandidateWrap').style.display = v !== 'Myself' ? '' : 'none';
+}
+
+// ── CITY DATA ──
+const cityData = {
+  'Andhra Pradesh': ['Visakhapatnam','Vijayawada','Guntur','Nellore','Tirupati','Rajahmundry','Kakinada','Other'],
+  'Assam': ['Guwahati','Silchar','Dibrugarh','Jorhat','Other'],
+  'Bihar': ['Patna','Gaya','Muzaffarpur','Bhagalpur','Other'],
+  'Chhattisgarh': ['Raipur','Bhilai','Bilaspur','Other'],
+  'Delhi': ['New Delhi','Central Delhi','South Delhi','North Delhi','East Delhi','West Delhi','Other'],
+  'Goa': ['Panaji','Margao','Vasco da Gama','Other'],
+  'Gujarat': ['Ahmedabad','Surat','Vadodara','Rajkot','Gandhinagar','Other'],
+  'Haryana': ['Gurugram','Faridabad','Ambala','Panipat','Other'],
+  'Himachal Pradesh': ['Shimla','Dharamshala','Manali','Other'],
+  'Jharkhand': ['Ranchi','Jamshedpur','Dhanbad','Other'],
+  'Karnataka': ['Bengaluru','Mysuru','Mangalore','Hubli','Other'],
+  'Kerala': ['Kochi','Thiruvananthapuram','Kozhikode','Thrissur','Kollam','Kottayam','Other'],
+  'Madhya Pradesh': ['Bhopal','Indore','Jabalpur','Other'],
+  'Maharashtra': ['Mumbai','Pune','Nagpur','Nashik','Aurangabad','Thane','Navi Mumbai','Other'],
+  'Manipur': ['Imphal','Other'],
+  'Meghalaya': ['Shillong','Tura','Other'],
+  'Mizoram': ['Aizawl','Other'],
+  'Nagaland': ['Kohima','Dimapur','Other'],
+  'Odisha': ['Bhubaneswar','Cuttack','Rourkela','Other'],
+  'Punjab': ['Ludhiana','Amritsar','Jalandhar','Chandigarh','Other'],
+  'Rajasthan': ['Jaipur','Jodhpur','Udaipur','Other'],
+  'Tamil Nadu': ['Chennai','Coimbatore','Madurai','Salem','Other'],
+  'Telangana': ['Hyderabad','Warangal','Other'],
+  'Tripura': ['Agartala','Other'],
+  'Uttar Pradesh': ['Lucknow','Kanpur','Agra','Varanasi','Noida','Ghaziabad','Other'],
+  'Uttarakhand': ['Dehradun','Haridwar','Other'],
+  'West Bengal': ['Kolkata','Howrah','Siliguri','Other'],
+  'Other / Outside India': ['Other'],
+};
+
+function populateSetupCities() {
+  const state = document.getElementById('setupState').value;
+  const citySelect = document.getElementById('setupCity');
+  citySelect.innerHTML = '<option value="">Select city...</option>';
+  (cityData[state] || []).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    citySelect.appendChild(opt);
+  });
 }
 
 function handlePhotoSelect(index, input) {
@@ -605,7 +661,7 @@ async function setupNext() {
   if (setupStep === 1) {
     if (!document.getElementById('setupName').value.trim() || !document.getElementById('setupAge').value ||
         !document.getElementById('setupGender').value || !document.getElementById('setupDenom').value ||
-        !document.getElementById('setupCity').value.trim()) {
+        !document.getElementById('setupState').value || !document.getElementById('setupCity').value) {
       errEl.textContent = 'Please fill in all required fields'; errEl.style.display = ''; return;
     }
     setupStep++; updateSetupUI(); return;
@@ -635,8 +691,8 @@ async function setupNext() {
       age: parseInt(document.getElementById('setupAge').value),
       gender: document.getElementById('setupGender').value,
       denomination: document.getElementById('setupDenom').value,
-      city: document.getElementById('setupCity').value.trim(),
-      state: document.getElementById('setupState').value.trim(),
+      city: document.getElementById('setupCity').value,
+      state: document.getElementById('setupState').value,
       phone: document.getElementById('setupPhone').value.trim(),
       registered_by: document.getElementById('setupRegFor').value,
       candidate_name: document.getElementById('setupCandidate').value.trim(),
