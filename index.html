@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Begin Forever"/>
+<meta name="theme-color" content="#0D0118"/>
+<title>Begin Forever</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --black: #0D0118; --dark1: #130220; --dark2: #1C0530; --dark3: #280840;
+  --royal: #3B0764; --royal-mid: #5B1A8A; --royal-light: #7C3AAD;
+  --gold: #D4A017; --gold-bright: #F5C842; --gold-pale: #FDF3D0;
+  --white: #FFFFFF; --white70: rgba(255,255,255,0.7); --white40: rgba(255,255,255,0.4);
+  --white15: rgba(255,255,255,0.15); --white08: rgba(255,255,255,0.08);
+  --red: #e74c3c; --green: #27ae60;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Nunito', sans-serif; background: var(--black); color: var(--white); overflow-x: hidden; min-height: 100vh; }
+input, select, textarea, button { font-family: 'Nunito', sans-serif; }
+input::placeholder, textarea::placeholder { color: var(--white40); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--white15); border-radius: 4px; }
+
+/* Ambient */
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.glow { position: absolute; border-radius: 50%; filter: blur(120px); animation: glowPulse 8s ease-in-out infinite alternate; }
+.g1 { width: 400px; height: 400px; background: var(--royal); opacity: 0.3; top: -100px; right: -80px; }
+.g2 { width: 300px; height: 300px; background: var(--gold); opacity: 0.1; bottom: -80px; left: -60px; }
+@keyframes glowPulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+/* Spinner */
+.spinner { width: 24px; height: 24px; border: 2.5px solid var(--white15); border-top-color: var(--gold-bright); border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto; }
+.spinner-sm { width: 18px; height: 18px; }
+
+/* Form fields */
+.field { width: 100%; padding: 13px 14px; border: 1px solid var(--white15); border-radius: 10px; font-size: 14px; color: var(--white); background: var(--white08); outline: none; transition: border-color 0.2s; }
+.field:focus { border-color: var(--royal-light); box-shadow: 0 0 0 3px rgba(124,58,173,0.2); }
+.field.error { border-color: var(--red); }
+select.field { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4A017' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+select.field option { background: var(--dark2); color: var(--white); }
+.field-label { font-size: 12px; font-weight: 600; color: var(--white70); display: block; margin-bottom: 5px; }
+.field-error { font-size: 11px; color: var(--red); margin-top: 3px; display: none; }
+.field-error.show { display: block; }
+.field-group { margin-bottom: 14px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Buttons */
+.btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-bright)); color: var(--black); }
+.btn-dark { background: var(--white08); color: var(--white); border: 1px solid var(--white15); }
+.btn-green { background: var(--green); color: var(--white); }
+.btn-red { background: var(--red); color: var(--white); }
+.btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 8px; width: auto; }
+
+/* Card */
+.card { background: var(--white08); border-radius: 14px; border: 1px solid var(--white08); }
+
+/* Screen */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* Header */
+.app-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--dark1); border-bottom: 1px solid var(--white08); position: sticky; top: 0; z-index: 50; }
+.app-header h1 { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold-bright); margin: 0; }
+
+/* Tab bar */
+.tab-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark1); border-top: 1px solid var(--white08); padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 100; }
+.tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 0; color: var(--white40); transition: color 0.2s; position: relative; }
+.tab-btn.active { color: var(--gold-bright); }
+.tab-btn .tab-icon { font-size: 20px; }
+.tab-btn .tab-label { font-size: 10px; font-weight: 600; }
+.tab-badge { position: absolute; top: 2px; right: 50%; margin-right: -18px; background: var(--red); color: var(--white); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; }
+
+/* Profile grid */
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.profile-card { background: var(--white08); border-radius: 16px; overflow: hidden; border: 1px solid var(--white08); cursor: pointer; transition: transform 0.2s; }
+.profile-card:hover { transform: translateY(-3px); }
+.profile-card-photo { height: 180px; background: var(--dark3); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
+.profile-card-info { padding: 14px; }
+.profile-card-info h3 { font-family: 'Cinzel', serif; font-size: 14px; color: var(--white); margin: 0; }
+.profile-card-info p { font-size: 11px; color: var(--white40); margin: 3px 0 0; }
+
+/* Section padding */
+.content-area { padding: 20px; padding-bottom: 80px; }
+
+/* Interest item */
+.interest-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--white08); border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--white08); }
+.interest-avatar { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; background: var(--dark3); background-size: cover; background-position: center; }
+.interest-info { flex: 1; min-width: 0; }
+.interest-info h3 { font-family: 'Cinzel', serif; font-size: 14px; color: var(--white); margin: 0; }
+.interest-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* Chat */
+.chat-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--dark1); border-bottom: 1px solid var(--white08); }
+.chat-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--dark3); flex-shrink: 0; background-size: cover; background-position: center; }
+.chat-messages { flex: 1; overflow: auto; padding: 16px; }
+.chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 14px; margin-bottom: 8px; }
+.chat-bubble-mine { background: var(--royal); border-bottom-right-radius: 4px; margin-left: auto; }
+.chat-bubble-theirs { background: var(--white08); border-bottom-left-radius: 4px; }
+.chat-bubble p { font-size: 14px; color: var(--white); line-height: 1.5; word-break: break-word; }
+.chat-bubble .time { font-size: 9px; color: var(--white40); text-align: right; margin-top: 4px; }
+.chat-input-bar { display: flex; gap: 10px; padding: 12px 16px; background: var(--dark1); border-top: 1px solid var(--white08); }
+.chat-input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--white15); background: var(--white08); color: var(--white); font-size: 14px; outline: none; }
+.chat-send { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; background: var(--gold); color: var(--black); font-size: 18px; }
+
+/* Modal overlay */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal-content { background: var(--dark1); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; max-height: 90vh; overflow: auto; animation: slideUp 0.3s ease; }
+
+/* Pill tabs */
+.pill-tabs { display: flex; gap: 6px; background: var(--white08); border-radius: 10px; padding: 4px; }
+.pill-tab { flex: 1; padding: 10px; background: transparent; color: var(--white40); border: none; cursor: pointer; font-weight: 700; font-size: 12px; border-radius: 8px; transition: all 0.2s; }
+.pill-tab.active { background: var(--gold); color: var(--black); }
+
+/* Photo upload */
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.photo-slot { aspect-ratio: 1; border-radius: 14px; overflow: hidden; cursor: pointer; background: var(--white08); border: 2px dashed var(--white15); display: flex; align-items: center; justify-content: center; flex-direction: column; background-size: cover; background-position: center; }
+.photo-slot.has-photo { border-color: var(--gold); }
+
+/* Filter bar */
+.filter-bar { background: var(--white08); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+
+/* Stat box */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.stat-box { background: var(--white08); border-radius: 10px; padding: 10px 12px; }
+.stat-box .label { font-size: 10px; color: var(--white40); text-transform: uppercase; letter-spacing: 1px; }
+.stat-box .value { font-size: 13px; color: var(--white); font-weight: 600; margin-top: 2px; }
+
+/* Admin card */
+.admin-card { background: var(--white08); border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--white08); }
+.admin-card-header { display: flex; align-items: center; gap: 12px; }
+.admin-avatar { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; background: var(--dark3); background-size: cover; background-position: center; }
+
+/* Step indicator */
+.steps { display: flex; gap: 6px; justify-content: center; margin: 12px 0; }
+.step-dot { width: 40px; height: 4px; border-radius: 2px; background: var(--white15); transition: background 0.3s; }
+.step-dot.active { background: var(--gold-bright); }
+
+/* Responsive */
+@media (max-width: 400px) {
+  .field-row { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-card-photo { height: 220px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ambient"><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- LOADING SCREEN -->
+<!-- ══════════════════════════════════════════ -->
+<div id="loadingScreen" class="screen active" style="display:flex; align-items:center; justify-content:center; flex-direction:column;">
+  <div style="font-size:24px; margin-bottom:16px;">✦ 👑 ✝ 👑 ✦</div>
+  <div class="spinner"></div>
+  <p style="font-family:'Cinzel',serif; color:var(--gold); margin-top:16px; font-size:14px;">Begin Forever</p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- AUTH SCREEN -->
+<!-- ══════════════════════════════════════════ -->
+<div id="authScreen" class="screen" style="display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px;">
+  <div style="text-align:center; margin-bottom:32px;">
+    <div style="font-size:28px; margin-bottom:8px;">✦ 👑 ✝ 👑 ✦</div>
+    <h1 style="font-family:'Cinzel',serif; font-size:28px; color:var(--white);">Begin Forever</h1>
+    <p style="color:var(--gold); font-family:'EB Garamond',serif; font-style:italic; font-size:14px; margin-top:8px;">Where God Writes Your Love Story</p>
+  </div>
+  <div style="background:var(--dark2); border-radius:20px; padding:32px 24px; width:100%; max-width:380px; border:1px solid var(--white08);">
+    <h2 id="authTitle" style="font-family:'Cinzel',serif; font-size:18px; color:var(--gold-bright); text-align:center; margin-bottom:24px;">Welcome Back</h2>
+    <div class="field-group">
+      <label class="field-label">Email *</label>
+      <input type="email" class="field" id="authEmail" placeholder="your@email.com"/>
+    </div>
+    <div class="field-group" id="authPasswordGroup">
+      <label class="field-label">Password *</label>
+      <input type="password" class="field" id="authPassword" placeholder="••••••••"/>
+    </div>
+    <div class="field-group" id="authConfirmGroup" style="display:none;">
+      <label class="field-label">Confirm Password *</label>
+      <input type="password" class="field" id="authConfirm" placeholder="••••••••"/>
+    </div>
+    <p id="authError" style="color:var(--red); font-size:12px; text-align:center; margin:8px 0; display:none;"></p>
+    <p id="authSuccess" style="color:var(--green); font-size:12px; text-align:center; margin:8px 0; display:none;"></p>
+    <div style="margin-top:16px;">
+      <button class="btn btn-gold" id="authSubmitBtn" onclick="handleAuth()">Sign In</button>
+    </div>
+    <div style="text-align:center; margin-top:16px;">
+      <button id="authForgotBtn" onclick="setAuthMode('forgot')" style="background:none; border:none; color:var(--white40); font-size:12px; cursor:pointer;">Forgot password?</button>
+      <p style="color:var(--white40); font-size:13px; margin-top:12px;" id="authToggleText">
+        New here? <button onclick="setAuthMode('signup')" style="background:none; border:none; color:var(--gold-bright); font-size:13px; cursor:pointer; font-weight:700;">Create Account</button>
+      </p>
+      <button id="authBackBtn" onclick="setAuthMode('login')" style="display:none; background:none; border:none; color:var(--gold-bright); font-size:13px; cursor:pointer; margin-top:12px;">← Back to Sign In</button>
+    </div>
+  </div>
+  <p style="font-family:'EB Garamond',serif; font-style:italic; color:var(--white40); font-size:12px; margin-top:24px; text-align:center; max-width:300px;">
+    "For I know the plans I have for you, declares the Lord, plans to give you a hope and a future." — Jeremiah 29:11
+  </p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PROFILE SETUP SCREEN -->
+<!-- ══════════════════════════════════════════ -->
+<div id="setupScreen" class="screen" style="padding:24px; padding-bottom:100px;">
+  <div style="max-width:440px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <h1 id="setupTitle" style="font-family:'Cinzel',serif; font-size:22px; color:var(--gold-bright);">Personal Details</h1>
+      <div class="steps" id="setupSteps">
+        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+      </div>
+      <p id="setupStepLabel" style="font-size:12px; color:var(--white40);">Step 1 of 4</p>
+    </div>
+    <div style="background:var(--dark2); border-radius:20px; padding:24px; border:1px solid var(--white08);">
+      <!-- Step 1 -->
+      <div id="setupStep1">
+        <div class="field-group"><label class="field-label">Full Name *</label><input class="field" id="setupName" placeholder="Your full name"/></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Age *</label><input type="number" class="field" id="setupAge" placeholder="Age" min="18" max="70"/></div>
+          <div class="field-group"><label class="field-label">Gender *</label>
+            <select class="field" id="setupGender"><option value="">Select...</option><option>Male</option><option>Female</option></select>
+          </div>
+        </div>
+        <div class="field-group"><label class="field-label">Denomination *</label>
+          <select class="field" id="setupDenom"><option value="">Select...</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Orthodox</option><option>Other</option></select>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">City *</label><input class="field" id="setupCity" placeholder="Your city"/></div>
+          <div class="field-group"><label class="field-label">State</label><input class="field" id="setupState" placeholder="State"/></div>
+        </div>
+        <div class="field-group"><label class="field-label">Phone</label><input class="field" id="setupPhone" placeholder="+91 XXXXX XXXXX"/></div>
+        <div class="field-group"><label class="field-label">Registering for</label>
+          <select class="field" id="setupRegFor" onchange="toggleCandidate()"><option value="Myself">Myself</option><option>My Son</option><option>My Daughter</option><option>My Brother</option><option>My Sister</option><option>Other Relative</option></select>
+        </div>
+        <div class="field-group" id="setupCandidateWrap" style="display:none;"><label class="field-label">Candidate's Name *</label><input class="field" id="setupCandidate" placeholder="Candidate's full name"/></div>
+      </div>
+      <!-- Step 2 -->
+      <div id="setupStep2" style="display:none;">
+        <div class="field-group"><label class="field-label">Bio / About</label><textarea class="field" id="setupBio" placeholder="Tell us about yourself, your faith journey, and what you're looking for..." style="min-height:100px; resize:vertical;"></textarea></div>
+        <div class="field-group"><label class="field-label">Education</label><input class="field" id="setupEdu" placeholder="e.g. MBA, B.Tech"/></div>
+        <div class="field-group"><label class="field-label">Occupation</label><input class="field" id="setupOcc" placeholder="e.g. Software Engineer"/></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Height (cm)</label><input type="number" class="field" id="setupHeight" placeholder="170"/></div>
+          <div class="field-group"><label class="field-label">Mother Tongue</label><input class="field" id="setupTongue" placeholder="e.g. Tamil"/></div>
+        </div>
+        <div class="field-group"><label class="field-label">Marital Status</label>
+          <select class="field" id="setupMarital"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div id="setupStep3" style="display:none;">
+        <p style="font-size:13px; color:var(--white70); margin-bottom:16px;">Upload up to 3 photos. Your primary photo will be shown on your profile card.</p>
+        <div class="photo-grid">
+          <div class="photo-slot" id="photoSlot0" onclick="document.getElementById('photoInput0').click();">
+            <span style="font-size:28px; opacity:0.4;">📷</span>
+            <span style="font-size:10px; color:var(--white40); margin-top:4px;">Primary *</span>
+            <input type="file" accept="image/*" id="photoInput0" style="display:none;" onchange="handlePhotoSelect(0, this)"/>
+          </div>
+          <div class="photo-slot" id="photoSlot1" onclick="document.getElementById('photoInput1').click();">
+            <span style="font-size:28px; opacity:0.4;">📷</span>
+            <span style="font-size:10px; color:var(--white40); margin-top:4px;">Photo 2</span>
+            <input type="file" accept="image/*" id="photoInput1" style="display:none;" onchange="handlePhotoSelect(1, this)"/>
+          </div>
+          <div class="photo-slot" id="photoSlot2" onclick="document.getElementById('photoInput2').click();">
+            <span style="font-size:28px; opacity:0.4;">📷</span>
+            <span style="font-size:10px; color:var(--white40); margin-top:4px;">Photo 3</span>
+            <input type="file" accept="image/*" id="photoInput2" style="display:none;" onchange="handlePhotoSelect(2, this)"/>
+          </div>
+        </div>
+      </div>
+      <!-- Step 4 -->
+      <div id="setupStep4" style="display:none;">
+        <p style="font-size:13px; color:var(--white70); margin-bottom:16px;">Help us find your best matches. These can be updated anytime.</p>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="setupPrefMin" value="18"/></div>
+          <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="setupPrefMax" value="70"/></div>
+        </div>
+        <div class="field-group"><label class="field-label">Preferred Denomination</label>
+          <select class="field" id="setupPrefDenom"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Orthodox</option><option>Other</option></select>
+        </div>
+        <div class="field-group"><label class="field-label">Preferred City</label><input class="field" id="setupPrefCity" placeholder="Any"/></div>
+      </div>
+
+      <p id="setupError" style="color:var(--red); font-size:12px; text-align:center; margin:12px 0; display:none;"></p>
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <button class="btn btn-dark" id="setupBackBtn" onclick="setupBack()" style="display:none;">← Back</button>
+        <button class="btn btn-gold" id="setupNextBtn" onclick="setupNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PENDING SCREEN -->
+<!-- ══════════════════════════════════════════ -->
+<div id="pendingScreen" class="screen" style="display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px; text-align:center;">
+  <div style="font-size:48px; margin-bottom:16px;">⏳</div>
+  <h2 style="font-family:'Cinzel',serif; font-size:22px; color:var(--gold-bright);">Profile Under Review</h2>
+  <p id="pendingMsg" style="color:var(--white70); font-size:14px; margin-top:8px; max-width:340px; line-height:1.6;"></p>
+  <p style="font-family:'EB Garamond',serif; font-style:italic; color:var(--gold); font-size:14px; margin-top:20px;">"Wait for the Lord; be strong, and let your heart take courage." — Psalm 27:14</p>
+  <div style="margin-top:32px; width:200px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- REJECTED SCREEN -->
+<!-- ══════════════════════════════════════════ -->
+<div id="rejectedScreen" class="screen" style="display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px; text-align:center;">
+  <div style="font-size:48px; margin-bottom:16px;">😔</div>
+  <h2 style="font-family:'Cinzel',serif; font-size:22px; color:var(--red);">Profile Not Approved</h2>
+  <p id="rejectedMsg" style="color:var(--white70); margin-top:8px; max-width:340px; line-height:1.6;"></p>
+  <p style="color:var(--white40); margin-top:12px; font-size:13px;">📧 info@beginforever.in</p>
+  <div style="margin-top:24px; width:200px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MAIN APP -->
+<!-- ══════════════════════════════════════════ -->
+<div id="mainApp" class="screen">
+  <div class="app-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span style="font-size:14px;">✦</span>
+      <h1>Begin Forever</h1>
+    </div>
+    <span id="headerName" style="font-size:11px; color:var(--white40);"></span>
+  </div>
+
+  <!-- Browse Tab -->
+  <div id="tabBrowse" class="content-area">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="font-family:'Cinzel',serif; font-size:20px; color:var(--gold-bright);">Discover</h2>
+      <button class="btn btn-dark btn-sm" onclick="toggleFilters()" id="filterToggle">🔍 Filter</button>
+    </div>
+    <div id="filterBar" class="filter-bar" style="display:none;">
+      <div class="field-group"><label class="field-label">Denomination</label>
+        <select class="field" id="filterDenom" onchange="loadBrowseProfiles()"><option value="">All</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Orthodox</option><option>Other</option></select>
+      </div>
+      <div class="field-group"><label class="field-label">City</label><input class="field" id="filterCity" placeholder="Search city..." oninput="loadBrowseProfiles()"/></div>
+      <button class="btn btn-dark btn-sm" onclick="clearFilters()">Clear Filters</button>
+    </div>
+    <div id="browseLoading" style="text-align:center; padding:60px 0;"><div class="spinner"></div></div>
+    <div id="browseEmpty" style="text-align:center; padding:60px 0; display:none;">
+      <p style="font-size:40px; margin-bottom:12px;">🕊️</p>
+      <p style="color:var(--white40); font-size:14px;">No profiles found yet. Check back soon!</p>
+    </div>
+    <div id="browseGrid" class="profile-grid"></div>
+  </div>
+
+  <!-- Interests Tab -->
+  <div id="tabInterests" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif; font-size:20px; color:var(--gold-bright); margin-bottom:16px;">Interests</h2>
+    <div class="pill-tabs" style="margin-bottom:20px;">
+      <button class="pill-tab active" onclick="setInterestTab('received')" id="intTabReceived">Received</button>
+      <button class="pill-tab" onclick="setInterestTab('sent')" id="intTabSent">Sent</button>
+      <button class="pill-tab" onclick="setInterestTab('connections')" id="intTabConnections">Connected</button>
+    </div>
+    <div id="interestsLoading" style="text-align:center; padding:60px 0;"><div class="spinner"></div></div>
+    <div id="interestsEmpty" style="text-align:center; padding:60px 0; display:none;">
+      <p style="font-size:40px; margin-bottom:12px;">💫</p>
+      <p id="interestsEmptyText" style="color:var(--white40); font-size:14px;"></p>
+    </div>
+    <div id="interestsList"></div>
+  </div>
+
+  <!-- Messages Tab -->
+  <div id="tabMessages" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif; font-size:20px; color:var(--gold-bright); margin-bottom:16px;">Messages</h2>
+    <div id="messagesLoading" style="text-align:center; padding:60px 0;"><div class="spinner"></div></div>
+    <div id="messagesEmpty" style="text-align:center; padding:60px 0; display:none;">
+      <p style="font-size:40px; margin-bottom:12px;">💬</p>
+      <p style="color:var(--white40); font-size:14px;">No conversations yet. Connect with someone to start chatting!</p>
+    </div>
+    <div id="messagesList"></div>
+  </div>
+
+  <!-- Profile Tab -->
+  <div id="tabProfile" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif; font-size:20px; color:var(--gold-bright); margin-bottom:20px;">My Profile</h2>
+    <div id="myProfileContent"></div>
+    <div style="margin-top:20px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
+  </div>
+
+  <!-- Admin Tab -->
+  <div id="tabAdmin" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif; font-size:20px; color:var(--gold-bright); margin-bottom:4px;">Admin Dashboard</h2>
+    <p style="font-size:12px; color:var(--white40); margin-bottom:16px;">Manage member profiles</p>
+    <div class="pill-tabs" style="margin-bottom:20px;">
+      <button class="pill-tab active" onclick="setAdminTab('pending')" id="admTabPending">Pending</button>
+      <button class="pill-tab" onclick="setAdminTab('approved')" id="admTabApproved">Approved</button>
+      <button class="pill-tab" onclick="setAdminTab('rejected')" id="admTabRejected">Rejected</button>
+    </div>
+    <div id="adminLoading" style="text-align:center; padding:40px 0;"><div class="spinner"></div></div>
+    <div id="adminEmpty" style="text-align:center; padding:40px 0; display:none;"><p style="color:var(--white40);">No profiles</p></div>
+    <div id="adminList"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" onclick="switchTab('browse')" id="navBrowse"><span class="tab-icon">🔍</span><span class="tab-label">Discover</span></button>
+    <button class="tab-btn" onclick="switchTab('interests')" id="navInterests"><span class="tab-icon">💝</span><span class="tab-label">Interests</span></button>
+    <button class="tab-btn" onclick="switchTab('messages')" id="navMessages"><span class="tab-icon">💬</span><span class="tab-label">Messages</span></button>
+    <button class="tab-btn" onclick="switchTab('profile')" id="navProfile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CHAT SCREEN (overlay) -->
+<!-- ══════════════════════════════════════════ -->
+<div id="chatScreen" style="display:none; position:fixed; inset:0; z-index:200; background:var(--black); flex-direction:column;">
+  <div class="chat-header">
+    <button onclick="closeChat()" style="background:none; border:none; color:var(--gold-bright); font-size:18px; cursor:pointer;">←</button>
+    <div class="chat-avatar" id="chatAvatar"></div>
+    <div>
+      <h3 id="chatName" style="font-family:'Cinzel',serif; font-size:14px; color:var(--white); margin:0;"></h3>
+      <p id="chatCity" style="font-size:11px; color:var(--white40); margin:0;"></p>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-bar">
+    <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PROFILE DETAIL MODAL -->
+<!-- ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="profileModal" onclick="closeProfileModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="profileModalPhoto" style="height:320px; background:var(--dark3); position:relative; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center;">
+      <span style="font-size:80px; opacity:0.2;" id="profileModalNoPhoto">👤</span>
+      <button onclick="closeProfileModal()" style="position:absolute; top:16px; right:16px; background:rgba(0,0,0,0.5); border:none; color:var(--white); font-size:20px; cursor:pointer; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;">✕</button>
+    </div>
+    <div style="padding:24px 20px;">
+      <h2 id="profileModalName" style="font-family:'Cinzel',serif; font-size:24px; color:var(--white); margin:0;"></h2>
+      <p id="profileModalSub" style="color:var(--gold); font-size:13px; margin-top:4px;"></p>
+      <div id="profileModalBio" style="margin-top:20px; display:none;">
+        <h4 style="font-size:11px; color:var(--gold); text-transform:uppercase; letter-spacing:2px; margin-bottom:6px;">About</h4>
+        <p id="profileModalBioText" style="font-size:14px; color:var(--white70); line-height:1.6;"></p>
+      </div>
+      <div id="profileModalStats" class="stat-grid"></div>
+      <div id="profileModalAction" style="margin-top:24px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// SUPABASE INIT
+// ══════════════════════════════════════════
+const SUPABASE_URL = "https://neftjxvovxocqabxjvme.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentUser = null;
+let myProfile = null;
+let currentTab = 'browse';
+let authMode = 'login';
+let setupStep = 1;
+let selectedPhotos = [null, null, null];
+let currentInterestTab = 'received';
+let currentAdminTab = 'pending';
+let chatPartnerId = null;
+let chatPartnerData = null;
+let allInterests = [];
+let chatInterval = null;
+
+// ══════════════════════════════════════════
+// SCREEN MANAGEMENT
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = id === 'authScreen' || id === 'pendingScreen' || id === 'rejectedScreen' || id === 'loadingScreen' ? 'flex' : 'block';
+    el.classList.add('active');
+  }
+}
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function setAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authSuccess').style.display = 'none';
+  if (mode === 'login') {
+    document.getElementById('authTitle').textContent = 'Welcome Back';
+    document.getElementById('authPasswordGroup').style.display = '';
+    document.getElementById('authConfirmGroup').style.display = 'none';
+    document.getElementById('authSubmitBtn').textContent = 'Sign In';
+    document.getElementById('authForgotBtn').style.display = '';
+    document.getElementById('authToggleText').style.display = '';
+    document.getElementById('authBackBtn').style.display = 'none';
+  } else if (mode === 'signup') {
+    document.getElementById('authTitle').textContent = 'Create Account';
+    document.getElementById('authPasswordGroup').style.display = '';
+    document.getElementById('authConfirmGroup').style.display = '';
+    document.getElementById('authSubmitBtn').textContent = 'Create Account';
+    document.getElementById('authForgotBtn').style.display = 'none';
+    document.getElementById('authToggleText').style.display = 'none';
+    document.getElementById('authBackBtn').style.display = '';
+  } else {
+    document.getElementById('authTitle').textContent = 'Reset Password';
+    document.getElementById('authPasswordGroup').style.display = 'none';
+    document.getElementById('authConfirmGroup').style.display = 'none';
+    document.getElementById('authSubmitBtn').textContent = 'Send Reset Link';
+    document.getElementById('authForgotBtn').style.display = 'none';
+    document.getElementById('authToggleText').style.display = 'none';
+    document.getElementById('authBackBtn').style.display = '';
+  }
+}
+
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const confirm = document.getElementById('authConfirm').value;
+  const errEl = document.getElementById('authError');
+  const sucEl = document.getElementById('authSuccess');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+
+  if (!email) { errEl.textContent = 'Please enter your email'; errEl.style.display = ''; return; }
+
+  const btn = document.getElementById('authSubmitBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm"></div>';
+
+  try {
+    if (authMode === 'signup') {
+      if (password.length < 6) throw new Error('Password must be at least 6 characters');
+      if (password !== confirm) throw new Error("Passwords don't match");
+      const { error } = await sb.auth.signUp({ email, password });
+      if (error) throw error;
+      sucEl.textContent = 'Check your email for a confirmation link!';
+      sucEl.style.display = '';
+    } else if (authMode === 'login') {
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+    } else {
+      const { error } = await sb.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+      sucEl.textContent = 'Password reset link sent to your email!';
+      sucEl.style.display = '';
+    }
+  } catch (err) {
+    errEl.textContent = err.message; errEl.style.display = '';
+  }
+  btn.disabled = false;
+  btn.textContent = authMode === 'login' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link';
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  currentUser = null; myProfile = null;
+  showScreen('authScreen');
+}
+
+// ══════════════════════════════════════════
+// PROFILE SETUP
+// ══════════════════════════════════════════
+function toggleCandidate() {
+  const v = document.getElementById('setupRegFor').value;
+  document.getElementById('setupCandidateWrap').style.display = v !== 'Myself' ? '' : 'none';
+}
+
+function handlePhotoSelect(index, input) {
+  const file = input.files[0];
+  if (!file) return;
+  selectedPhotos[index] = file;
+  const slot = document.getElementById('photoSlot' + index);
+  slot.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+  slot.style.borderColor = 'var(--gold)';
+  slot.innerHTML = `<input type="file" accept="image/*" id="photoInput${index}" style="display:none;" onchange="handlePhotoSelect(${index}, this)"/>`;
+}
+
+function updateSetupUI() {
+  const titles = ['Personal Details', 'About You', 'Your Photos', 'Preferences'];
+  document.getElementById('setupTitle').textContent = titles[setupStep - 1];
+  document.getElementById('setupStepLabel').textContent = `Step ${setupStep} of 4`;
+  document.querySelectorAll('.step-dot').forEach((d, i) => d.classList.toggle('active', i < setupStep));
+  for (let i = 1; i <= 4; i++) document.getElementById('setupStep' + i).style.display = i === setupStep ? '' : 'none';
+  document.getElementById('setupBackBtn').style.display = setupStep > 1 ? '' : 'none';
+  document.getElementById('setupNextBtn').textContent = setupStep < 4 ? 'Next →' : 'Submit for Review ✦';
+  document.getElementById('setupError').style.display = 'none';
+}
+
+function setupBack() { if (setupStep > 1) { setupStep--; updateSetupUI(); } }
+
+async function setupNext() {
+  const errEl = document.getElementById('setupError');
+  errEl.style.display = 'none';
+
+  if (setupStep === 1) {
+    if (!document.getElementById('setupName').value.trim() || !document.getElementById('setupAge').value ||
+        !document.getElementById('setupGender').value || !document.getElementById('setupDenom').value ||
+        !document.getElementById('setupCity').value.trim()) {
+      errEl.textContent = 'Please fill in all required fields'; errEl.style.display = ''; return;
+    }
+    setupStep++; updateSetupUI(); return;
+  }
+  if (setupStep === 2 || setupStep === 3) { setupStep++; updateSetupUI(); return; }
+
+  // Step 4 — submit
+  const btn = document.getElementById('setupNextBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm"></div>';
+
+  try {
+    const photoUrls = ['', '', ''];
+    for (let i = 0; i < 3; i++) {
+      if (selectedPhotos[i]) {
+        const ext = selectedPhotos[i].name.split('.').pop();
+        const path = `${currentUser.id}/photo_${i}_${Date.now()}.${ext}`;
+        const { error } = await sb.storage.from('profile-photos').upload(path, selectedPhotos[i], { upsert: true });
+        if (error) throw error;
+        const { data } = sb.storage.from('profile-photos').getPublicUrl(path);
+        photoUrls[i] = data.publicUrl;
+      }
+    }
+
+    const profileData = {
+      id: currentUser.id, email: currentUser.email,
+      full_name: document.getElementById('setupName').value.trim(),
+      age: parseInt(document.getElementById('setupAge').value),
+      gender: document.getElementById('setupGender').value,
+      denomination: document.getElementById('setupDenom').value,
+      city: document.getElementById('setupCity').value.trim(),
+      state: document.getElementById('setupState').value.trim(),
+      phone: document.getElementById('setupPhone').value.trim(),
+      registered_by: document.getElementById('setupRegFor').value,
+      candidate_name: document.getElementById('setupCandidate').value.trim(),
+      bio: document.getElementById('setupBio').value.trim(),
+      education: document.getElementById('setupEdu').value.trim(),
+      occupation: document.getElementById('setupOcc').value.trim(),
+      height_cm: document.getElementById('setupHeight').value ? parseInt(document.getElementById('setupHeight').value) : null,
+      mother_tongue: document.getElementById('setupTongue').value.trim(),
+      marital_status: document.getElementById('setupMarital').value,
+      photo_url: photoUrls[0], photo_2_url: photoUrls[1], photo_3_url: photoUrls[2],
+      pref_age_min: parseInt(document.getElementById('setupPrefMin').value) || 18,
+      pref_age_max: parseInt(document.getElementById('setupPrefMax').value) || 70,
+      pref_denomination: document.getElementById('setupPrefDenom').value,
+      pref_city: document.getElementById('setupPrefCity').value.trim() || 'Any',
+      status: 'pending',
+    };
+
+    const { error } = await sb.from('profiles').upsert(profileData);
+    if (error) throw error;
+    await loadUserProfile();
+  } catch (err) {
+    errEl.textContent = err.message; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Submit for Review ✦';
+  }
+}
+
+// ══════════════════════════════════════════
+// TAB NAVIGATION
+// ══════════════════════════════════════════
+function switchTab(tab) {
+  currentTab = tab;
+  ['browse', 'interests', 'messages', 'profile', 'admin'].forEach(t => {
+    const el = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) el.style.display = t === tab ? '' : 'none';
+    const nav = document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (nav) nav.classList.toggle('active', t === tab);
+  });
+  if (tab === 'browse') loadBrowseProfiles();
+  if (tab === 'interests') loadInterests();
+  if (tab === 'messages') loadConversations();
+  if (tab === 'profile') renderMyProfile();
+  if (tab === 'admin') loadAdminProfiles();
+}
+
+// ══════════════════════════════════════════
+// BROWSE
+// ══════════════════════════════════════════
+async function loadBrowseProfiles() {
+  document.getElementById('browseLoading').style.display = '';
+  document.getElementById('browseEmpty').style.display = 'none';
+  document.getElementById('browseGrid').innerHTML = '';
+
+  let query = sb.from('profiles').select('*').eq('status', 'approved').neq('id', myProfile.id);
+  if (myProfile.gender === 'Male') query = query.eq('gender', 'Female');
+  else if (myProfile.gender === 'Female') query = query.eq('gender', 'Male');
+
+  const denom = document.getElementById('filterDenom')?.value;
+  const city = document.getElementById('filterCity')?.value;
+  if (denom) query = query.eq('denomination', denom);
+  if (city) query = query.ilike('city', `%${city}%`);
+
+  const { data } = await query.order('created_at', { ascending: false }).limit(50);
+  document.getElementById('browseLoading').style.display = 'none';
+
+  if (!data || data.length === 0) {
+    document.getElementById('browseEmpty').style.display = '';
+    return;
+  }
+
+  const grid = document.getElementById('browseGrid');
+  data.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'profile-card';
+    card.onclick = () => openProfileModal(p);
+    card.innerHTML = `
+      <div class="profile-card-photo" style="${p.photo_url ? `background-image:url(${p.photo_url})` : ''}">
+        ${!p.photo_url ? '<span style="font-size:48px; opacity:0.3;">👤</span>' : ''}
+      </div>
+      <div class="profile-card-info">
+        <h3>${p.full_name}, ${p.age}</h3>
+        <p>${p.denomination} · ${p.city}</p>
+        ${p.occupation ? `<p>${p.occupation}</p>` : ''}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function toggleFilters() {
+  const bar = document.getElementById('filterBar');
+  bar.style.display = bar.style.display === 'none' ? '' : 'none';
+}
+function clearFilters() {
+  document.getElementById('filterDenom').value = '';
+  document.getElementById('filterCity').value = '';
+  loadBrowseProfiles();
+}
+
+// ══════════════════════════════════════════
+// PROFILE MODAL
+// ══════════════════════════════════════════
+function openProfileModal(profile) {
+  const modal = document.getElementById('profileModal');
+  const photoDiv = document.getElementById('profileModalPhoto');
+  if (profile.photo_url) {
+    photoDiv.style.backgroundImage = `url(${profile.photo_url})`;
+    document.getElementById('profileModalNoPhoto').style.display = 'none';
+  } else {
+    photoDiv.style.backgroundImage = '';
+    document.getElementById('profileModalNoPhoto').style.display = '';
+  }
+  document.getElementById('profileModalName').textContent = `${profile.full_name}, ${profile.age}`;
+  document.getElementById('profileModalSub').textContent = `${profile.denomination} · ${profile.city}`;
+
+  if (profile.bio) {
+    document.getElementById('profileModalBio').style.display = '';
+    document.getElementById('profileModalBioText').textContent = profile.bio;
+  } else {
+    document.getElementById('profileModalBio').style.display = 'none';
+  }
+
+  const stats = document.getElementById('profileModalStats');
+  stats.innerHTML = '';
+  [
+    { label: 'Education', value: profile.education },
+    { label: 'Occupation', value: profile.occupation },
+    { label: 'Mother Tongue', value: profile.mother_tongue },
+    { label: 'Marital Status', value: profile.marital_status },
+    { label: 'Height', value: profile.height_cm ? profile.height_cm + ' cm' : null },
+    { label: 'State', value: profile.state },
+  ].filter(d => d.value).forEach(d => {
+    stats.innerHTML += `<div class="stat-box"><p class="label">${d.label}</p><p class="value">${d.value}</p></div>`;
+  });
+
+  // Interest button
+  const action = document.getElementById('profileModalAction');
+  const status = getInterestStatus(profile.id);
+  if (status === 'accepted') action.innerHTML = '<button class="btn btn-green" disabled>✅ Mutually Connected</button>';
+  else if (status === 'sent') action.innerHTML = '<button class="btn btn-dark" disabled>Interest Sent ✓</button>';
+  else if (status === 'received') action.innerHTML = `<button class="btn btn-gold" onclick="sendInterest('${profile.id}','accept')">Accept Interest ♥</button>`;
+  else action.innerHTML = `<button class="btn btn-gold" onclick="sendInterest('${profile.id}','send')">✦ Express Interest</button>`;
+
+  modal.classList.add('show');
+}
+
+function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
+
+function getInterestStatus(profileId) {
+  const sent = allInterests.find(i => i.from_user_id === myProfile.id && i.to_user_id === profileId);
+  const received = allInterests.find(i => i.to_user_id === myProfile.id && i.from_user_id === profileId);
+  if (sent?.status === 'accepted' || received?.status === 'accepted') return 'accepted';
+  if (sent) return 'sent';
+  if (received) return 'received';
+  return null;
+}
+
+async function sendInterest(targetId, action) {
+  if (action === 'send') {
+    await sb.from('interests').insert({ from_user_id: myProfile.id, to_user_id: targetId });
+  } else {
+    await sb.from('interests').update({ status: 'accepted', responded_at: new Date().toISOString() })
+      .eq('from_user_id', targetId).eq('to_user_id', myProfile.id);
+  }
+  await loadAllInterests();
+  closeProfileModal();
+}
+
+async function loadAllInterests() {
+  const { data } = await sb.from('interests').select('*')
+    .or(`from_user_id.eq.${myProfile.id},to_user_id.eq.${myProfile.id}`);
+  allInterests = data || [];
+}
+
+// ══════════════════════════════════════════
+// INTERESTS TAB
+// ══════════════════════════════════════════
+function setInterestTab(tab) {
+  currentInterestTab = tab;
+  ['received', 'sent', 'connections'].forEach(t => {
+    document.getElementById('intTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+  });
+  loadInterests();
+}
+
+async function loadInterests() {
+  document.getElementById('interestsLoading').style.display = '';
+  document.getElementById('interestsEmpty').style.display = 'none';
+  document.getElementById('interestsList').innerHTML = '';
+
+  let query;
+  if (currentInterestTab === 'received') {
+    query = sb.from('interests').select('*').eq('to_user_id', myProfile.id);
+  } else if (currentInterestTab === 'sent') {
+    query = sb.from('interests').select('*').eq('from_user_id', myProfile.id);
+  } else {
+    query = sb.from('interests').select('*').eq('status', 'accepted')
+      .or(`from_user_id.eq.${myProfile.id},to_user_id.eq.${myProfile.id}`);
+  }
+  const { data } = await query.order('created_at', { ascending: false });
+  document.getElementById('interestsLoading').style.display = 'none';
+
+  if (!data || data.length === 0) {
+    document.getElementById('interestsEmpty').style.display = '';
+    const texts = { received: 'No interests received yet', sent: "You haven't sent any interests yet", connections: 'No connections yet' };
+    document.getElementById('interestsEmptyText').textContent = texts[currentInterestTab];
+    return;
+  }
+
+  const userIds = new Set();
+  data.forEach(i => { userIds.add(i.from_user_id); userIds.add(i.to_user_id); });
+  userIds.delete(myProfile.id);
+  const { data: profiles } = await sb.from('profiles').select('*').in('id', [...userIds]);
+  const profileMap = {};
+  (profiles || []).forEach(p => profileMap[p.id] = p);
+
+  const list = document.getElementById('interestsList');
+  data.forEach(interest => {
+    const otherId = interest.from_user_id === myProfile.id ? interest.to_user_id : interest.from_user_id;
+    const p = profileMap[otherId];
+    if (!p) return;
+    const statusText = interest.status === 'pending' ? '⏳ Pending' : interest.status === 'accepted' ? '✅ Accepted' : '❌ Declined';
+    let actions = '';
+    if (currentInterestTab === 'received' && interest.status === 'pending') {
+      actions = `<button class="btn btn-green btn-sm" onclick="respondInterest('${interest.id}','accepted')">Accept</button>
+                 <button class="btn btn-dark btn-sm" onclick="respondInterest('${interest.id}','declined')">Decline</button>`;
+    }
+    if (currentInterestTab === 'connections') {
+      actions = `<button class="btn btn-gold btn-sm" onclick="openChat('${p.id}')">💬 Chat</button>`;
+    }
+    list.innerHTML += `
+      <div class="interest-item">
+        <div class="interest-avatar" style="${p.photo_url ? `background-image:url(${p.photo_url})` : ''}" onclick="openProfileModal(${JSON.stringify(p).replace(/"/g, '&quot;')})"></div>
+        <div class="interest-info" onclick="openProfileModal(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+          <h3>${p.full_name}, ${p.age}</h3>
+          <p style="font-size:11px; color:var(--white40); margin:2px 0 0;">${p.denomination} · ${p.city}</p>
+          <p style="font-size:10px; color:var(--white40); margin:2px 0 0;">${statusText}</p>
+        </div>
+        <div class="interest-actions">${actions}</div>
+      </div>`;
+  });
+}
+
+async function respondInterest(interestId, status) {
+  await sb.from('interests').update({ status, responded_at: new Date().toISOString() }).eq('id', interestId);
+  await loadAllInterests();
+  loadInterests();
+}
+
+// ══════════════════════════════════════════
+// MESSAGES
+// ══════════════════════════════════════════
+async function loadConversations() {
+  document.getElementById('messagesLoading').style.display = '';
+  document.getElementById('messagesEmpty').style.display = 'none';
+  document.getElementById('messagesList').innerHTML = '';
+
+  const { data: connections } = await sb.from('interests').select('*').eq('status', 'accepted')
+    .or(`from_user_id.eq.${myProfile.id},to_user_id.eq.${myProfile.id}`);
+
+  if (!connections || connections.length === 0) {
+    document.getElementById('messagesLoading').style.display = 'none';
+    document.getElementById('messagesEmpty').style.display = '';
+    return;
+  }
+
+  const partnerIds = connections.map(c => c.from_user_id === myProfile.id ? c.to_user_id : c.from_user_id);
+  const { data: partners } = await sb.from('profiles').select('*').in('id', partnerIds);
+
+  const list = document.getElementById('messagesList');
+  for (const partner of (partners || [])) {
+    const { data: lastMsg } = await sb.from('messages').select('*')
+      .or(`and(sender_id.eq.${myProfile.id},receiver_id.eq.${partner.id}),and(sender_id.eq.${partner.id},receiver_id.eq.${myProfile.id})`)
+      .order('created_at', { ascending: false }).limit(1);
+
+    const { count } = await sb.from('messages').select('*', { count: 'exact', head: true })
+      .eq('sender_id', partner.id).eq('receiver_id', myProfile.id).eq('is_read', false);
+
+    const msg = lastMsg?.[0];
+    list.innerHTML += `
+      <div class="interest-item" style="cursor:pointer;" onclick="openChat('${partner.id}')">
+        <div class="interest-avatar" style="${partner.photo_url ? `background-image:url(${partner.photo_url})` : ''}"></div>
+        <div class="interest-info" style="flex:1; min-width:0;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="font-family:'Cinzel',serif; font-size:13px; color:var(--white); margin:0;">${partner.full_name}</h3>
+            ${msg ? `<span style="font-size:10px; color:var(--white40);">${new Date(msg.created_at).toLocaleDateString()}</span>` : ''}
+          </div>
+          <p style="font-size:12px; color:${count > 0 ? 'var(--white)' : 'var(--white40)'}; font-weight:${count > 0 ? 700 : 400}; margin:4px 0 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            ${msg ? msg.content : 'Start a conversation...'}
+          </p>
+        </div>
+        ${count > 0 ? `<span style="background:var(--gold); color:var(--black); font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px;">${count}</span>` : ''}
+      </div>`;
+  }
+  document.getElementById('messagesLoading').style.display = 'none';
+  if (list.innerHTML === '') document.getElementById('messagesEmpty').style.display = '';
+}
+
+// ══════════════════════════════════════════
+// CHAT
+// ══════════════════════════════════════════
+async function openChat(partnerId) {
+  chatPartnerId = partnerId;
+  const { data } = await sb.from('profiles').select('*').eq('id', partnerId).single();
+  chatPartnerData = data;
+
+  document.getElementById('chatName').textContent = data.full_name;
+  document.getElementById('chatCity').textContent = data.city;
+  if (data.photo_url) document.getElementById('chatAvatar').style.backgroundImage = `url(${data.photo_url})`;
+
+  document.getElementById('chatScreen').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+
+  loadChatMessages();
+  chatInterval = setInterval(loadChatMessages, 3000);
+}
+
+function closeChat() {
+  if (chatInterval) clearInterval(chatInterval);
+  document.getElementById('chatScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  chatPartnerId = null;
+}
+
+async function loadChatMessages() {
+  if (!chatPartnerId) return;
+  const { data } = await sb.from('messages').select('*')
+    .or(`and(sender_id.eq.${myProfile.id},receiver_id.eq.${chatPartnerId}),and(sender_id.eq.${chatPartnerId},receiver_id.eq.${myProfile.id})`)
+    .order('created_at', { ascending: true });
+
+  const container = document.getElementById('chatMessages');
+  container.innerHTML = '';
+  if (!data || data.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:40px 0;"><p style="color:var(--white40); font-size:13px;">Say hello! Start a conversation.</p></div>';
+  } else {
+    data.forEach(m => {
+      const mine = m.sender_id === myProfile.id;
+      container.innerHTML += `
+        <div style="display:flex; justify-content:${mine ? 'flex-end' : 'flex-start'}; margin-bottom:8px;">
+          <div class="chat-bubble ${mine ? 'chat-bubble-mine' : 'chat-bubble-theirs'}">
+            <p>${m.content}</p>
+            <p class="time">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+          </div>
+        </div>`;
+    });
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // Mark as read
+  await sb.from('messages').update({ is_read: true })
+    .eq('receiver_id', myProfile.id).eq('sender_id', chatPartnerId).eq('is_read', false);
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  await sb.from('messages').insert({ sender_id: myProfile.id, receiver_id: chatPartnerId, content: msg });
+  loadChatMessages();
+}
+
+// ══════════════════════════════════════════
+// MY PROFILE
+// ══════════════════════════════════════════
+function renderMyProfile() {
+  const el = document.getElementById('myProfileContent');
+  const p = myProfile;
+  el.innerHTML = `
+    <div style="text-align:center; margin-bottom:24px;">
+      <div style="width:100px; height:100px; border-radius:50%; margin:0 auto; background:var(--dark3); border:3px solid var(--gold); ${p.photo_url ? `background-image:url(${p.photo_url}); background-size:cover; background-position:center;` : 'display:flex; align-items:center; justify-content:center;'}">
+        ${!p.photo_url ? '<span style="font-size:36px; opacity:0.3;">👤</span>' : ''}
+      </div>
+      <h3 style="font-family:'Cinzel',serif; font-size:20px; color:var(--white); margin-top:12px;">${p.full_name}, ${p.age}</h3>
+      <p style="color:var(--gold); font-size:13px;">${p.denomination} · ${p.city}</p>
+      <span style="display:inline-block; margin-top:8px; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; background:${p.status === 'approved' ? 'var(--green)' : 'var(--gold)'}; color:${p.status === 'approved' ? 'var(--white)' : 'var(--black)'};">
+        ${p.status === 'approved' ? '✅ Approved' : '⏳ Pending'}
+      </span>
+    </div>
+    <div style="background:var(--white08); border-radius:14px; padding:16px;">
+      ${[
+        { label: 'Bio', value: p.bio }, { label: 'Education', value: p.education },
+        { label: 'Occupation', value: p.occupation }, { label: 'Mother Tongue', value: p.mother_tongue },
+        { label: 'Marital Status', value: p.marital_status }, { label: 'Phone', value: p.phone },
+        { label: 'Email', value: p.email },
+      ].filter(d => d.value).map(d => `
+        <div style="margin-bottom:12px;">
+          <p style="font-size:10px; color:var(--gold); text-transform:uppercase; letter-spacing:1px;">${d.label}</p>
+          <p style="font-size:13px; color:var(--white); margin-top:2px;">${d.value}</p>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════
+function setAdminTab(tab) {
+  currentAdminTab = tab;
+  ['pending', 'approved', 'rejected'].forEach(t => {
+    document.getElementById('admTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+  });
+  loadAdminProfiles();
+}
+
+async function loadAdminProfiles() {
+  document.getElementById('adminLoading').style.display = '';
+  document.getElementById('adminEmpty').style.display = 'none';
+  document.getElementById('adminList').innerHTML = '';
+
+  const { data } = await sb.from('profiles').select('*').eq('status', currentAdminTab).order('created_at', { ascending: false });
+  document.getElementById('adminLoading').style.display = 'none';
+
+  if (!data || data.length === 0) {
+    document.getElementById('adminEmpty').style.display = '';
+    return;
+  }
+
+  const list = document.getElementById('adminList');
+  data.forEach(p => {
+    let actions = '';
+    if (currentAdminTab === 'pending') {
+      actions = `
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn btn-green btn-sm" style="flex:1;" onclick="adminAction('${p.id}','approved')">✅ Approve</button>
+          <button class="btn btn-red btn-sm" style="flex:1;" onclick="adminReject('${p.id}')">❌ Reject</button>
+        </div>`;
+    }
+    if (currentAdminTab === 'approved') {
+      actions = `<button class="btn btn-dark btn-sm" style="margin-top:10px;" onclick="adminAction('${p.id}','suspended')">Suspend</button>`;
+    }
+
+    list.innerHTML += `
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-avatar" style="${p.photo_url ? `background-image:url(${p.photo_url})` : ''}"></div>
+          <div style="flex:1;">
+            <h3 style="font-size:14px; color:var(--white); margin:0;">${p.full_name}, ${p.age}</h3>
+            <p style="font-size:11px; color:var(--white40);">${p.gender} · ${p.denomination} · ${p.city}</p>
+            <p style="font-size:10px; color:var(--white40);">${p.email} · ${new Date(p.created_at).toLocaleDateString()}</p>
+          </div>
+        </div>
+        ${p.bio ? `<p style="font-size:12px; color:var(--white70); margin-top:10px; line-height:1.5;">${p.bio}</p>` : ''}
+        ${actions}
+      </div>`;
+  });
+}
+
+async function adminAction(profileId, status) {
+  await sb.from('profiles').update({
+    status, approved_at: status === 'approved' ? new Date().toISOString() : null,
+    is_founding_member: status === 'approved',
+  }).eq('id', profileId);
+  loadAdminProfiles();
+}
+
+async function adminReject(profileId) {
+  const reason = prompt('Reason for rejection:');
+  if (reason === null) return;
+  await sb.from('profiles').update({ status: 'rejected', rejection_reason: reason }).eq('id', profileId);
+  loadAdminProfiles();
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+async function loadUserProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  myProfile = data;
+
+  if (!myProfile) {
+    showScreen('setupScreen');
+    updateSetupUI();
+    return;
+  }
+
+  if (myProfile.status === 'pending') {
+    document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile has been submitted and is being reviewed by our team. You'll receive an email once it's approved.`;
+    showScreen('pendingScreen');
+    return;
+  }
+
+  if (myProfile.status === 'rejected') {
+    document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support for more information.';
+    showScreen('rejectedScreen');
+    return;
+  }
+
+  // Approved — show main app
+  document.getElementById('headerName').textContent = myProfile.full_name.split(' ')[0];
+  
+  // Add admin tab if admin
+  if (myProfile.is_admin) {
+    const tabBar = document.getElementById('tabBar');
+    if (!document.getElementById('navAdmin')) {
+      const adminBtn = document.createElement('button');
+      adminBtn.className = 'tab-btn';
+      adminBtn.id = 'navAdmin';
+      adminBtn.onclick = () => switchTab('admin');
+      adminBtn.innerHTML = '<span class="tab-icon">⚙️</span><span class="tab-label">Admin</span>';
+      tabBar.appendChild(adminBtn);
+    }
+  }
+
+  await loadAllInterests();
+  showScreen('mainApp');
+  switchTab('browse');
+}
+
+// Auth state listener
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    currentUser = session.user;
+    await loadUserProfile();
+  } else {
+    currentUser = null;
+    myProfile = null;
+    showScreen('authScreen');
+  }
+});
+
+// Initial session check
+sb.auth.getSession().then(async ({ data: { session } }) => {
+  if (session?.user) {
+    currentUser = session.user;
+    await loadUserProfile();
+  } else {
+    showScreen('authScreen');
+  }
+});
+</script>
+</body>
+</html>
