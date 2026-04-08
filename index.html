@@ -220,7 +220,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     <div style="text-align:center; margin-bottom:24px;">
       <h1 id="setupTitle" style="font-family:'Cinzel',serif; font-size:22px; color:var(--gold-bright);">Personal Details</h1>
       <div class="steps" id="setupSteps">
-        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
       </div>
       <p id="setupStepLabel" style="font-size:12px; color:var(--white40);">Step 1 of 4</p>
     </div>
@@ -264,16 +264,16 @@ select.field option { background: var(--dark2); color: var(--white); }
           <select class="field" id="setupMarital"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select>
         </div>
       </div>
-      <!-- Step 3 -->
+      <!-- Step 3: Photos (mandatory primary photo) -->
       <div id="setupStep3" style="display:none;">
-        <p style="font-size:13px; color:var(--white70); margin-bottom:12px;">Upload up to 3 photos. Your primary photo will be shown on your profile card.</p>
+        <p style="font-size:13px; color:var(--white70); margin-bottom:12px;">Upload up to 3 photos. <strong style="color:var(--gold-bright);">Primary photo is required.</strong></p>
         <div style="background:var(--white08); border:1px solid var(--gold); border-radius:10px; padding:12px; margin-bottom:16px;">
           <p style="font-size:12px; color:var(--gold); margin:0;">🔒 <strong>Photo Privacy:</strong> Your photos are private until your profile is approved. Only verified members can see your photos. You can change privacy settings anytime from your profile.</p>
         </div>
         <div class="photo-grid">
           <div class="photo-slot" id="photoSlot0" onclick="document.getElementById('photoInput0').click();">
             <span style="font-size:28px; opacity:0.4;">📷</span>
-            <span style="font-size:10px; color:var(--white40); margin-top:4px;">Primary *</span>
+            <span style="font-size:10px; color:var(--gold-bright); margin-top:4px; font-weight:700;">Primary *</span>
             <input type="file" accept="image/*" id="photoInput0" style="display:none;" onchange="handlePhotoSelect(0, this)"/>
           </div>
           <div class="photo-slot" id="photoSlot1" onclick="document.getElementById('photoInput1').click();">
@@ -288,15 +288,46 @@ select.field option { background: var(--dark2); color: var(--white); }
           </div>
         </div>
       </div>
-      <!-- Step 4 -->
+      <!-- Step 4: Government ID Verification (NEW) -->
       <div id="setupStep4" style="display:none;">
+        <div style="background:var(--white08); border:1px solid var(--gold); border-radius:10px; padding:16px; margin-bottom:20px;">
+          <p style="font-size:13px; color:var(--gold-bright); margin:0 0 8px;"><strong>🪪 Why we verify?</strong></p>
+          <p style="font-size:12px; color:var(--white70); margin:0; line-height:1.6;">Begin Forever is a 100% ID-verified platform. Every member must submit a valid Government ID to ensure safety and authenticity. Your ID is stored securely and is <strong>never shared</strong> with other members — it's only used by our admin team for verification.</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Government ID Type *</label>
+          <select class="field" id="setupIdType">
+            <option value="">Select ID type...</option>
+            <option value="Aadhaar Card">Aadhaar Card</option>
+            <option value="PAN Card">PAN Card</option>
+            <option value="Voter ID">Voter ID</option>
+            <option value="Driving Licence">Driving Licence</option>
+            <option value="Passport">Passport</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Upload Government ID *</label>
+          <div id="idProofSlot" onclick="document.getElementById('idProofInput').click();" style="border:2px dashed var(--white15); border-radius:14px; padding:30px 20px; text-align:center; cursor:pointer; background:var(--white08); transition:all 0.2s;">
+            <span style="font-size:36px; display:block; margin-bottom:8px; opacity:0.4;">🪪</span>
+            <span style="font-size:13px; color:var(--white40);">Tap to upload your Government ID</span>
+            <span style="font-size:11px; color:var(--white40); display:block; margin-top:4px;">Accepted: JPG, PNG, PDF (Max 5MB)</span>
+            <input type="file" accept="image/*,.pdf" id="idProofInput" style="display:none;" onchange="handleIdProofSelect(this)"/>
+          </div>
+          <p id="idProofFileName" style="font-size:12px; color:var(--gold-bright); margin-top:8px; display:none;"></p>
+        </div>
+        <div style="background:rgba(39,174,96,0.1); border:1px solid rgba(39,174,96,0.3); border-radius:10px; padding:12px; margin-top:12px;">
+          <p style="font-size:11px; color:var(--green); margin:0; line-height:1.6;">✅ Your ID is encrypted and stored securely<br/>✅ Only our admin team can view it for verification<br/>✅ It is never shown to other members<br/>✅ You can request deletion anytime</p>
+        </div>
+      </div>
+      <!-- Step 5: Preferences (was Step 4) -->
+      <div id="setupStep5" style="display:none;">
         <p style="font-size:13px; color:var(--white70); margin-bottom:16px;">Help us find your best matches. These can be updated anytime.</p>
         <div class="field-row">
           <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="setupPrefMin" value="18"/></div>
           <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="setupPrefMax" value="70"/></div>
         </div>
         <div class="field-group"><label class="field-label">Preferred Denomination</label>
-          <select class="field" id="setupPrefDenom"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Orthodox</option><option>Other</option></select>
+          <select class="field" id="setupPrefDenom"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Other</option></select>
         </div>
         <div class="field-group"><label class="field-label">Preferred City</label><input class="field" id="setupPrefCity" placeholder="Any"/></div>
       </div>
@@ -651,14 +682,37 @@ function handlePhotoSelect(index, input) {
   slot.innerHTML = `<input type="file" accept="image/*" id="photoInput${index}" style="display:none;" onchange="handlePhotoSelect(${index}, this)"/>`;
 }
 
+// ── ID PROOF HANDLER ──
+let selectedIdProof = null;
+function handleIdProofSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert('File size must be less than 5MB');
+    return;
+  }
+  selectedIdProof = file;
+  const slot = document.getElementById('idProofSlot');
+  slot.style.borderColor = 'var(--gold)';
+  slot.style.background = 'rgba(212,160,23,0.1)';
+  slot.innerHTML = `
+    <span style="font-size:36px; display:block; margin-bottom:8px;">✅</span>
+    <span style="font-size:13px; color:var(--gold-bright); font-weight:700;">ID uploaded successfully</span>
+    <span style="font-size:11px; color:var(--white40); display:block; margin-top:4px;">Tap to change</span>
+    <input type="file" accept="image/*,.pdf" id="idProofInput" style="display:none;" onchange="handleIdProofSelect(this)"/>
+  `;
+  document.getElementById('idProofFileName').textContent = '📄 ' + file.name;
+  document.getElementById('idProofFileName').style.display = '';
+}
+
 function updateSetupUI() {
-  const titles = ['Personal Details', 'About You', 'Your Photos', 'Preferences'];
+  const titles = ['Personal Details', 'About You', 'Your Photos', 'Government ID Verification', 'Preferences'];
   document.getElementById('setupTitle').textContent = titles[setupStep - 1];
-  document.getElementById('setupStepLabel').textContent = `Step ${setupStep} of 4`;
+  document.getElementById('setupStepLabel').textContent = `Step ${setupStep} of 5`;
   document.querySelectorAll('.step-dot').forEach((d, i) => d.classList.toggle('active', i < setupStep));
-  for (let i = 1; i <= 4; i++) document.getElementById('setupStep' + i).style.display = i === setupStep ? '' : 'none';
+  for (let i = 1; i <= 5; i++) document.getElementById('setupStep' + i).style.display = i === setupStep ? '' : 'none';
   document.getElementById('setupBackBtn').style.display = setupStep > 1 ? '' : 'none';
-  document.getElementById('setupNextBtn').textContent = setupStep < 4 ? 'Next →' : 'Submit for Review ✦';
+  document.getElementById('setupNextBtn').textContent = setupStep < 5 ? 'Next →' : 'Submit for Review ✦';
   document.getElementById('setupError').style.display = 'none';
 }
 
@@ -668,21 +722,49 @@ async function setupNext() {
   const errEl = document.getElementById('setupError');
   errEl.style.display = 'none';
 
+  // Step 1: Personal Details — ALL mandatory
   if (setupStep === 1) {
-    if (!document.getElementById('setupName').value.trim() || !document.getElementById('setupAge').value ||
-        !document.getElementById('setupGender').value || !document.getElementById('setupDenom').value ||
-        !document.getElementById('setupState').value || !document.getElementById('setupCity').value) {
-      errEl.textContent = 'Please fill in all required fields'; errEl.style.display = ''; return;
+    if (!document.getElementById('setupName').value.trim()) { errEl.textContent = 'Full Name is required'; errEl.style.display = ''; return; }
+    if (!document.getElementById('setupAge').value) { errEl.textContent = 'Age is required'; errEl.style.display = ''; return; }
+    if (!document.getElementById('setupGender').value) { errEl.textContent = 'Gender is required'; errEl.style.display = ''; return; }
+    if (!document.getElementById('setupDenom').value) { errEl.textContent = 'Denomination is required'; errEl.style.display = ''; return; }
+    if (!document.getElementById('setupState').value) { errEl.textContent = 'State is required'; errEl.style.display = ''; return; }
+    if (!document.getElementById('setupCity').value) { errEl.textContent = 'City is required'; errEl.style.display = ''; return; }
+    if (!document.getElementById('setupPhone').value.trim()) { errEl.textContent = 'Phone number is required for verification'; errEl.style.display = ''; return; }
+    setupStep++; updateSetupUI(); return;
+  }
+
+  // Step 2: About — optional, just move forward
+  if (setupStep === 2) { setupStep++; updateSetupUI(); return; }
+
+  // Step 3: Photos — primary photo mandatory
+  if (setupStep === 3) {
+    if (!selectedPhotos[0]) {
+      errEl.textContent = 'Primary profile photo is required. Please upload at least one photo.';
+      errEl.style.display = ''; return;
     }
     setupStep++; updateSetupUI(); return;
   }
-  if (setupStep === 2 || setupStep === 3) { setupStep++; updateSetupUI(); return; }
 
-  // Step 4 — submit
+  // Step 4: Government ID — mandatory
+  if (setupStep === 4) {
+    if (!document.getElementById('setupIdType').value) {
+      errEl.textContent = 'Please select your Government ID type';
+      errEl.style.display = ''; return;
+    }
+    if (!selectedIdProof) {
+      errEl.textContent = 'Please upload your Government ID for verification';
+      errEl.style.display = ''; return;
+    }
+    setupStep++; updateSetupUI(); return;
+  }
+
+  // Step 5: Preferences — submit
   const btn = document.getElementById('setupNextBtn');
   btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm"></div>';
 
   try {
+    // Upload profile photos
     const photoUrls = ['', '', ''];
     for (let i = 0; i < 3; i++) {
       if (selectedPhotos[i]) {
@@ -692,6 +774,24 @@ async function setupNext() {
         if (error) throw error;
         const { data } = sb.storage.from('profile-photos').getPublicUrl(path);
         photoUrls[i] = data.publicUrl;
+      }
+    }
+
+    // Upload Government ID proof
+    let idProofUrl = '';
+    if (selectedIdProof) {
+      const ext = selectedIdProof.name.split('.').pop();
+      const idPath = `${currentUser.id}/id_proof_${Date.now()}.${ext}`;
+      const { error: idErr } = await sb.storage.from('id-proofs').upload(idPath, selectedIdProof, { upsert: true });
+      if (idErr) {
+        // If id-proofs bucket doesn't exist, use profile-photos bucket
+        const idPathAlt = `${currentUser.id}/id_proof_${Date.now()}.${ext}`;
+        await sb.storage.from('profile-photos').upload(idPathAlt, selectedIdProof, { upsert: true });
+        const { data: idData } = sb.storage.from('profile-photos').getPublicUrl(idPathAlt);
+        idProofUrl = idData.publicUrl;
+      } else {
+        const { data: idData } = sb.storage.from('id-proofs').getPublicUrl(idPath);
+        idProofUrl = idData.publicUrl;
       }
     }
 
@@ -713,6 +813,8 @@ async function setupNext() {
       mother_tongue: document.getElementById('setupTongue').value.trim(),
       marital_status: document.getElementById('setupMarital').value,
       photo_url: photoUrls[0], photo_2_url: photoUrls[1], photo_3_url: photoUrls[2],
+      id_proof_type: document.getElementById('setupIdType').value,
+      id_proof_url: idProofUrl,
       pref_age_min: parseInt(document.getElementById('setupPrefMin').value) || 18,
       pref_age_max: parseInt(document.getElementById('setupPrefMax').value) || 70,
       pref_denomination: document.getElementById('setupPrefDenom').value,
