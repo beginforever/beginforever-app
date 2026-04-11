@@ -1289,7 +1289,7 @@ async function adminReject(profileId) {
 // INIT
 // ══════════════════════════════════════════
 async function loadUserProfile() {
-  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybesingle();
   myProfile = data;
 
   if (!myProfile) {
