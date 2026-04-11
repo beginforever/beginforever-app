@@ -1312,41 +1312,37 @@ async function loadUserProfile() {
   switchTab('browse');
 }
 
-// Auth state listener
+// ══════════════════════════════════════════
+// INIT — fixed: single entry point, no race condition
+// ══════════════════════════════════════════
+let appInitialized = false;
+
+async function initApp() {
+  if (appInitialized) return;
+  appInitialized = true;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      await loadUserProfile();
+    } else {
+      showScreen('authScreen');
+    }
+  } catch (err) {
+    console.warn('Init error:', err);
+    showScreen('authScreen');
+  }
+}
+
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
+  if (!appInitialized) return;
+  if (event === 'SIGNED_IN' && session?.user) {
     currentUser = session.user;
     await loadUserProfile();
-  } else {
-    currentUser = null;
-    myProfile = null;
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null; myProfile = null;
     showScreen('authScreen');
   }
 });
 
-// Initial session check with timeout fallback
-let sessionChecked = false;
-sb.auth.getSession().then(async ({ data: { session } }) => {
-  sessionChecked = true;
-  if (session?.user) {
-    currentUser = session.user;
-    await loadUserProfile();
-  } else {
-    showScreen('authScreen');
-  }
-}).catch(err => {
-  console.warn('Supabase connection error:', err);
-  sessionChecked = true;
-  showScreen('authScreen');
-});
-
-// Fallback: if session check takes more than 5 seconds, show login anyway
-setTimeout(() => {
-  if (!sessionChecked) {
-    console.warn('Session check timeout — showing login screen');
-    showScreen('authScreen');
-  }
-}, 15000);
-</script>
-</body>
-</html>
+initApp();is this
