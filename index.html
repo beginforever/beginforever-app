@@ -1291,7 +1291,10 @@ async function adminReject(profileId) {
 async function loadUserProfile() {
   try {
     const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-    myProfile = data;
+   var resp = await sb.from('profiles').select('*').eq('id', currentUser.id).limit(1);
+var rows = resp.data;
+myProfile = (rows && rows.length > 0) ? rows[0] : null;
+if(resp.error) { myProfile = null; }
   } catch(e) {
     myProfile = null;
   }
