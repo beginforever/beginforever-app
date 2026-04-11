@@ -1322,7 +1322,7 @@ async function initApp() {
   appInitialized = true;
   try {
     const sessionPromise = sb.auth.getSession();
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
+    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 2000));
     const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
     if (session?.user) {
       currentUser = session.user;
