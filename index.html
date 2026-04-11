@@ -1315,29 +1315,17 @@ async function loadUserProfile() {
 // ══════════════════════════════════════════
 // INIT — fixed: single entry point, no race condition
 // ══════════════════════════════════════════
-let appInitialized = false;
+// Show login immediately, then check session in background
+showScreen('authScreen');
 
-async function initApp() {
-  if (appInitialized) return;
-  appInitialized = true;
-  try {
-    const sessionPromise = sb.auth.getSession();
-    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ data: { session: null } }), 2000));
-    const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
-    if (session?.user) {
-      currentUser = session.user;
-      await loadUserProfile();
-    } else {
-      showScreen('authScreen');
-    }
-  } catch (err) {
-    console.warn('Init error:', err);
-    showScreen('authScreen');
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session?.user) {
+    currentUser = session.user;
+    loadUserProfile();
   }
-}
+}).catch(() => {});
 
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (!appInitialized) return;
   if (event === 'SIGNED_IN' && session?.user) {
     currentUser = session.user;
     await loadUserProfile();
@@ -1346,5 +1334,3 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showScreen('authScreen');
   }
 });
-
-initApp();is this
