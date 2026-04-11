@@ -29,7 +29,8 @@ input::placeholder,textarea::placeholder{color:var(--w40)}
 .btn-sm{padding:10px 16px;font-size:13px}
 .field{width:100%;padding:14px;border:1px solid var(--w15);border-radius:10px;background:var(--w08);color:var(--w);font-size:14px;outline:none}
 .field:focus{border-color:var(--gold)}
-select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4A017' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4A017' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-color:#1C0530;color:#fff}
+select.field option{background:#1C0530;color:#fff;padding:8px}
 .fg{margin-bottom:16px}
 .fl{display:block;font-size:12px;color:var(--gold);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -151,7 +152,7 @@ select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 <div id="rejectedScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center">
 <div style="font-size:48px;margin-bottom:16px">😔</div>
 <h2 style="font-family:'Cinzel',serif;font-size:22px;color:var(--red)">Profile Not Approved</h2>
-<p style="color:var(--w70);font-size:14px;margin-top:12px">Contact us: <strong>info@beginforever.in</strong></p>
+<p style="color:var(--w70);font-size:14px;margin-top:12px">Contact us: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9a0a7afa689abacaea0a7afa6bbacbfacbbe7a0a7">[email&#160;protected]</a></strong></p>
 <button class="btn btn-dark" style="max-width:200px;margin-top:24px" onclick="doSignOut()">Sign Out</button>
 </div>
 
@@ -174,7 +175,7 @@ select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 <button class="tab-btn" onclick="goTab('profile')"><span style="font-size:20px">👤</span><span style="font-size:10px">Profile</span></button>
 </div></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var SB_URL="https://neftjxvovxocqabxjvme.supabase.co";
 var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc";
 var sb=supabase.createClient(SB_URL,SB_KEY);
@@ -229,8 +230,4 @@ async function adAct(id,st){await sb.from('profiles').update({status:st}).eq('id
 function goTab(t){document.getElementById('tBrowse').style.display=t==='browse'?'':'none';document.getElementById('tProfile').style.display=t==='profile'?'':'none';document.getElementById('tAdmin').style.display=t==='admin'?'':'none';document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});if(t==='admin')ldAdmin('pending');if(t==='browse')ldBrowse()}
 
 sb.auth.onAuthStateChange(function(ev,sess){if(sess&&sess.user){U=sess.user;loadP()}else{U=null;P=null;show('authScreen')}});
-var ck=false;sb.auth.getSession().then(function(r){ck=true;if(r.data.session&&r.data.session.user){U=r.data.session.user;loadP()}else{show('authScreen')}}).catch(function(){ck=true;show('authScreen')});
-setTimeout(function(){if(!ck)show('authScreen')},5000);
-</script>
-</body>
-</html>
+var ck=false;sb.auth.getSession().then(function(r){ck=
