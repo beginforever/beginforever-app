@@ -1290,27 +1290,87 @@ async function adminReject(profileId) {
 // ══════════════════════════════════════════
 async function loadUserProfile() {
   try {
-    const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-   var resp = await sb.from('profiles').select('*').eq('id', currentUser.id).limit(1);
-var rows = resp.data;
-myProfile = (rows && rows.length > 0) ? rows[0] : null;
-if(resp.error) { myProfile = null; }
+    const { data: rows } = await sb.from('profiles').select('*').eq('id', currentUser.id).limit(1);
+    myProfile = (rows && rows.length > 0) ? rows[0] : null;
   } catch(e) {
+    console.error('Profile fetch failed:', e);
     myProfile = null;
   }
+
   if (!myProfile) {
     showScreen('setupScreen');
     updateSetupUI();
     return;
   }
+
   if (myProfile.status === 'pending') {
+    document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile has been submitted and our team is reviewing it with care. This is just the beginning of something beautiful — God is writing your love story, and we're honoured to be part of it.`;
     showScreen('pendingScreen');
     return;
   }
+
   if (myProfile.status === 'rejected') {
+    document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support for more information.';
     showScreen('rejectedScreen');
     return;
   }
+
+  // Approved — show main app
+  document.getElementById('headerName').textContent = myProfile.full_name.split(' ')[0];
+  
+  // Add admin tab if admin
+  if (myProfile.is_admin) {
+    const tabBar = document.getElementById('tabBar');
+    if (!document.getElementById('navAdmin')) {
+      const adminBtn = document.createElement('button');
+      adminBtn.className = 'tab-btn';
+      adminBtn.id = 'navAdmin';
+      adminBtn.onclick = () => switchTab('admin');
+      adminBtn.innerHTML = '<span class="tab-icon">⚙️</span><span class="tab-label">Admin</span>';
+      tabBar.appendChild(adminBtn);
+    }
+  }
+
+  await loadAllInterests();
   showScreen('mainApp');
   switchTab('browse');
 }
+
+// Auth state listener
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    currentUser = session.user;
+    await loadUserProfile();
+  } else {
+    currentUser = null;
+    myProfile = null;
+    showScreen('authScreen');
+  }
+});
+
+// Initial session check with timeout fallback
+let sessionChecked = false;
+sb.auth.getSession().then(async ({ data: { session } }) => {
+  sessionChecked = true;
+  if (session?.user) {
+    currentUser = session.user;
+    await loadUserProfile();
+  } else {
+    showScreen('authScreen');
+  }
+}).catch(err => {
+  console.warn('Supabase connection error:', err);
+  sessionChecked = true;
+  showScreen('authScreen');
+});
+
+// Fallback: if session check takes more than 5 seconds, show login anyway
+setTimeout(() => {
+  if (!sessionChecked) {
+    console.warn('Session check timeout — showing login screen');
+    showScreen('authScreen');
+  }
+}, 5000);
+</script>
+</body>
+</html>
