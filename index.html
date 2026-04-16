@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#FDFAF4"/>
+<title>Begin Forever</title>
+<meta name="description" content="India's first 100% ID-verified matrimony platform. Faith-first!"/>
+<meta name="keywords" content="Christian matrimony, Indian Christian wedding, faith-based matchmaking, Begin Forever, True Love, Find Love, Find your soulmate, your Truematch"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+:root{--bg:#FDFAF4;--s1:#FAF6EE;--s2:#FFFFFF;--s3:#F5ECD4;--royal:#3B0764;--royal-mid:#5B1A8A;--royal-light:#7C3AAD;--gold:#D4A017;--gb:#F5C842;--gp:#FDF3D0;--w:#2D1B4E;--w80:rgba(45,27,78,.8);--w50:rgba(45,27,78,.55);--w20:rgba(45,27,78,.25);--w10:rgba(59,7,100,.1);--w05:rgba(59,7,100,.05);--red:#C0392B;--grn:#229954;--pink:#C2185B;--ivory:#FDFAF4;--ivory-warm:#FAF6EE;--muted:#7A6090;--radius:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;background-image:linear-gradient(rgba(212,160,23,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(212,160,23,.04) 1px,transparent 1px);background-size:80px 80px}
+input,select,textarea,button{font-family:'DM Sans',sans-serif}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+.screen{display:none;min-height:100vh}.screen.active{display:flex}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.spinner{width:22px;height:22px;border:2.5px solid var(--w10);border-top-color:var(--royal);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+.spinner-sm{width:16px;height:16px;border-width:2px}
+.btn{padding:14px 24px;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;transition:all .2s;letter-spacing:.3px}
+.btn:active{transform:scale(.97)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gb));color:var(--royal);box-shadow:0 4px 20px rgba(212,160,23,.3)}
+.btn-royal{background:linear-gradient(135deg,var(--royal),var(--royal-mid));color:#FFFFFF;box-shadow:0 4px 20px rgba(59,7,100,.25)}
+.btn-dark{background:#FFFFFF;color:var(--royal);border:1.5px solid var(--royal)}
+.btn-grn{background:var(--grn);color:#FFFFFF}
+.btn-red{background:var(--red);color:#FFFFFF}
+.btn-sm{padding:10px 16px;font-size:12px;width:auto}
+.btn-outline{background:transparent;border:1.5px solid var(--royal);color:var(--royal);padding:8px 16px;border-radius:10px;font-size:12px;cursor:pointer;font-weight:600}
+.field{width:100%;padding:13px 16px;border:1.5px solid rgba(59,7,100,.15);border-radius:12px;background:#FFFFFF;color:var(--royal);font-size:14px;outline:none;transition:border-color .2s}
+.field:focus{border-color:var(--gold);background:#FFFBF0}
+select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233B0764' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-color:#FFFFFF}
+select.field option{background:#FFFFFF;color:var(--royal)}
+.fg{margin-bottom:14px}.fl{display:block;font-size:11px;color:var(--royal);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#FFFFFF;border:1px solid rgba(59,7,100,.08);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(59,7,100,.04)}
+.card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,7,100,.08)}
+.card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(212,160,23,.08),transparent);pointer-events:none}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--s3);border:2px solid var(--gold);flex-shrink:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:var(--royal);font-weight:600}
+.avatar-lg{width:90px;height:90px;border-width:3px}
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:#FFFFFF;border-top:1px solid rgba(59,7,100,.08);display:flex;padding:8px 4px;padding-bottom:max(8px,env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(59,7,100,.06)}
+.tab-btn{flex:1;border:none;background:none;color:var(--muted);font-size:9px;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .2s;position:relative;font-weight:500}
+.tab-btn.active{color:var(--royal)}
+.tab-btn.active::before{content:'';position:absolute;top:-8px;width:20px;height:3px;background:var(--gold);border-radius:2px}
+.notif-dot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:0;right:calc(50% - 12px);animation:pulse 2s infinite}
+.section-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--royal);margin-bottom:14px;display:flex;align-items:center;gap:8px;font-weight:700}
+.section-title span{color:var(--gold)}
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.photo-slot{aspect-ratio:1;border:2px dashed rgba(59,7,100,.2);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background-size:cover;background-position:center;font-size:9px;color:var(--muted);transition:all .2s;background-color:#FFFFFF}
+.photo-slot:hover{border-color:var(--gold)}
+.steps{display:flex;gap:5px;justify-content:center;margin-bottom:12px}
+.step-dot{width:7px;height:7px;border-radius:50%;background:rgba(59,7,100,.15);transition:all .3s}
+.step-dot.active{background:var(--gold);box-shadow:0 0 8px rgba(212,160,23,.4)}
+.modal-bg{position:fixed;inset:0;background:rgba(59,7,100,.45);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal{background:#FFFFFF;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:24px;border-top:2px solid var(--gold);animation:slideUp .3s ease;box-shadow:0 -10px 40px rgba(59,7,100,.15)}
+.modal-close{position:sticky;top:0;right:0;font-size:22px;color:var(--muted);cursor:pointer;background:#FFFFFF;border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;float:right;z-index:1}
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;padding:2px 0}
+.filter-bar select{padding:7px 24px 7px 10px;border-radius:20px;border:1.5px solid rgba(59,7,100,.15);background:#FFFFFF;color:var(--royal);font-size:11px;font-weight:600;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%233B0764' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer;transition:all .2s}
+.filter-bar select:focus{border-color:var(--gold)}
+.filter-bar select option{background:#FFFFFF;color:var(--royal)}
+.msg-bubble{max-width:78%;padding:10px 14px;border-radius:16px;margin-bottom:5px;font-size:13px;line-height:1.5}
+.msg-sent{background:linear-gradient(135deg,var(--royal),var(--royal-mid));color:#FFFFFF;margin-left:auto;border-bottom-right-radius:4px}
+.msg-recv{background:var(--s3);color:var(--royal);margin-right:auto;border-bottom-left-radius:4px}
+.msg-time{font-size:9px;opacity:.7;margin-top:2px}
+.stat-card{background:linear-gradient(135deg,#FFFFFF,var(--ivory-warm));border-radius:12px;padding:14px;text-align:center;border:1px solid rgba(212,160,23,.2);box-shadow:0 2px 8px rgba(59,7,100,.04)}
+.stat-num{font-family:'Playfair Display',serif;font-size:26px;color:var(--royal);font-weight:700}
+.stat-label{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(59,7,100,.06);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.info-value{color:var(--royal);text-align:right;font-weight:500}
+.glow-border{border:1.5px solid var(--gold);box-shadow:0 4px 16px rgba(212,160,23,.15)}
+/* ── FAITH CHIP ── */
+.faith-chip{border-radius:14px;padding:12px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .2s;border:1.5px solid rgba(59,7,100,.15);background:#FFFFFF}
+.faith-chip:hover{transform:translateY(-2px);border-color:var(--gold)}
+.faith-chip.on{border-color:var(--gold);background:#FFFBF0}
+.faith-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.faith-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid}
+/* ── IVORY-SPECIFIC ── */
+h1,h2,h3{color:var(--royal)}
+.royal-text{color:var(--royal)}
+.gold-text{color:var(--gold)}
+.ivory-bg{background:var(--ivory)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ LOADING -->
+<div id="loadingScreen" class="screen active" style="align-items:center;justify-content:center;flex-direction:column;text-align:center">
+<div style="animation:fadeUp .8s ease">
+<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:80px;height:80px;border-radius:16px;margin-bottom:12px" onerror="this.style.display='none'"/>
+<div class="spinner" style="margin:0 auto"></div>
+<p style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-top:12px">Begin Forever</p>
+<p style="font-size:11px;color:var(--w50);margin-top:4px">India's First ID-Verified Matrimony Platform</p>
+</div></div>
+
+<!-- ═══════════════════════════════════════════ AUTH -->
+<div id="authScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="text-align:center;margin-bottom:28px;animation:fadeUp .6s ease">
+<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:72px;height:72px;border-radius:14px;margin-bottom:8px" onerror="this.style.display='none'"/>
+<h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-top:4px;letter-spacing:1px">Begin Forever</h1>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--gold);font-size:13px;margin-top:4px">Where God Writes Your Love Story</p>
+<p style="font-size:11px;color:var(--w50);margin-top:6px">100% ID-Verified · Faith-First · All Faiths Welcome</p></div>
+<div style="width:100%;max-width:360px;background:var(--s2);border-radius:24px;padding:28px;border:1px solid var(--w10);animation:fadeUp .8s ease;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+<h2 id="aTitle" style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);text-align:center;margin-bottom:20px">Welcome Back</h2>
+<div class="fg"><label class="fl">Email</label><input class="field" id="aEmail" type="email" placeholder="your@email.com"/></div>
+<div class="fg" id="aPassG"><label class="fl">Password</label><input class="field" id="aPass" type="password" placeholder="••••••"/></div>
+<div class="fg" id="aConfG" style="display:none"><label class="fl">Confirm Password</label><input class="field" id="aConf" type="password"/></div>
+<p id="aErr" style="color:var(--red);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<p id="aOk" style="color:var(--grn);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<button class="btn btn-gold" id="aBtn" onclick="doAuth()">Sign In</button>
+<div style="display:flex;justify-content:space-between;margin-top:14px;font-size:12px">
+<span style="color:var(--w50);cursor:pointer" onclick="setMode('forgot')">Forgot password?</span>
+<span id="aToggle" style="color:var(--gold);cursor:pointer;font-weight:600" onclick="setMode('signup')">Create Account →</span></div>
+<p id="aBack" style="text-align:center;margin-top:10px;font-size:12px;color:var(--gold);cursor:pointer;display:none" onclick="setMode('login')">← Back to Sign In</p></div>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:12px;margin-top:24px;text-align:center;max-width:300px;line-height:1.6">"For I know the plans I have for you, declares the Lord, plans to give you a hope and a future."<br/><span style="color:var(--gold)">— Jeremiah 29:11</span></p>
+</div>
+
+<!-- ═══════════════════════════════════════════ SETUP (5 steps + new faith step) -->
+<div id="setupScreen" class="screen" style="flex-direction:column;padding:20px;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="max-width:460px;width:100%;margin:0 auto;padding-top:12px">
+<div style="text-align:center;margin-bottom:16px">
+<h1 id="sTitle" style="font-family:'Playfair Display',serif;font-size:20px">Personal Details</h1>
+<p id="sLabel" style="font-size:11px;color:var(--w50);margin-top:4px">Step 1 of 6</p>
+<div class="steps" style="margin-top:10px"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div></div></div>
+<div style="background:var(--s2);border-radius:20px;padding:22px;border:1px solid var(--w10)">
+
+<!-- Step 1: Personal -->
+<div id="s1">
+<div class="fg"><label class="fl">Full Name *</label><input class="field" id="fName"/></div>
+<div class="fr"><div class="fg"><label class="fl">Age *</label><input type="number" class="field" id="fAge" min="18" max="70"/></div>
+<div class="fg"><label class="fl">Gender *</label><select class="field" id="fGender"><option value="">Select</option><option>Male</option><option>Female</option></select></div></div>
+<div class="fg"><label class="fl">Religion *</label><select class="field" id="fReligion" onchange="toggleDenom()"><option value="">Select</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
+<div class="fg" id="denomGroup" style="display:none"><label class="fl">Denomination</label><select class="field" id="fDenom"><option value="">Select</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Seventh-day Adventist</option><option>Church of God</option><option>Assemblies of God</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Presbyterian</option><option>Anglican</option><option>Non-Denominational</option><option>Other</option></select></div>
+<div class="fr"><div class="fg"><label class="fl">State *</label><select class="field" id="fState" onchange="fillC()"><option value="">Select</option><option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Other / Outside India</option></select></div>
+<div class="fg"><label class="fl">City *</label><select class="field" id="fCity"><option value="">Select</option></select></div></div>
+<div class="fg"><label class="fl">Phone *</label><input class="field" id="fPhone" placeholder="+91 XXXXX XXXXX"/></div>
+<div class="fg"><label class="fl">Registering for</label><select class="field" id="fRegFor"><option value="Myself">Myself</option><option>My Son</option><option>My Daughter</option><option>My Brother</option><option>My Sister</option><option>Other</option></select></div></div>
+
+<!-- Step 2: About -->
+<div id="s2" style="display:none">
+<div class="fg"><label class="fl">Bio</label><textarea class="field" id="fBio" style="min-height:80px;resize:vertical" placeholder="Your faith journey..."></textarea></div>
+<div class="fr"><div class="fg"><label class="fl">Education</label><input class="field" id="fEdu"/></div>
+<div class="fg"><label class="fl">Occupation</label><input class="field" id="fOcc"/></div></div>
+<div class="fr"><div class="fg"><label class="fl">Height (cm)</label><input type="number" class="field" id="fHt"/></div>
+<div class="fg"><label class="fl">Mother Tongue</label><input class="field" id="fMT"/></div></div>
+<div class="fg"><label class="fl">Marital Status</label><select class="field" id="fMS"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select></div></div>
+
+<!-- Step 3: Photos -->
+<div id="s3" style="display:none">
+<p style="font-size:12px;color:var(--w80);margin-bottom:10px"><strong style="color:var(--gb)">Primary photo required.</strong> Upload up to 5 photos.</p>
+<div style="background:var(--w05);border:1px solid var(--gold);border-radius:12px;padding:10px;margin-bottom:14px"><p style="font-size:11px;color:var(--gold);margin:0">🔒 Photos are private until your profile is approved.</p></div>
+<div class="photo-grid" id="photoGrid"></div></div>
+
+<!-- Step 4: ID -->
+<div id="s4" style="display:none">
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),transparent);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:18px"><p style="font-size:12px;color:var(--w80);margin:0;line-height:1.6"><span style="font-size:16px">🪪</span> <strong style="color:var(--gb)">Government ID Required</strong><br/>Every member is verified. Your ID is encrypted and <strong>never shared</strong> with other members.</p></div>
+<div class="fg"><label class="fl">ID Type *</label><select class="field" id="fIdT"><option value="">Select</option><option>Aadhaar Card</option><option>PAN Card</option><option>Voter ID</option><option>Driving Licence</option><option>Passport</option></select></div>
+<div class="fg"><label class="fl">Upload ID *</label><div id="idSlot" onclick="document.getElementById('idInp').click()" style="border:2px dashed var(--w20);border-radius:14px;padding:28px;text-align:center;cursor:pointer;background:var(--w05);transition:all .2s"><span style="font-size:32px;opacity:.4">🪪</span><br/><span style="font-size:12px;color:var(--w50)">Tap to upload</span><input type="file" accept="image/*,.pdf" id="idInp" style="display:none" onchange="pickId(this)"/></div>
+<p id="idN" style="font-size:11px;color:var(--gb);margin-top:6px;display:none"></p></div></div>
+
+<!-- Step 5: Preferences (age/denom) -->
+<div id="s5" style="display:none">
+<p style="font-size:12px;color:var(--w80);margin-bottom:14px">Help us find your best matches. You can update these anytime.</p>
+<div class="fr"><div class="fg"><label class="fl">Min Age</label><input type="number" class="field" id="fPMin" value="18"/></div>
+<div class="fg"><label class="fl">Max Age</label><input type="number" class="field" id="fPMax" value="70"/></div></div>
+<div class="fg"><label class="fl">Pref. Denomination / Religion</label><select class="field" id="fPD"><option>Any</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
+<div class="fg"><label class="fl">Pref. City</label><input class="field" id="fPC" placeholder="Any"/></div></div>
+
+<!-- Step 6 (NEW): Faith preferences -->
+<div id="s6" style="display:none">
+<p style="font-size:13px;color:var(--w80);margin-bottom:6px;font-weight:600">🔒 Your Faith Privacy Controls</p>
+<p style="font-size:12px;color:var(--w50);margin-bottom:16px">You are always in full control of who you see and who can reach you.</p>
+
+<div class="fg">
+<label class="fl">🔍 Browse matches from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths will appear in your Discover feed?</p>
+<div class="faith-grid" id="setupBrowseGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="setupSelectAll('browse')" style="color:var(--gold);font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="setupClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+
+<div class="fg" style="margin-top:6px">
+<label class="fl">💌 Receive interest from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
+<div class="faith-grid" id="setupReceiveGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="setupSelectAll('receive')" style="color:var(--gold);font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="setupClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+</div>
+
+<p id="sErr" style="color:var(--red);font-size:11px;text-align:center;margin:10px 0;display:none"></p>
+<div style="display:flex;gap:10px;margin-top:18px">
+<button class="btn btn-dark" id="bkBtn" onclick="goBack()" style="display:none">← Back</button>
+<button class="btn btn-gold" id="nxBtn" onclick="goNext()">Next →</button>
+</div>
+</div></div></div>
+
+<!-- ═══════════════════════════════════════════ PENDING -->
+<div id="pendingScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="animation:fadeUp .8s ease"><div style="font-size:48px;margin-bottom:16px">🕊️✨</div>
+<h2 style="font-family:'Playfair Display',serif;font-size:24px;color:var(--gb)">Your Journey Has Begun</h2>
+<p style="color:var(--w80);font-size:14px;margin-top:12px;max-width:380px;line-height:1.8">Your profile is under review. Our team is carefully verifying your details.</p>
+<div style="background:var(--w05);border:1px solid rgba(232,184,48,.2);border-radius:16px;padding:20px;margin-top:20px;max-width:380px"><p style="color:var(--w80);font-size:13px;line-height:1.7;margin:0"><strong style="color:var(--gb)">🔔 What happens next?</strong><br/>Once approved, you'll be able to discover verified profiles and find your perfect match.</p></div>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--gold);font-size:14px;margin-top:24px;line-height:1.6">"Delight yourself in the Lord, and He will give you the desires of your heart."<br/><span style="font-size:12px">— Psalm 37:4</span></p>
+<button class="btn btn-dark" style="max-width:200px;margin-top:24px" onclick="doSignOut()">Sign Out</button></div></div>
+
+<!-- ═══════════════════════════════════════════ REJECTED -->
+<div id="rejectedScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center">
+<div style="font-size:44px;margin-bottom:14px">😔</div>
+<h2 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--red)">Profile Not Approved</h2>
+<p style="color:var(--w80);font-size:13px;margin-top:10px">Contact: <strong>info@beginforever.in</strong></p>
+<button class="btn btn-dark" style="max-width:180px;margin-top:20px" onclick="doSignOut()">Sign Out</button></div>
+
+<!-- ═══════════════════════════════════════════ RESET PASSWORD SCREEN -->
+<div id="resetScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="text-align:center;margin-bottom:28px;animation:fadeUp .6s ease">
+<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:72px;height:72px;border-radius:14px;margin-bottom:8px" onerror="this.style.display='none'"/>
+<h1 style="font-family:'Playfair Display',serif;font-size:26px;margin-top:4px;letter-spacing:1px">Set New Password</h1>
+<p style="color:var(--w80);font-size:13px;margin-top:8px;max-width:320px;margin-left:auto;margin-right:auto;line-height:1.6">Create a new secure password for your account.</p></div>
+<div style="width:100%;max-width:360px;background:var(--s2);border-radius:24px;padding:28px;border:1px solid var(--w10);box-shadow:0 20px 60px rgba(0,0,0,.4)">
+<div class="fg"><label class="fl">New Password</label><input class="field" id="nPass" type="password" placeholder="At least 6 characters"/></div>
+<div class="fg"><label class="fl">Confirm Password</label><input class="field" id="nConf" type="password" placeholder="Re-enter password"/></div>
+<p id="rErr" style="color:var(--red);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<p id="rOk" style="color:var(--grn);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<button class="btn btn-gold" id="rBtn" onclick="submitNewPassword()">Update Password ✦</button>
+<p style="text-align:center;margin-top:14px;font-size:12px;color:var(--w50)">🔒 Your password is encrypted and secure</p>
+</div>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:12px;margin-top:24px;text-align:center;max-width:300px;line-height:1.6">"Be strong and courageous. Do not be afraid; do not be discouraged."<br/><span style="color:var(--gold)">— Joshua 1:9</span></p></div>
+
+<!-- ═══════════════════════════════════════════ MAIN APP -->
+<div id="mainApp" class="screen" style="flex-direction:column">
+<div style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center;background:#FFFFFF;border-bottom:1px solid rgba(59,7,100,.08);box-shadow:0 2px 8px rgba(59,7,100,.03)">
+<div style="display:flex;align-items:center;gap:10px">
+<img src="https://beginforever.in/logo.png" alt="" style="width:32px;height:32px;border-radius:8px" onerror="this.style.display='none'"/>
+<span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--royal)">Begin Forever</span></div>
+<div style="display:flex;align-items:center;gap:10px">
+<span id="hName" style="font-size:12px;color:var(--muted);font-weight:500"></span>
+<span style="font-size:11px;color:var(--royal);cursor:pointer;background:var(--s3);padding:6px 14px;border-radius:8px;font-weight:600;border:1px solid rgba(212,160,23,.3)" onclick="doSignOut()">Logout</span></div></div>
+
+<div style="flex:1;overflow-y:auto;padding:0 16px 80px" id="mainContent">
+
+<!-- HOME -->
+<div id="tHome" style="animation:fadeUp .4s ease">
+
+<!-- Welcome banner -->
+<div style="background:linear-gradient(135deg,var(--royal),var(--royal-mid));border-radius:var(--radius);padding:20px;margin:12px 0;border:1px solid rgba(212,160,23,.3);text-align:center;box-shadow:0 4px 20px rgba(59,7,100,.2)">
+<img src="https://beginforever.in/logo.png" alt="" style="width:48px;height:48px;border-radius:10px;margin-bottom:8px" onerror="this.style.display='none'"/>
+<h2 style="font-family:'Playfair Display',serif;font-size:22px;color:#FFFFFF;font-weight:700">Begin Forever</h2>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--gb);font-size:13px;margin-top:4px">Where God Writes Your Love Story</p>
+<p style="font-size:12px;color:rgba(255,255,255,.85);margin-top:8px">Welcome back, <span id="hWelcomeName" style="color:var(--gb);font-weight:700"></span> 🙏</p>
+<p style="font-size:10px;color:rgba(255,255,255,.65);margin-top:4px">100% ID-Verified · Faith-First · All Faiths Welcome</p></div>
+
+<!-- Stats bar -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="homeStats">
+<div class="stat-card"><div class="stat-num" id="statViews">–</div><div class="stat-label">Views</div></div>
+<div class="stat-card"><div class="stat-num" id="statInt">–</div><div class="stat-label">Interests</div></div>
+<div class="stat-card"><div class="stat-num" id="statMsg">–</div><div class="stat-label">Messages</div></div></div>
+
+<!-- Quick Actions -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+<div class="card" onclick="goTab('browse')" style="text-align:center;padding:14px"><span style="font-size:22px">🔍</span><p style="font-size:12px;margin-top:4px;color:var(--gold);font-weight:600">Discover Profiles</p></div>
+<div class="card" onclick="goTab('interests')" style="text-align:center;padding:14px;position:relative"><span style="font-size:22px">💝</span><p style="font-size:12px;margin-top:4px;color:var(--gold);font-weight:600">Interests</p><span id="intBadge" style="display:none;position:absolute;top:6px;right:8px;background:var(--red);color:var(--w);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700"></span></div>
+<div class="card" onclick="goTab('chat')" style="text-align:center;padding:14px"><span style="font-size:22px">💬</span><p style="font-size:12px;margin-top:4px;color:var(--gold);font-weight:600">Messages</p></div>
+<div class="card" onclick="goTab('views')" style="text-align:center;padding:14px"><span style="font-size:22px">👁️</span><p style="font-size:12px;margin-top:4px;color:var(--gold);font-weight:600">Who Viewed Me</p></div></div>
+
+<!-- Faith Preferences quick card -->
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),var(--s2));border-radius:var(--radius);padding:14px;margin-bottom:12px;border:1px solid rgba(232,184,48,.2);display:flex;justify-content:space-between;align-items:center" onclick="openFaithPrefs()">
+<div><p style="font-size:13px;color:var(--gold);font-weight:600">⚙ Faith Preferences</p><p style="font-size:11px;color:var(--w50);margin-top:2px">Control who you see & who reaches you</p></div>
+<span style="font-size:18px;color:var(--gold)">→</span></div>
+
+<!-- Platform Features -->
+<div style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--w10)">
+<h3 style="font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);margin-bottom:12px">✦ Why Begin Forever?</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:var(--w05);border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🪪</span><p style="font-size:11px;color:var(--gb);font-weight:600;margin-top:6px">100% ID Verified</p><p style="font-size:10px;color:var(--w50);margin-top:2px">Every profile verified with govt. ID</p></div>
+<div style="background:var(--w05);border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🕊️</span><p style="font-size:11px;color:var(--gb);font-weight:600;margin-top:6px">Faith-First Matching</p><p style="font-size:10px;color:var(--w50);margin-top:2px">Filters built around your beliefs</p></div>
+<div style="background:var(--w05);border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🔒</span><p style="font-size:11px;color:var(--gb);font-weight:600;margin-top:6px">Private Messaging</p><p style="font-size:10px;color:var(--w50);margin-top:2px">Chat only with mutual interests</p></div>
+<div style="background:var(--w05);border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🌍</span><p style="font-size:11px;color:var(--gb);font-weight:600;margin-top:6px">All Faiths Welcome</p><p style="font-size:10px;color:var(--w50);margin-top:2px">Christian, Hindu, Muslim & more</p></div></div></div>
+
+<!-- Subscription Plans preview -->
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:12px;text-align:center" onclick="goTab('plans')">
+<p style="font-size:13px;color:var(--gb);font-weight:700">🎉 Founding Member Offer</p>
+<p style="font-size:11px;color:var(--w80);margin-top:4px">First 300 members get 1 WEEK FREE!</p>
+<div style="display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap">
+<div style="background:var(--w05);border-radius:10px;padding:10px 14px;text-align:center"><p style="font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);font-weight:700">₹499</p><p style="font-size:10px;color:var(--w50)">Monthly</p></div>
+<div style="background:var(--gold);border-radius:10px;padding:10px 14px;text-align:center;position:relative"><div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;white-space:nowrap">POPULAR</div><p style="font-family:'Playfair Display',serif;font-size:16px;color:var(--s1);font-weight:700">₹1,299</p><p style="font-size:10px;color:var(--s2)">Quarterly</p></div>
+<div style="background:var(--w05);border-radius:10px;padding:10px 14px;text-align:center"><p style="font-family:'Playfair Display',serif;font-size:16px;color:var(--gold);font-weight:700">₹2,599</p><p style="font-size:10px;color:var(--w50)">Yearly</p></div></div>
+<p style="font-size:11px;color:var(--gold);margin-top:12px;font-weight:600">View Plans & Subscribe →</p></div>
+
+<!-- Reviews preview -->
+<div style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--w10)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<h3 style="font-family:'Playfair Display',serif;font-size:15px;color:var(--gold)">⭐ Member Reviews</h3>
+<span style="font-size:11px;color:var(--gold);cursor:pointer" onclick="goTab('reviews')">See All →</span></div>
+<div style="background:var(--w05);border-radius:12px;padding:12px;margin-bottom:8px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">P</div><div><p style="font-size:12px;font-weight:600">Priya M., Mumbai</p><p style="font-size:10px;color:var(--gold)">⭐⭐⭐⭐⭐ · Catholic</p></div></div><p style="font-size:11px;color:var(--w80);line-height:1.5">"Finally a platform where I feel safe. Every profile is genuine and faith-first!"</p></div>
+<div style="background:var(--w05);border-radius:12px;padding:12px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">R</div><div><p style="font-size:12px;font-weight:600">Rohit S., Bengaluru</p><p style="font-size:10px;color:var(--gold)">⭐⭐⭐⭐⭐ · CSI/CNI</p></div></div><p style="font-size:11px;color:var(--w80);line-height:1.5">"Govt ID verification means zero fake accounts. Highly recommend!"</p></div></div>
+
+<!-- Footer links -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+<a href="https://beginforever.in/privacy.html" style="text-decoration:none;background:var(--w05);border-radius:10px;padding:10px;text-align:center"><p style="font-size:10px;color:var(--w50)">Privacy Policy</p></a>
+<a href="https://beginforever.in/terms.html" style="text-decoration:none;background:var(--w05);border-radius:10px;padding:10px;text-align:center"><p style="font-size:10px;color:var(--w50)">Terms</p></a>
+<a href="https://beginforever.in/safety.html" style="text-decoration:none;background:var(--w05);border-radius:10px;padding:10px;text-align:center"><p style="font-size:10px;color:var(--w50)">Safety</p></a></div>
+<div style="text-align:center;padding:8px 0 4px">
+<p style="font-size:10px;color:var(--w50)">Begin Forever · A brand of Kyomi · Pune, India</p>
+<p style="font-size:10px;color:var(--w50);margin-top:2px">info@beginforever.in · +91 97000 25345</p>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:10px;margin-top:6px">"Two are better than one" — Ecclesiastes 4:9</p></div>
+</div>
+
+<!-- BROWSE / DISCOVER -->
+<div id="tBrowse" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>✦</span> Discover</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<!-- Faith quick filter chips (NEW) -->
+<div id="browseChips" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;scrollbar-width:none"></div>
+<!-- Receive filter info bar (NEW) -->
+<div id="receiveBar" style="background:rgba(232,184,48,.07);border:1px solid rgba(232,184,48,.2);border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:11px;color:var(--w50)"></div>
+<div class="filter-bar">
+<select id="fltDenom" onchange="ldBrowse()"><option value="">All Denominations</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Orthodox</option><option>Mar Thoma</option><option>Other</option></select>
+<select id="fltAge" onchange="ldBrowse()"><option value="">All Ages</option><option value="18-25">18-25</option><option value="26-30">26-30</option><option value="31-35">31-35</option><option value="36-40">36-40</option><option value="41+">41+</option></select></div>
+<div id="bList"></div>
+<p id="bEmpty" style="text-align:center;color:var(--w50);margin-top:30px;display:none">🕊️ No profiles found.</p></div>
+
+<!-- INTERESTS -->
+<div id="tInterests" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>💝</span> Interests</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="display:flex;gap:6px;margin-bottom:12px">
+<button class="btn btn-sm btn-gold" id="intRecBtn" onclick="showInt('received')">Received</button>
+<button class="btn btn-sm btn-dark" id="intSentBtn" onclick="showInt('sent')">Sent</button>
+<button class="btn btn-sm btn-dark" id="intMutBtn" onclick="showInt('mutual')">Mutual ❤️</button></div>
+<div id="intList"></div>
+<p id="intEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No interests yet.</p></div>
+
+<!-- CHAT LIST -->
+<div id="tChat" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>💬</span> Messages</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div id="chatList"></div>
+<p id="chatEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No conversations yet.<br/>Send interests to start chatting!</p></div>
+
+<!-- CHAT WINDOW -->
+<div id="tChatWin" style="display:none">
+<div style="display:flex;align-items:center;gap:10px;margin:12px 0;padding-bottom:12px;border-bottom:1px solid var(--w10)">
+<button class="btn-outline" onclick="goTab('chat')" style="font-size:10px;padding:5px 8px">←</button>
+<div class="avatar" id="cwAv" style="width:38px;height:38px"></div>
+<div><p id="cwNm" style="font-size:14px;font-weight:600"></p><p id="cwIn" style="font-size:10px;color:var(--w50)"></p></div></div>
+<div id="cwMs" style="min-height:300px;max-height:55vh;overflow-y:auto;padding:8px 0"></div>
+<div style="display:flex;gap:8px;margin-top:10px;position:sticky;bottom:0;background:var(--bg);padding:8px 0">
+<input class="field" id="cwTx" placeholder="Type a message..." style="flex:1" onkeydown="if(event.key==='Enter')sendMsg()"/>
+<button class="btn btn-gold" style="width:auto;padding:12px 18px" onclick="sendMsg()">→</button></div></div>
+
+<!-- WHO VIEWED -->
+<div id="tViews" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>👁️</span> Who Viewed You</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div id="viewList"></div>
+<p id="viewEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No profile views yet.</p></div>
+
+<!-- MY PROFILE -->
+<div id="tProfile" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>👤</span> My Profile</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<!-- Profile hero -->
+<div id="profileHero" style="text-align:center;padding:16px 0"></div>
+<!-- Stats -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="profileStats">
+<div class="stat-card"><div class="stat-num" id="pStatViews">–</div><div class="stat-label">Views</div></div>
+<div class="stat-card"><div class="stat-num" id="pStatInt">–</div><div class="stat-label">Interests</div></div>
+<div class="stat-card"><div class="stat-num" id="pStatMsg">–</div><div class="stat-label">Messages</div></div></div>
+<!-- Profile details -->
+<div id="mInfo" style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--w10)"></div>
+<!-- Edit button -->
+<button class="btn btn-gold" style="margin-bottom:10px" onclick="openEdit()">✏️ Edit Profile</button>
+<!-- Faith prefs shortcut -->
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),var(--s2));border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid rgba(232,184,48,.2)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<p style="font-size:13px;color:var(--gold);font-weight:600">⚙ Faith Preferences</p>
+<button class="btn-outline" style="font-size:10px;padding:5px 10px" onclick="openFaithPrefs()">Edit</button></div>
+<div id="profileFaithSummary"></div></div>
+<!-- Subscription shortcut -->
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer" onclick="goTab('plans')">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div><p style="font-size:13px;color:var(--gb);font-weight:700">👑 Subscription & Billing</p><p style="font-size:11px;color:var(--w50);margin-top:3px">View plans · Monthly · Quarterly · Yearly</p></div>
+<span style="font-size:18px;color:var(--gold)">→</span></div></div>
+<!-- Sign out -->
+<button class="btn btn-dark" style="margin-bottom:12px" onclick="doSignOut()">Sign Out</button></div>
+
+<!-- PLANS -->
+<div id="tPlans" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>👑</span> Plans</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:14px;text-align:center">
+<p style="font-size:13px;color:var(--gb);font-weight:700">🎉 Founding Member Offer</p>
+<p style="font-size:11px;color:var(--w80);margin-top:4px">First 300 members get 1 WEEK FREE!</p></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="card glow-border" style="text-align:center;padding:20px" onclick="payRzp('Monthly',49900)">
+<p style="font-size:20px;margin-bottom:6px">🕊️</p>
+<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Monthly</p>
+<p style="font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);font-weight:900;margin:8px 0">₹499<span style="font-size:14px;color:var(--w50)">/month</span></p>
+<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹499</button></div>
+<div class="card glow-border" style="text-align:center;padding:20px;border-color:var(--gold);position:relative" onclick="payRzp('Quarterly',129900)">
+<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--s1);padding:3px 14px;border-radius:20px;font-size:10px;font-weight:700">MOST POPULAR</div>
+<p style="font-size:20px;margin-bottom:6px">👑</p>
+<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Quarterly</p>
+<p style="font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);font-weight:900;margin:8px 0">₹1,299<span style="font-size:14px;color:var(--w50)">/3 months</span></p>
+<p style="font-size:11px;color:var(--grn);font-weight:600">Save 13% · ₹433/month</p>
+<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹1,299 ✦</button></div>
+<div class="card glow-border" style="text-align:center;padding:20px" onclick="payRzp('Yearly',259900)">
+<p style="font-size:20px;margin-bottom:6px">✝</p>
+<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Yearly</p>
+<p style="font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);font-weight:900;margin:8px 0">₹2,599<span style="font-size:14px;color:var(--w50)">/year</span></p>
+<p style="font-size:11px;color:var(--grn);font-weight:600">Save 57% · ₹217/month</p>
+<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹2,599</button></div></div>
+<div style="background:var(--w05);border-radius:12px;padding:14px;margin-top:14px"><p style="font-size:12px;color:var(--w80);text-align:center;line-height:1.6">✅ All plans include every feature<br/>✅ Unlimited interests · Messaging · Photo privacy<br/>✅ Cancel anytime · No lock-in</p></div></div>
+
+<!-- REVIEWS -->
+<div id="tReviews" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>⭐</span> Reviews</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div id="reviewsList" style="margin-bottom:14px"></div>
+<div style="background:var(--s2);border-radius:var(--radius);padding:16px;border:1px solid var(--w10)">
+<h3 style="font-size:14px;color:var(--gold);margin-bottom:12px">✍️ Write a Review</h3>
+<div class="fg"><label class="fl">Your Rating</label><select class="field" id="revRating"><option value="5">⭐⭐⭐⭐⭐ Excellent</option><option value="4">⭐⭐⭐⭐ Very Good</option><option value="3">⭐⭐⭐ Good</option><option value="2">⭐⭐ Fair</option><option value="1">⭐ Poor</option></select></div>
+<div class="fg"><label class="fl">Your Review</label><textarea class="field" id="revText" placeholder="Share your experience..." style="min-height:80px;resize:vertical"></textarea></div>
+<p id="revMsg" style="color:var(--grn);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<button class="btn btn-gold" onclick="submitReview()">Submit Review ✦</button></div></div>
+
+<!-- ADMIN -->
+<div id="tAdmin" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>⚙️</span> Admin</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="display:flex;gap:6px;margin-bottom:12px">
+<button class="btn btn-sm btn-gold" onclick="ldAdmin('pending')">Pending</button>
+<button class="btn btn-sm btn-dark" onclick="ldAdmin('approved')">Approved</button>
+<button class="btn btn-sm btn-dark" onclick="ldAdmin('rejected')">Rejected</button></div>
+<div id="adList"></div>
+<p id="adEmpty" style="text-align:center;color:var(--w50);margin-top:16px;display:none">None found.</p></div>
+
+</div><!-- end mainContent -->
+
+<div class="tab-bar" id="tBar">
+<button class="tab-btn active" id="tabHome" onclick="goTab('home')"><span style="font-size:18px">🏠</span><span style="font-size:9px">Home</span></button>
+<button class="tab-btn" id="tabBrowse" onclick="goTab('browse')"><span style="font-size:18px">🔍</span><span style="font-size:9px">Discover</span></button>
+<button class="tab-btn" id="tabInterests" onclick="goTab('interests')"><span style="font-size:18px;position:relative">💝<span id="intDot" class="notif-dot" style="display:none"></span></span><span style="font-size:9px">Interests</span></button>
+<button class="tab-btn" id="tabChat" onclick="goTab('chat')"><span style="font-size:18px;position:relative">💬<span id="msgDot" class="notif-dot" style="display:none"></span></span><span style="font-size:9px">Chat</span></button>
+<button class="tab-btn" id="tabPlansTab" onclick="goTab('plans')"><span style="font-size:18px">👑</span><span style="font-size:9px">Plans</span></button>
+<button class="tab-btn" id="tabProfile" onclick="goTab('profile')"><span style="font-size:18px">👤</span><span style="font-size:9px">Profile</span></button>
+</div>
+</div><!-- end mainApp -->
+
+<!-- PROFILE VIEW MODAL -->
+<div class="modal-bg" id="profileModal"><div class="modal"><button class="modal-close" onclick="closeModal()">&times;</button><div id="pmC"></div></div></div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-bg" id="editModal"><div class="modal"><button class="modal-close" onclick="closeEdit()">&times;</button>
+<h2 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gb);margin-bottom:18px">Edit Profile</h2>
+<div class="fg"><label class="fl">Bio</label><textarea class="field" id="eBio" style="min-height:80px;resize:vertical"></textarea></div>
+<div class="fr"><div class="fg"><label class="fl">Education</label><input class="field" id="eEdu"/></div>
+<div class="fg"><label class="fl">Occupation</label><input class="field" id="eOcc"/></div></div>
+<div class="fg"><label class="fl">Phone</label><input class="field" id="ePh"/></div>
+<div class="fg"><label class="fl">Photos</label><div class="photo-grid" id="epGrid"></div></div>
+<p id="eErr" style="color:var(--red);font-size:11px;text-align:center;margin:8px 0;display:none"></p>
+<button class="btn btn-gold" onclick="saveEdit()">Save Changes ✦</button></div></div>
+
+<!-- FAITH PREFERENCES MODAL (NEW) -->
+<div class="modal-bg" id="faithModal"><div class="modal"><button class="modal-close" onclick="closeFaithPrefs()">&times;</button>
+<h2 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gb);margin-bottom:6px">⚙ Faith Preferences</h2>
+<p style="font-size:12px;color:var(--w50);margin-bottom:18px">Control who you see and who can reach you.</p>
+
+<div class="fg">
+<label class="fl">🔍 Browse matches from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths appear in your Discover feed?</p>
+<div class="faith-grid" id="fpBrowseGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="fpSelectAll('browse')" style="color:var(--gold);font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="fpClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+
+<div class="fg" style="margin-top:8px">
+<label class="fl">💌 Receive interest from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
+<div class="faith-grid" id="fpReceiveGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="fpSelectAll('receive')" style="color:var(--gold);font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="fpClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+
+<button class="btn btn-gold" style="margin-top:8px" onclick="saveFaithPrefs()">Save Preferences ✦</button>
+</div></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script>
+// ═══════════════════════════════════════════ CONFIG
+var SB_URL="https://neftjxvovxocqabxjvme.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc";
+var sb=supabase.createClient(SB_URL,SB_KEY);
+var U=null,P=null,step=1,photos=[null,null,null,null,null],idFile=null,mode='login',chatPid=null,editPhotos=[null,null,null,null,null];
+var quickFaithFilter='All';
+
+// ── FAITH DATA
+var FAITHS=[
+  {key:'Christian',icon:'✝️',color:'#9B59B6',bg:'rgba(155,89,182,0.15)'},
+  {key:'Hindu',    icon:'🕉️',color:'#E07020',bg:'rgba(224,112,32,0.15)'},
+  {key:'Muslim',   icon:'☪️', color:'#2E8B57',bg:'rgba(46,139,87,0.15)'},
+  {key:'Sikh',     icon:'☬', color:'#C8960C',bg:'rgba(200,150,12,0.15)'},
+  {key:'Jain',     icon:'🕊️',color:'#4A90D9',bg:'rgba(74,144,217,0.15)'},
+  {key:'Buddhist', icon:'☸️',color:'#D4700A',bg:'rgba(212,112,10,0.15)'},
+  {key:'Other',    icon:'🌐',color:'#888',   bg:'rgba(136,136,136,0.15)'}
+];
+function faithByKey(k){return FAITHS.find(function(f){return f.key===k})||FAITHS[6]}
+
+// ── FAITH PREFS STATE (loaded from localStorage + Supabase)
+var fpBrowse=FAITHS.map(function(f){return f.key});   // default: all
+var fpReceive=FAITHS.map(function(f){return f.key});  // default: all
+
+function loadFaithPrefs(){
+  try{
+    var b=localStorage.getItem('bf_browse');
+    var r=localStorage.getItem('bf_receive');
+    if(b)fpBrowse=JSON.parse(b);
+    if(r)fpReceive=JSON.parse(r);
+  }catch(x){}
+}
+function saveFaithPrefsLocal(){
+  localStorage.setItem('bf_browse',JSON.stringify(fpBrowse));
+  localStorage.setItem('bf_receive',JSON.stringify(fpReceive));
+}
+
+// ═══════════════════════════════════════════ HELPERS
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active')});var el=document.getElementById(id);if(el){el.style.display='flex';el.classList.add('active')}}
+function toggleDenom(){var r=document.getElementById('fReligion').value;document.getElementById('denomGroup').style.display=r==='Christian'?'':'none'}
+
+// ═══════════════════════════════════════════ AUTH
+function setMode(m){mode=m;document.getElementById('aErr').style.display='none';document.getElementById('aOk').style.display='none';var t=document.getElementById('aTitle'),pg=document.getElementById('aPassG'),cg=document.getElementById('aConfG'),b=document.getElementById('aBtn'),tg=document.getElementById('aToggle'),bk=document.getElementById('aBack');if(m==='login'){t.textContent='Welcome Back';pg.style.display='';cg.style.display='none';b.textContent='Sign In';tg.style.display='';bk.style.display='none'}else if(m==='signup'){t.textContent='Create Account';pg.style.display='';cg.style.display='';b.textContent='Create Account';tg.style.display='none';bk.style.display=''}else{t.textContent='Reset Password';pg.style.display='none';cg.style.display='none';b.textContent='Send Reset Link';tg.style.display='none';bk.style.display=''}}
+async function doAuth(){var em=document.getElementById('aEmail').value.trim(),pw=document.getElementById('aPass').value,cf=document.getElementById('aConf').value,er=document.getElementById('aErr'),ok=document.getElementById('aOk');er.style.display='none';ok.style.display='none';if(!em){er.textContent='Enter email';er.style.display='';return}if(mode!=='forgot'&&!pw){er.textContent='Enter password';er.style.display='';return}var b=document.getElementById('aBtn'),o=b.textContent;b.disabled=true;b.innerHTML='<div class="spinner spinner-sm" style="margin:0 auto"></div>';try{if(mode==='signup'){if(pw.length<6)throw{message:'Password: 6+ characters'};if(pw!==cf)throw{message:'Passwords must match'};var r=await sb.auth.signUp({email:em,password:pw});if(r.error)throw r.error;ok.textContent='Account created! Sign in now.';ok.style.display='';b.disabled=false;b.textContent=o;setMode('login')}else if(mode==='login'){var r=await sb.auth.signInWithPassword({email:em,password:pw});if(r.error)throw r.error}else{var r=await sb.auth.resetPasswordForEmail(em);if(r.error)throw r.error;ok.textContent='Reset link sent!';ok.style.display='';b.disabled=false;b.textContent=o}}catch(e){er.textContent=e.message||'Error';er.style.display='';b.disabled=false;b.textContent=o}}
+async function doSignOut(){await sb.auth.signOut();U=null;P=null;show('authScreen')}
+
+// ═══════════════════════════════════════════ STATE / CITIES
+var CT={'Andhra Pradesh':['Visakhapatnam','Vijayawada','Guntur','Other'],'Assam':['Guwahati','Other'],'Bihar':['Patna','Other'],'Chhattisgarh':['Raipur','Other'],'Delhi':['New Delhi','South Delhi','Other'],'Goa':['Panaji','Other'],'Gujarat':['Ahmedabad','Surat','Other'],'Haryana':['Gurugram','Other'],'Himachal Pradesh':['Shimla','Other'],'Jharkhand':['Ranchi','Other'],'Karnataka':['Bengaluru','Mysuru','Mangalore','Other'],'Kerala':['Kochi','Thiruvananthapuram','Kozhikode','Thrissur','Other'],'Madhya Pradesh':['Bhopal','Indore','Other'],'Maharashtra':['Mumbai','Pune','Nagpur','Nashik','Other'],'Manipur':['Imphal','Other'],'Meghalaya':['Shillong','Other'],'Mizoram':['Aizawl','Other'],'Nagaland':['Kohima','Other'],'Odisha':['Bhubaneswar','Other'],'Punjab':['Ludhiana','Amritsar','Other'],'Rajasthan':['Jaipur','Other'],'Tamil Nadu':['Chennai','Coimbatore','Other'],'Telangana':['Hyderabad','Other'],'Tripura':['Agartala','Other'],'Uttar Pradesh':['Lucknow','Noida','Other'],'Uttarakhand':['Dehradun','Other'],'West Bengal':['Kolkata','Other'],'Other / Outside India':['Other']};
+function fillC(){var s=document.getElementById('fState').value,c=document.getElementById('fCity');c.innerHTML='<option value="">Select</option>';(CT[s]||[]).forEach(function(v){c.innerHTML+='<option>'+v+'</option>'})}
+function initPG(){var g=document.getElementById('photoGrid');g.innerHTML='';for(var i=0;i<5;i++)g.innerHTML+='<div class="photo-slot" id="ps'+i+'" onclick="document.getElementById(\'pi'+i+'\').click()"><span style="font-size:16px;opacity:.4">📷</span><span>'+(i===0?'Main*':'#'+(i+1))+'</span><input type="file" accept="image/*" id="pi'+i+'" style="display:none" onchange="pickP('+i+',this)"/></div>'}
+function pickP(i,inp){var f=inp.files[0];if(!f)return;photos[i]=f;var s=document.getElementById('ps'+i);s.style.backgroundImage='url('+URL.createObjectURL(f)+')';s.style.borderColor='var(--gold)';s.style.borderStyle='solid';s.innerHTML='<input type="file" accept="image/*" id="pi'+i+'" style="display:none" onchange="pickP('+i+',this)"/>'}
+function pickId(inp){var f=inp.files[0];if(!f||f.size>5*1024*1024){alert('Max 5MB');return}idFile=f;document.getElementById('idSlot').style.borderColor='var(--gold)';document.getElementById('idSlot').style.borderStyle='solid';document.getElementById('idSlot').innerHTML='<span style="font-size:32px">✅</span><br/><span style="font-size:12px;color:var(--gb)">ID uploaded</span><input type="file" accept="image/*,.pdf" id="idInp" style="display:none" onchange="pickId(this)"/>';document.getElementById('idN').textContent='📄 '+f.name;document.getElementById('idN').style.display=''}
+
+// ═══════════════════════════════════════════ SETUP STEPS (now 6)
+function updUI(){
+  var t=['Personal Details','About You','Photos','Government ID','Match Preferences','Faith Privacy'];
+  document.getElementById('sTitle').textContent=t[step-1];
+  document.getElementById('sLabel').textContent='Step '+step+' of 6';
+  document.querySelectorAll('.step-dot').forEach(function(d,i){d.classList.toggle('active',i<step)});
+  for(var i=1;i<=6;i++)document.getElementById('s'+i).style.display=i===step?'':'none';
+  document.getElementById('bkBtn').style.display=step>1?'':'none';
+  document.getElementById('nxBtn').textContent=step<6?'Next →':'Submit for Review ✦';
+  document.getElementById('sErr').style.display='none';
+  if(step===3)initPG();
+  if(step===6)initSetupFaithGrids();
+}
+function goBack(){if(step>1){step--;updUI()}}
+
+// Setup faith grids
+var setupBrowse=FAITHS.map(function(f){return f.key});
+var setupReceive=FAITHS.map(function(f){return f.key});
+function renderFaithGrid(containerId,arr,onToggle){
+  var g=document.getElementById(containerId);if(!g)return;
+  g.innerHTML='';
+  FAITHS.forEach(function(f){
+    var on=arr.indexOf(f.key)>-1;
+    var d=document.createElement('div');
+    d.className='faith-chip'+(on?' on':'');
+    d.style.background=on?f.bg:'var(--w05)';
+    d.style.borderColor=on?f.color:'var(--w20)';
+    d.innerHTML='<span style="font-size:18px">'+f.icon+'</span><span style="color:'+(on?f.color:'var(--w70)')+';font-size:12px;font-weight:600;flex:1">'+f.key+'</span><span style="font-size:13px;color:'+(on?f.color:'var(--w20)')+'">'+( on?'✓':'○')+'</span>';
+    d.onclick=function(){onToggle(f.key)};
+    g.appendChild(d);
+  });
+}
+function initSetupFaithGrids(){
+  renderFaithGrid('setupBrowseGrid',setupBrowse,function(k){
+    var i=setupBrowse.indexOf(k);if(i>-1)setupBrowse.splice(i,1);else setupBrowse.push(k);
+    renderFaithGrid('setupBrowseGrid',setupBrowse,arguments.callee);
+  });
+  renderFaithGrid('setupReceiveGrid',setupReceive,function(k){
+    var i=setupReceive.indexOf(k);if(i>-1)setupReceive.splice(i,1);else setupReceive.push(k);
+    renderFaithGrid('setupReceiveGrid',setupReceive,arguments.callee);
+  });
+}
+function setupSelectAll(t){if(t==='browse'){setupBrowse=FAITHS.map(function(f){return f.key});renderFaithGrid('setupBrowseGrid',setupBrowse,function(k){var i=setupBrowse.indexOf(k);if(i>-1)setupBrowse.splice(i,1);else setupBrowse.push(k);renderFaithGrid('setupBrowseGrid',setupBrowse,arguments.callee)})}else{setupReceive=FAITHS.map(function(f){return f.key});renderFaithGrid('setupReceiveGrid',setupReceive,function(k){var i=setupReceive.indexOf(k);if(i>-1)setupReceive.splice(i,1);else setupReceive.push(k);renderFaithGrid('setupReceiveGrid',setupReceive,arguments.callee)})}}
+function setupClearAll(t){if(t==='browse'){setupBrowse=[];renderFaithGrid('setupBrowseGrid',setupBrowse,function(k){setupBrowse.push(k);renderFaithGrid('setupBrowseGrid',setupBrowse,arguments.callee)})}else{setupReceive=[];renderFaithGrid('setupReceiveGrid',setupReceive,function(k){setupReceive.push(k);renderFaithGrid('setupReceiveGrid',setupReceive,arguments.callee)})}}
+
+async function goNext(){
+  var e=document.getElementById('sErr');e.style.display='none';
+  if(step===1){if(!document.getElementById('fName').value.trim()||!document.getElementById('fAge').value||!document.getElementById('fGender').value||!document.getElementById('fReligion').value||!document.getElementById('fState').value||!document.getElementById('fCity').value||!document.getElementById('fPhone').value.trim()){e.textContent='Please fill all required fields';e.style.display='';return}step++;updUI();return}
+  if(step===2){step++;updUI();return}
+  if(step===3){if(!photos[0]){e.textContent='Primary photo is required';e.style.display='';return}step++;updUI();return}
+  if(step===4){if(!document.getElementById('fIdT').value||!idFile){e.textContent='ID type and upload are required';e.style.display='';return}step++;updUI();return}
+  if(step===5){step++;updUI();return}
+  // step 6 — submit
+  if(setupBrowse.length===0){e.textContent='Select at least one faith to browse';e.style.display='';return}
+  if(setupReceive.length===0){e.textContent='Select at least one faith to receive interests from';e.style.display='';return}
+  fpBrowse=setupBrowse.slice();fpReceive=setupReceive.slice();saveFaithPrefsLocal();
+  var btn=document.getElementById('nxBtn');btn.disabled=true;btn.innerHTML='<div class="spinner spinner-sm" style="margin:0 auto"></div>';
+  try{
+    var urls=['','','','',''];
+    for(var i=0;i<5;i++){if(photos[i]){var ext=photos[i].name.split('.').pop(),path=U.id+'/p'+i+'_'+Date.now()+'.'+ext;var r=await sb.storage.from('profile-photos').upload(path,photos[i],{upsert:true});if(!r.error)urls[i]=sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl}}
+    var idUrl='';if(idFile){var ext2=idFile.name.split('.').pop(),idP=U.id+'/id_'+Date.now()+'.'+ext2;try{var r2=await sb.storage.from('id-proofs').upload(idP,idFile,{upsert:true});if(!r2.error)idUrl=sb.storage.from('id-proofs').getPublicUrl(idP).data.publicUrl}catch(x){var r3=await sb.storage.from('profile-photos').upload(idP,idFile,{upsert:true});if(!r3.error)idUrl=sb.storage.from('profile-photos').getPublicUrl(idP).data.publicUrl}}
+    var pd={id:U.id,email:U.email,full_name:document.getElementById('fName').value.trim(),age:parseInt(document.getElementById('fAge').value),gender:document.getElementById('fGender').value,religion:document.getElementById('fReligion').value,denomination:document.getElementById('fDenom').value||null,city:document.getElementById('fCity').value,state:document.getElementById('fState').value,phone:document.getElementById('fPhone').value.trim(),registered_by:document.getElementById('fRegFor').value,bio:document.getElementById('fBio').value.trim(),education:document.getElementById('fEdu').value.trim(),occupation:document.getElementById('fOcc').value.trim(),height_cm:document.getElementById('fHt').value?parseInt(document.getElementById('fHt').value):null,mother_tongue:document.getElementById('fMT').value.trim(),marital_status:document.getElementById('fMS').value,photo_url:urls[0],photo_2_url:urls[1],photo_3_url:urls[2],photo_4_url:urls[3],photo_5_url:urls[4],id_proof_type:document.getElementById('fIdT').value,id_proof_url:idUrl,pref_age_min:parseInt(document.getElementById('fPMin').value)||18,pref_age_max:parseInt(document.getElementById('fPMax').value)||70,pref_denomination:document.getElementById('fPD').value,pref_city:document.getElementById('fPC').value.trim()||'Any',faith_browse:JSON.stringify(fpBrowse),faith_receive:JSON.stringify(fpReceive),status:'pending'};
+    var r=await sb.from('profiles').insert(pd);if(r.error)throw r.error;P=pd;show('pendingScreen')
+  }catch(ex){e.textContent=ex.message||'Error submitting';e.style.display='';btn.disabled=false;btn.textContent='Submit for Review ✦'}
+}
+
+// ═══════════════════════════════════════════ LOAD PROFILE
+async function loadP(){
+  try{var r=await sb.from('profiles').select('*').eq('id',U.id).limit(1);P=(r.data&&r.data.length>0)?r.data[0]:null}catch(x){P=null}
+  if(!P){show('setupScreen');updUI();return}
+  if(P.status==='pending'){show('pendingScreen');return}
+  if(P.status==='rejected'){show('rejectedScreen');return}
+  loadFaithPrefs();
+  if(P.faith_browse){try{fpBrowse=JSON.parse(P.faith_browse)}catch(x){}}
+  if(P.faith_receive){try{fpReceive=JSON.parse(P.faith_receive)}catch(x){}}
+  document.getElementById('hName').textContent=P.full_name.split(' ')[0];
+  if(P.is_admin){var bar=document.getElementById('tBar');if(!document.getElementById('adTab')){var ab=document.createElement('button');ab.className='tab-btn';ab.id='adTab';ab.onclick=function(){goTab('admin')};ab.innerHTML='<span style="font-size:18px">⚙️</span><span style="font-size:9px">Admin</span>';bar.appendChild(ab)}}
+  show('mainApp');renderHome();checkNotifs()
+}
+
+// ═══════════════════════════════════════════ TABS
+function goTab(t){
+  ['tHome','tBrowse','tInterests','tChat','tChatWin','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x){var el=document.getElementById(x);if(el)el.style.display='none'});
+  var key=t.charAt(0).toUpperCase()+t.slice(1);
+  var target=document.getElementById('t'+key);if(target)target.style.display='';
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  var activeMap={home:'tabHome',browse:'tabBrowse',interests:'tabInterests',chat:'tabChat',chatWin:'tabChat',views:'tabProfile',plans:'tabPlansTab',profile:'tabProfile',reviews:'tabHome',admin:'tabHome'};
+  var activeId=activeMap[t];if(activeId){var ab=document.getElementById(activeId);if(ab)ab.classList.add('active')}
+  if(t==='home')renderHome();
+  if(t==='browse')ldBrowse();
+  if(t==='interests')ldInt('received');
+  if(t==='chat')ldChats();
+  if(t==='views')ldViews();
+  if(t==='profile')renP();
+  if(t==='admin')ldAdmin('pending');
+  if(t==='reviews')ldReviews();
+}
+
+// ═══════════════════════════════════════════ HOME
+function renderHome(){
+  var n=document.getElementById('hWelcomeName');
+  if(n&&P)n.textContent=P.full_name.split(' ')[0];
+  loadStats();
+}
+async function loadStats(){
+  try{
+    var v=await sb.from('profile_views').select('id',{count:'exact'}).eq('viewed_id',U.id);
+    var iv=v.count||0;
+    var i=await sb.from('interests').select('id',{count:'exact'}).eq('to_user',U.id);
+    var ii=i.count||0;
+    var m=await sb.from('messages').select('id',{count:'exact'}).eq('receiver_id',U.id);
+    var im=m.count||0;
+    // home stats
+    var sv=document.getElementById('statViews');var si=document.getElementById('statInt');var sm=document.getElementById('statMsg');
+    if(sv)sv.textContent=iv;if(si)si.textContent=ii;if(sm)sm.textContent=im;
+    // profile stats
+    var pv=document.getElementById('pStatViews');var pi=document.getElementById('pStatInt');var pm=document.getElementById('pStatMsg');
+    if(pv)pv.textContent=iv;if(pi)pi.textContent=ii;if(pm)pm.textContent=im;
+  }catch(x){}
+}
+
+// ═══════════════════════════════════════════ FAITH PREF SUMMARY (profile tab)
+
+
+// ═══════════════════════════════════════════ FAITH PREFS MODAL
+function openFaithPrefs(){
+  renderFpGrid('fpBrowseGrid',fpBrowse,'browse');
+  renderFpGrid('fpReceiveGrid',fpReceive,'receive');
+  document.getElementById('faithModal').classList.add('show');
+}
+function closeFaithPrefs(){document.getElementById('faithModal').classList.remove('show')}
+function renderFpGrid(containerId,arr,type){
+  renderFaithGrid(containerId,arr,function(k){
+    var target=type==='browse'?fpBrowse:fpReceive;
+    var i=target.indexOf(k);if(i>-1)target.splice(i,1);else target.push(k);
+    renderFpGrid(containerId,target,type);
+  });
+}
+function fpSelectAll(t){if(t==='browse'){fpBrowse=FAITHS.map(function(f){return f.key});renderFpGrid('fpBrowseGrid',fpBrowse,'browse')}else{fpReceive=FAITHS.map(function(f){return f.key});renderFpGrid('fpReceiveGrid',fpReceive,'receive')}}
+function fpClearAll(t){if(t==='browse'){fpBrowse=[];renderFpGrid('fpBrowseGrid',fpBrowse,'browse')}else{fpReceive=[];renderFpGrid('fpReceiveGrid',fpReceive,'receive')}}
+async function saveFaithPrefs(){
+  saveFaithPrefsLocal();
+  try{await sb.from('profiles').update({faith_browse:JSON.stringify(fpBrowse),faith_receive:JSON.stringify(fpReceive)}).eq('id',U.id)}catch(x){}
+  closeFaithPrefs();renderFaithPrefSummary();renderBrowseChips();
+}
+
+// ═══════════════════════════════════════════ BROWSE
+function renderBrowseChips(){
+  var chips=document.getElementById('browseChips');if(!chips)return;
+  var opts=['All'].concat(fpBrowse);
+  chips.innerHTML='';
+  opts.forEach(function(k){
+    var f=k==='All'?null:faithByKey(k);
+    var on=quickFaithFilter===k;
+    var btn=document.createElement('button');
+    btn.style.cssText='white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;font-family:DM Sans,sans-serif;cursor:pointer;transition:all .2s;border:1px solid '+(on?(f?f.color:'var(--gold)'):'var(--w20)')+';background:'+(on?(f?f.bg:'rgba(232,184,48,.15)'):'transparent')+';color:'+(on?(f?f.color:'var(--gold)'):'var(--w50)');
+    btn.textContent=(k==='All'?'🌍 All':(f?f.icon+' '+k:k));
+    btn.onclick=function(){quickFaithFilter=k;renderBrowseChips();ldBrowse()};
+    chips.appendChild(btn);
+  });
+  // receive bar
+  var bar=document.getElementById('receiveBar');if(bar){
+    var pills=fpReceive.map(function(k){var f=faithByKey(k);return '<span style="color:'+f.color+'">'+f.icon+' '+k+'</span>'}).join(' · ');
+    bar.innerHTML='💌 Receiving interest from: '+pills;
+  }
+}
+async function ldBrowse(){
+  renderBrowseChips();
+  var g=P.gender==='Male'?'Female':'Male';
+  var q=sb.from('profiles').select('*').eq('status','approved').eq('gender',g).neq('id',U.id);
+  // apply faith browse filter
+  if(quickFaithFilter!=='All'){q=q.eq('religion',quickFaithFilter)}
+  else if(fpBrowse.length>0&&fpBrowse.length<FAITHS.length){q=q.in('religion',fpBrowse)}
+  var fd=document.getElementById('fltDenom').value;if(fd)q=q.eq('denomination',fd);
+  var fa=document.getElementById('fltAge').value;if(fa){var pp=fa.split('-');if(pp.length===2)q=q.gte('age',parseInt(pp[0])).lte('age',parseInt(pp[1]));else q=q.gte('age',41)}
+  var r=await q.order('created_at',{ascending:false});
+  var d=r.data||[];
+  document.getElementById('bEmpty').style.display=d.length?'none':'';
+  var l=document.getElementById('bList');l.innerHTML='';
+  d.forEach(function(p){
+    var f=faithByKey(p.religion||'Other');
+    l.innerHTML+='<div class="card" onclick="viewProfile(\''+p.id+'\')"><div style="display:flex;gap:12px;align-items:center"><div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'+(!p.photo_url?'<span style="font-size:20px;opacity:.3">👤</span>':'')+'</div><div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">'+p.full_name+', '+p.age+'</h3><p style="font-size:11px;margin:3px 0"><span style="color:'+f.color+'">'+f.icon+' '+(p.religion||'')+'</span>'+(p.denomination?' · <span style="color:var(--w50)">'+p.denomination+'</span>':'')+'</p><p style="font-size:10px;color:var(--w50)">'+p.city+', '+p.state+'</p></div><span style="font-size:18px">→</span></div>'+(p.bio?'<p style="font-size:12px;color:var(--w50);margin-top:8px;line-height:1.4;overflow:hidden;max-height:36px">'+p.bio+'</p>':'')+'</div>'
+  });
+}
+
+// ═══════════════════════════════════════════ VIEW PROFILE MODAL
+async function viewProfile(id){
+  try{await sb.from('profile_views').upsert({viewer_id:U.id,viewed_id:id,viewed_at:new Date().toISOString()},{onConflict:'viewer_id,viewed_id'})}catch(x){}
+  var r=await sb.from('profiles').select('*').eq('id',id).limit(1);if(!r.data||!r.data.length)return;
+  var p=r.data[0];var f=faithByKey(p.religion||'Other');
+  var ap=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(function(x){return x});
+  var ir=await sb.from('interests').select('*').eq('from_user',U.id).eq('to_user',id).limit(1);var sent=(ir.data&&ir.data.length>0);
+  var h='<div style="text-align:center;padding-top:8px"><div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">';
+  ap.forEach(function(u){h+='<div style="width:72px;height:72px;border-radius:14px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>'});
+  if(!ap.length)h+='<div class="avatar avatar-lg"><span style="font-size:32px;opacity:.3">👤</span></div>';
+  h+='</div><h2 style="font-family:Playfair Display,serif;font-size:22px">'+p.full_name+', '+p.age+'</h2>';
+  h+='<p style="margin-top:4px"><span style="color:'+f.color+';font-size:14px">'+f.icon+' '+(p.religion||'')+'</span>'+(p.denomination?' <span style="color:var(--w50);font-size:12px">· '+p.denomination+'</span>':'')+'</p>';
+  h+='<p style="color:var(--w50);font-size:12px">'+p.city+', '+p.state+'</p></div>';
+  h+='<div style="background:var(--w05);border-radius:14px;padding:14px;margin-top:16px">';
+  [{l:'Bio',v:p.bio},{l:'Education',v:p.education},{l:'Occupation',v:p.occupation},{l:'Mother Tongue',v:p.mother_tongue},{l:'Marital Status',v:p.marital_status},{l:'Height',v:p.height_cm?p.height_cm+' cm':''}].forEach(function(d){if(d.v)h+='<div style="margin-bottom:10px"><p style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px">'+d.l+'</p><p style="font-size:13px;margin-top:2px;color:var(--w80)">'+d.v+'</p></div>'});
+  h+='</div>';
+  if(!sent&&p.id!==U.id){
+    // check receive filter before showing interest button
+    var canSend=fpReceive.length===0||fpReceive.indexOf(p.religion)>-1||true; // always show, Supabase enforces
+    h+='<button class="btn btn-gold" style="margin-top:16px" onclick="sendInt(\''+p.id+'\')">💝 Express Interest</button>';
+  }else if(sent)h+='<p style="text-align:center;color:var(--gold);margin-top:16px;font-size:13px">✅ Interest sent</p>';
+  document.getElementById('pmC').innerHTML=h;
+  document.getElementById('profileModal').classList.add('show');
+}
+function closeModal(){document.getElementById('profileModal').classList.remove('show')}
+async function sendInt(to){
+  // check receive filter on target user's side (client hint — Supabase RLS enforces server side)
+  try{await sb.from('interests').insert({from_user:U.id,to_user:to,status:'pending'});closeModal();alert('Interest sent! 💝')}catch(x){alert(x.message||'Already sent')}
+}
+
+// ═══════════════════════════════════════════ INTERESTS
+async function ldInt(type){
+  document.getElementById('intRecBtn').className='btn btn-sm '+(type==='received'?'btn-gold':'btn-dark');
+  document.getElementById('intSentBtn').className='btn btn-sm '+(type==='sent'?'btn-gold':'btn-dark');
+  document.getElementById('intMutBtn').className='btn btn-sm '+(type==='mutual'?'btn-gold':'btn-dark');
+  var r;
+  if(type==='received')r=await sb.from('interests').select('*,profiles!interests_from_user_fkey(*)').eq('to_user',U.id).eq('status','pending').order('created_at',{ascending:false});
+  else if(type==='sent')r=await sb.from('interests').select('*,profiles!interests_to_user_fkey(*)').eq('from_user',U.id).order('created_at',{ascending:false});
+  else r=await sb.from('interests').select('*,profiles!interests_from_user_fkey(*)').eq('to_user',U.id).eq('status','accepted').order('created_at',{ascending:false});
+  var d=r.data||[];
+  document.getElementById('intEmpty').style.display=d.length?'none':'';
+  var l=document.getElementById('intList');l.innerHTML='';
+  d.forEach(function(i){
+    var p=i.profiles;if(!p)return;
+    var f=faithByKey(p.religion||'Other');
+    l.innerHTML+='<div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'+(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div><div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">'+p.full_name+', '+p.age+'</h3><p style="font-size:11px;color:'+f.color+'">'+f.icon+' '+(p.denomination||p.religion||'')+'<span style="color:var(--w50)"> · '+p.city+'</span></p></div></div>'+(type==='received'?'<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="actInt(\''+i.id+'\',\'accepted\')">✅ Accept</button><button class="btn btn-red btn-sm" style="flex:1" onclick="actInt(\''+i.id+'\',\'declined\')">✗ Decline</button></div>':'')+(type==='mutual'?'<button class="btn btn-gold btn-sm" style="margin-top:10px" onclick="openChat(\''+p.id+'\')">💬 Message</button>':'')+'</div>'
+  });
+}
+function showInt(t){ldInt(t)}
+async function actInt(id,st){await sb.from('interests').update({status:st}).eq('id',id);ldInt('received')}
+
+// ═══════════════════════════════════════════ CHAT
+async function ldChats(){var r=await sb.from('interests').select('*').or('from_user.eq.'+U.id+',to_user.eq.'+U.id).eq('status','accepted');var d=r.data||[];var pids=[];d.forEach(function(i){var pid=i.from_user===U.id?i.to_user:i.from_user;if(pids.indexOf(pid)===-1)pids.push(pid)});if(!pids.length){document.getElementById('chatEmpty').style.display='';document.getElementById('chatList').innerHTML='';return}document.getElementById('chatEmpty').style.display='none';var pr=await sb.from('profiles').select('*').in('id',pids);var profiles=pr.data||[];var l=document.getElementById('chatList');l.innerHTML='';profiles.forEach(function(p){var f=faithByKey(p.religion||'Other');l.innerHTML+='<div class="card" onclick="openChat(\''+p.id+'\')"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'+(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div><div><h3 style="font-size:14px;margin:0;font-weight:600">'+p.full_name+'</h3><p style="font-size:11px;color:'+f.color+'">'+f.icon+' '+(p.denomination||p.religion||'')+' · '+p.city+'</p></div><span style="font-size:16px;color:var(--w50)">💬</span></div></div>'})}
+async function openChat(pid){chatPid=pid;var pr=await sb.from('profiles').select('*').eq('id',pid).limit(1);var p=pr.data[0];document.getElementById('cwNm').textContent=p.full_name;document.getElementById('cwIn').textContent=(p.denomination||p.religion||'')+' · '+p.city;if(p.photo_url)document.getElementById('cwAv').style.backgroundImage='url('+p.photo_url+')';goTab('chatWin');ldMsgs()}
+async function ldMsgs(){if(!chatPid)return;var r=await sb.from('messages').select('*').or('and(sender_id.eq.'+U.id+',receiver_id.eq.'+chatPid+'),and(sender_id.eq.'+chatPid+',receiver_id.eq.'+U.id+')').order('created_at',{ascending:true});var d=r.data||[];var c=document.getElementById('cwMs');c.innerHTML='';d.forEach(function(m){var t=new Date(m.created_at);c.innerHTML+='<div class="msg-bubble '+(m.sender_id===U.id?'msg-sent':'msg-recv')+'">'+m.content+'<div class="msg-time">'+t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</div></div>'});c.scrollTop=c.scrollHeight;await sb.from('messages').update({is_read:true}).eq('receiver_id',U.id).eq('sender_id',chatPid)}
+async function sendMsg(){var inp=document.getElementById('cwTx'),txt=inp.value.trim();if(!txt)return;inp.value='';await sb.from('messages').insert({sender_id:U.id,receiver_id:chatPid,content:txt});ldMsgs()}
+
+// ═══════════════════════════════════════════ WHO VIEWED
+async function ldViews(){var r=await sb.from('profile_views').select('*,profiles!profile_views_viewer_id_fkey(*)').eq('viewed_id',U.id).order('viewed_at',{ascending:false});var d=r.data||[];document.getElementById('viewEmpty').style.display=d.length?'none':'';var l=document.getElementById('viewList');l.innerHTML='';d.forEach(function(v){var p=v.profiles;if(!p)return;var f=faithByKey(p.religion||'Other');l.innerHTML+='<div class="card" onclick="viewProfile(\''+p.id+'\')"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'+(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div><div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">'+p.full_name+', '+p.age+'</h3><p style="font-size:11px;color:'+f.color+'">'+f.icon+' '+(p.denomination||p.religion||'')+'</p></div><p style="font-size:10px;color:var(--w50)">'+new Date(v.viewed_at).toLocaleDateString()+'</p></div></div>'})}
+
+// ═══════════════════════════════════════════ MY PROFILE TAB
+function renP(){
+  var p=P;
+  var f=faithByKey(p.religion||'Other');
+  var ap=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(function(x){return x});
+  // hero
+  var ph='';
+  if(ap.length>0)ph='background-image:url('+ap[0]+');background-size:cover;background-position:center';
+  document.getElementById('profileHero').innerHTML=
+    '<div class="avatar avatar-lg glow-border" style="margin:0 auto;'+ph+'">'+(!ap.length?'<span style="font-size:36px;opacity:.3">👤</span>':'')+'</div>'+
+    '<h2 style="font-family:Playfair Display,serif;font-size:22px;margin-top:12px">'+p.full_name+'</h2>'+
+    '<p style="color:'+f.color+';font-size:13px;margin-top:4px">'+f.icon+' '+(p.denomination?p.denomination+' · ':'')+f.key+'</p>'+
+    '<p style="color:var(--w50);font-size:12px">'+p.city+', '+p.state+'</p>'+
+    '<span class="badge" style="margin-top:8px;background:'+(p.status==='approved'?'var(--grn)':'var(--gold)')+';color:'+(p.status==='approved'?'#fff':'#1A0830')+';">'+(p.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
+    '<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px">'+
+    ap.slice(1).map(function(u){return '<div style="width:56px;height:56px;border-radius:10px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>'}).join('')+
+    '</div>';
+  // details
+  var h='<h3 style="font-size:13px;color:var(--gold);margin-bottom:12px;text-transform:uppercase;letter-spacing:1.5px">Profile Details</h3>';
+  [{l:'Email',v:p.email},{l:'Phone',v:p.phone},{l:'Religion',v:p.religion},{l:'Denomination',v:p.denomination},{l:'Age',v:p.age},{l:'Education',v:p.education},{l:'Occupation',v:p.occupation},{l:'Mother Tongue',v:p.mother_tongue},{l:'Marital Status',v:p.marital_status},{l:'Height',v:p.height_cm?p.height_cm+' cm':''}].forEach(function(d){if(d.v)h+='<div class="info-row"><span class="info-label">'+d.l+'</span><span class="info-value">'+d.v+'</span></div>'});
+  if(p.bio)h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--w10)"><p style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">About</p><p style="font-size:13px;color:var(--w80);line-height:1.6">'+p.bio+'</p></div>';
+  document.getElementById('mInfo').innerHTML=h;
+  // faith summary
+  renderProfileFaithSummary();
+  loadStats();
+}
+function renderProfileFaithSummary(){
+  var h='<div style="margin-bottom:8px"><p style="font-size:11px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">🔍 Browsing from</p><div style="display:flex;flex-wrap:wrap;gap:5px">';
+  fpBrowse.forEach(function(k){var f=faithByKey(k);h+='<span class="faith-pill" style="background:'+f.bg+';border-color:'+f.color+';color:'+f.color+'">'+f.icon+' '+k+'</span>'});
+  h+='</div></div><div><p style="font-size:11px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">💌 Receiving from</p><div style="display:flex;flex-wrap:wrap;gap:5px">';
+  fpReceive.forEach(function(k){var f=faithByKey(k);h+='<span class="faith-pill" style="background:'+f.bg+';border-color:'+f.color+';color:'+f.color+'">'+f.icon+' '+k+'</span>'});
+  h+='</div></div>';
+  var el=document.getElementById('profileFaithSummary');if(el)el.innerHTML=h;
+}
+
+// ═══════════════════════════════════════════ EDIT PROFILE
+function openEdit(){document.getElementById('eBio').value=P.bio||'';document.getElementById('eEdu').value=P.education||'';document.getElementById('eOcc').value=P.occupation||'';document.getElementById('ePh').value=P.phone||'';editPhotos=[null,null,null,null,null];var g=document.getElementById('epGrid');g.innerHTML='';var urls=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url];for(var i=0;i<5;i++){var has=urls[i]&&urls[i].length>0;g.innerHTML+='<div class="photo-slot" id="eps'+i+'" onclick="document.getElementById(\'epi'+i+'\').click()" style="'+(has?'background-image:url('+urls[i]+');border-color:var(--gold);border-style:solid':'')+'">'+(!has?'<span style="font-size:14px;opacity:.4">📷</span><span>#'+(i+1)+'</span>':'')+'<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/></div>'}document.getElementById('editModal').classList.add('show')}
+function closeEdit(){document.getElementById('editModal').classList.remove('show')}
+function pickEP(i,inp){var f=inp.files[0];if(!f)return;editPhotos[i]=f;var s=document.getElementById('eps'+i);s.style.backgroundImage='url('+URL.createObjectURL(f)+')';s.style.borderColor='var(--gold)';s.style.borderStyle='solid';s.innerHTML='<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/>'}
+async function saveEdit(){var upd={bio:document.getElementById('eBio').value.trim(),education:document.getElementById('eEdu').value.trim(),occupation:document.getElementById('eOcc').value.trim(),phone:document.getElementById('ePh').value.trim()};for(var i=0;i<5;i++){if(editPhotos[i]){var ext=editPhotos[i].name.split('.').pop(),path=U.id+'/p'+i+'_'+Date.now()+'.'+ext;var r=await sb.storage.from('profile-photos').upload(path,editPhotos[i],{upsert:true});if(!r.error){var url=sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;if(i===0)upd.photo_url=url;else upd['photo_'+(i+1)+'_url']=url}}}await sb.from('profiles').update(upd).eq('id',U.id);var r2=await sb.from('profiles').select('*').eq('id',U.id).limit(1);P=r2.data[0];closeEdit();renderHome();alert('Profile updated! ✅')}
+
+// ═══════════════════════════════════════════ ADMIN
+async function ldAdmin(st){var r=await sb.from('profiles').select('*').eq('status',st).order('created_at',{ascending:false});var d=r.data||[];document.getElementById('adEmpty').style.display=d.length?'none':'';var l=document.getElementById('adList');l.innerHTML='';d.forEach(function(p){var f=faithByKey(p.religion||'Other');var act='';if(st==='pending')act='<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="adAct(\''+p.id+'\',\'approved\')">✅ Approve</button><button class="btn btn-red btn-sm" style="flex:1" onclick="adAct(\''+p.id+'\',\'rejected\')">❌ Reject</button></div>';l.innerHTML+='<div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'+(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div><div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">'+p.full_name+', '+p.age+'</h3><p style="font-size:11px;color:'+f.color+'">'+f.icon+' '+(p.denomination?p.denomination+' · ':'')+p.city+'</p><p style="font-size:10px;color:var(--w50)">'+p.email+' · '+(p.phone||'')+'</p><p style="font-size:10px;color:var(--w50)">ID: '+(p.id_proof_type||'N/A')+'</p></div></div>'+(p.bio?'<p style="font-size:12px;color:var(--w50);margin-top:8px">'+p.bio+'</p>':'')+act+'</div>'})}
+async function adAct(id,st){await sb.from('profiles').update({status:st}).eq('id',id);ldAdmin('pending')}
+
+// ═══════════════════════════════════════════ NOTIFICATIONS
+async function checkNotifs(){try{var r=await sb.from('interests').select('id',{count:'exact'}).eq('to_user',U.id).eq('status','pending');if(r.count>0){document.getElementById('intDot').style.display='';document.getElementById('intBadge').style.display='';document.getElementById('intBadge').textContent=r.count}var mr=await sb.from('messages').select('id',{count:'exact'}).eq('receiver_id',U.id).eq('is_read',false);if(mr.count>0)document.getElementById('msgDot').style.display=''}catch(x){}}
+
+// ═══════════════════════════════════════════ PAYMENT
+function payRzp(plan,amt){
+  var opts={
+    key:'rzp_live_SausbldU6Vqpy0',
+    amount:amt,
+    currency:'INR',
+    name:'Begin Forever',
+    description:plan+' Subscription',
+    image:'https://beginforever.in/logo.png',
+    handler:async function(r){
+      // Save subscription to database
+      try{
+        var now=new Date();
+        var expires=new Date(now);
+        if(plan==='Monthly')expires.setMonth(expires.getMonth()+1);
+        else if(plan==='Quarterly')expires.setMonth(expires.getMonth()+3);
+        else if(plan==='Yearly')expires.setFullYear(expires.getFullYear()+1);
+        
+        await sb.from('subscriptions').insert({
+          user_id:U.id,
+          plan_type:plan,
+          amount_paid:amt/100,
+          razorpay_payment_id:r.razorpay_payment_id,
+          status:'active',
+          expires_at:expires.toISOString()
+        });
+        
+        await sb.from('profiles').update({
+          subscription_status:'active',
+          subscription_plan:plan,
+          subscription_expires_at:expires.toISOString()
+        }).eq('id',U.id);
+        
+        // Refresh local profile
+        var pr=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
+        if(pr.data&&pr.data.length)P=pr.data[0];
+      }catch(e){console.error('Subscription save failed:',e)}
+      
+      alert('Payment successful! 🎉\n\nYour '+plan+' plan is now active.\nPayment ID: '+r.razorpay_payment_id);
+      goTab('home');
+    },
+    prefill:{
+      name:P?P.full_name:'',
+      email:P?P.email:'',
+      contact:P?P.phone:''
+    },
+    theme:{color:'#4A1080'}
+  };
+  var rzp=new Razorpay(opts);rzp.open();
+}
+
+// ═══════════════════════════════════════════ REVIEWS
+async function ldReviews(){
+  var l=document.getElementById('reviewsList');
+  l.innerHTML='<div style="text-align:center;padding:20px"><div class="spinner"></div></div>';
+  try{
+    var r=await sb.from('reviews').select('*').eq('is_approved',true).order('is_featured',{ascending:false}).order('created_at',{ascending:false}).limit(20);
+    var d=r.data||[];
+    if(!d.length){l.innerHTML='<p style="text-align:center;color:var(--w50);padding:20px">No reviews yet. Be the first!</p>';return}
+    l.innerHTML='';
+    d.forEach(function(rv){
+      var stars='⭐'.repeat(rv.rating);
+      var initial=(rv.user_name||'U').charAt(0).toUpperCase();
+      var city=rv.user_city?', '+rv.user_city:'';
+      var rel=rv.user_religion||'Member';
+      l.innerHTML+='<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">'+initial+'</div><div><p style="font-size:13px;font-weight:600">'+rv.user_name+city+'</p><p style="font-size:11px;color:var(--gold)">'+stars+' · '+rel+'</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"'+rv.review_text+'"</p></div>';
+    });
+  }catch(e){
+    l.innerHTML='<p style="text-align:center;color:var(--red);padding:20px">Failed to load reviews</p>';
+  }
+}
+
+async function submitReview(){
+  var txt=document.getElementById('revText').value.trim();
+  var rating=parseInt(document.getElementById('revRating').value)||5;
+  var msg=document.getElementById('revMsg');
+  if(!txt||txt.length<10){alert('Please write at least 10 characters');return}
+  if(!P){alert('Please log in to submit a review');return}
+  try{
+    await sb.from('reviews').insert({
+      user_id:U.id,
+      user_name:P.full_name,
+      user_religion:P.religion||P.denomination||'',
+      user_city:P.city||'',
+      rating:rating,
+      review_text:txt,
+      is_approved:false,
+      is_featured:false
+    });
+    msg.textContent='✅ Thank you! Your review will be published after moderation.';
+    msg.style.display='';
+    document.getElementById('revText').value='';
+    setTimeout(function(){msg.style.display='none'},5000);
+  }catch(e){
+    alert('Error submitting review: '+(e.message||'Unknown'));
+  }
+}
+
+// ═══════════════════════════════════════════ PASSWORD RESET
+async function submitNewPassword(){
+  var np=document.getElementById('nPass').value;
+  var nc=document.getElementById('nConf').value;
+  var er=document.getElementById('rErr');
+  var ok=document.getElementById('rOk');
+  er.style.display='none';ok.style.display='none';
+  if(!np||np.length<6){er.textContent='Password must be at least 6 characters';er.style.display='';return}
+  if(np!==nc){er.textContent='Passwords do not match';er.style.display='';return}
+  var btn=document.getElementById('rBtn');var orig=btn.textContent;btn.disabled=true;btn.innerHTML='<div class="spinner spinner-sm" style="margin:0 auto"></div>';
+  try{
+    var r=await sb.auth.updateUser({password:np});
+    if(r.error)throw r.error;
+    ok.textContent='Password updated! Redirecting to home...';ok.style.display='';
+    // Clear the URL hash and redirect to clean URL
+    setTimeout(function(){
+      window.history.replaceState(null,'',window.location.pathname);
+      window.location.href=window.location.origin+window.location.pathname;
+    },1500);
+  }catch(e){
+    er.textContent=e.message||'Error updating password';er.style.display='';
+    btn.disabled=false;btn.textContent=orig;
+  }
+}
+
+// ═══════════════════════════════════════════ AUTH STATE LISTENER
+var authHandled = false;
+// Detect password recovery flow by checking URL hash BEFORE auth fires
+var isRecoveryFlow = window.location.hash.indexOf('type=recovery') > -1 || 
+                     window.location.hash.indexOf('access_token') > -1 && 
+                     window.location.hash.indexOf('recovery') > -1;
+
+sb.auth.onAuthStateChange(function(ev, sess) {
+  // If we're in recovery flow OR got the PASSWORD_RECOVERY event, show reset screen
+  if (ev === 'PASSWORD_RECOVERY' || isRecoveryFlow) {
+    authHandled = true;
+    isRecoveryFlow = true; // Keep flag set so SIGNED_IN doesn't override
+    show('resetScreen');
+    return;
+  }
+  if (authHandled) return;
+  authHandled = true;
+  if (sess && sess.user) {
+    U = sess.user;
+    loadP();
+  } else {
+    U = null; P = null;
+    show('authScreen');
+  }
+});
+
+// Check URL on load - if recovery, show reset screen immediately
+if (isRecoveryFlow) {
+  authHandled = true;
+  show('resetScreen');
+}
+
+// Fallback: if onAuthStateChange never fires within 4s, show auth screen
+setTimeout(function() {
+  if (!authHandled) {
+    authHandled = true;
+    show('authScreen');
+  }
+}, 4000);
+
+</script>
+</body>
+</html>
