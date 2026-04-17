@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#FDFAF4"/>
+<title>Begin Forever</title>
+<meta name="description" content="India's first 100% ID-verified matrimony platform. Faith-first!"/>
+<meta name="keywords" content="Christian matrimony, Indian Christian wedding, faith-based matchmaking, Begin Forever, True Love, Find Love, Find your soulmate, your Truematch"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+:root{--bg:#FDFAF4;--s1:#FAF6EE;--s2:#FFFFFF;--s3:#F5ECD4;--royal:#4A1080;--gold:#E8B830;--gb:#FFD54F;--gp:#FFF3CD;--w:#2D1B4E;--w80:rgba(45,27,78,.85);--w50:rgba(45,27,78,.5);--w20:rgba(59,7,100,.15);--w10:rgba(59,7,100,.08);--w05:rgba(59,7,100,.04);--red:#FF4757;--grn:#2ED573;--pink:#FF6B9D;--radius:16px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+input,select,textarea,button{font-family:'DM Sans',sans-serif}
+input::placeholder,textarea::placeholder{color:rgba(59,7,100,.35)}
+.screen{display:none;min-height:100vh}.screen.active{display:flex}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.spinner{width:22px;height:22px;border:2.5px solid var(--w10);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+.spinner-sm{width:16px;height:16px;border-width:2px}
+.btn{padding:14px 24px;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;transition:all .2s;letter-spacing:.3px}
+.btn:active{transform:scale(.97)}
+.btn-gold{background:linear-gradient(135deg,#D4A017,#F5C842);color:#3B0764;box-shadow:0 4px 20px rgba(232,184,48,.25)}
+.btn-dark{background:var(--w10);color:var(--w);border:1px solid var(--w20)}
+.btn-grn{background:var(--grn);color:#FFFFFF}
+.btn-red{background:var(--red);color:#FFFFFF}
+.btn-sm{padding:10px 16px;font-size:12px;width:auto}
+.btn-outline{background:transparent;border:1.5px solid #3B0764;color:#3B0764;padding:8px 16px;border-radius:10px;font-size:12px;cursor:pointer;font-weight:600}
+.field{width:100%;padding:13px 16px;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;background:#FFFFFF;color:#2D1B4E;font-size:14px;outline:none;transition:border-color .2s}
+.field:focus{border-color:var(--gold);background:#FFFDF5}
+select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23E8B830' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-color:#FFFFFF}
+select.field option{background:#FFFFFF;color:#2D1B4E}
+.fg{margin-bottom:14px}.fl{display:block;font-size:11px;color:#3B0764;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#3B0764;border:1px solid rgba(212,160,23,.3);color:#FFFFFF;border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.card:hover{border-color:#D4A017;transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,7,100,.3)}
+.card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(232,184,48,.06),transparent);pointer-events:none}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--s3);border:2px solid var(--gold);flex-shrink:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+.avatar-lg{width:90px;height:90px;border-width:3px}
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:#3B0764;border-top:none;display:flex;padding:8px 4px;padding-bottom:max(8px,env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(59,7,100,.3)}
+.tab-btn{flex:1;border:none;background:none;color:rgba(255,255,255,.6);font-size:9px;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .2s;position:relative}
+.tab-btn.active{color:#FFD54F}
+.tab-btn.active::before{content:'';position:absolute;top:-8px;width:20px;height:3px;background:var(--gold);border-radius:2px}
+.notif-dot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:0;right:calc(50% - 12px);animation:pulse 2s infinite}
+.section-title{font-family:'Playfair Display',serif;font-size:20px;color:#3B0764;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title span{color:#D4A017}
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.photo-slot{aspect-ratio:1;border:2px dashed var(--w20);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background-size:cover;background-position:center;font-size:9px;color:var(--w50);transition:all .2s}
+.photo-slot:hover{border-color:var(--gold)}
+.steps{display:flex;gap:5px;justify-content:center;margin-bottom:12px}
+.step-dot{width:7px;height:7px;border-radius:50%;background:var(--w20);transition:all .3s}
+.step-dot.active{background:var(--gold);box-shadow:0 0 8px rgba(232,184,48,.4)}
+.modal-bg{position:fixed;inset:0;background:rgba(59,7,100,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal{background:#FFFFFF;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:24px;border-top:1px solid var(--w20);animation:slideUp .3s ease}
+.modal-close{position:sticky;top:0;right:0;font-size:22px;color:var(--w50);cursor:pointer;background:var(--s2);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;float:right;z-index:1}
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;padding:2px 0}
+.filter-bar select{padding:7px 24px 7px 10px;border-radius:20px;border:1px solid rgba(59,7,100,.15);background:#FFFFFF;color:#2D1B4E;font-size:11px;font-weight:500;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%23E8B830' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer;transition:all .2s}
+.filter-bar select:focus{border-color:var(--gold)}
+.filter-bar select option{background:#FFFFFF;color:#2D1B4E}
+.msg-bubble{max-width:78%;padding:10px 14px;border-radius:16px;margin-bottom:5px;font-size:13px;line-height:1.5}
+.msg-sent{background:linear-gradient(135deg,#3B0764,#5B1A8A);color:#FFFFFF;margin-left:auto;border-bottom-right-radius:4px}
+.msg-recv{background:var(--s3);margin-right:auto;border-bottom-left-radius:4px}
+.msg-time{font-size:9px;color:var(--w50);margin-top:2px}
+.stat-card{background:#F0E6FA;border-radius:12px;padding:14px;text-align:center;border:1.5px solid #D4A017}
+.stat-num{font-family:'Playfair Display',serif;font-size:24px;color:#3B0764;font-weight:700}
+.stat-label{font-size:10px;color:var(--w50);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--w10);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--w50);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.info-value{color:var(--w80);text-align:right}
+.glow-border{border:1.5px solid var(--gold);box-shadow:0 0 15px rgba(232,184,48,.1)}
+/* ── FAITH CHIP (new) ── */
+.faith-chip{border-radius:14px;padding:12px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .2s;border:1.5px solid var(--w20);background:var(--w05)}
+.faith-chip:hover{transform:translateY(-2px)}
+.faith-chip.on{border-color:var(--gold)}
+.faith-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.faith-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ LOADING -->
+<div id="loadingScreen" class="screen active" style="align-items:center;justify-content:center;flex-direction:column;text-align:center">
+<div style="animation:fadeUp .8s ease">
+<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:80px;height:80px;border-radius:16px;margin-bottom:12px" onerror="this.style.display='none'"/>
+<div class="spinner" style="margin:0 auto"></div>
+<p style="font-family:'Playfair Display',serif;font-size:18px;color:#3B0764;margin-top:12px">Begin Forever</p>
+<p style="font-size:11px;color:var(--w50);margin-top:4px">India's First ID-Verified Matrimony Platform</p>
+</div></div>
+
+<!-- ═══════════════════════════════════════════ AUTH -->
+<div id="authScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="text-align:center;margin-bottom:28px;animation:fadeUp .6s ease">
+<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:72px;height:72px;border-radius:14px;margin-bottom:8px" onerror="this.style.display='none'"/>
+<h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-top:4px;letter-spacing:1px">Begin Forever</h1>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:#D4A017;font-size:13px;margin-top:4px">Where God Writes Your Love Story</p>
+<p style="font-size:11px;color:var(--w50);margin-top:6px">100% ID-Verified · Faith-First · All Faiths Welcome</p></div>
+<div style="width:100%;max-width:360px;background:var(--s2);border-radius:24px;padding:28px;border:1.5px solid #D4A017;animation:fadeUp .8s ease;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+<h2 id="aTitle" style="font-family:'Playfair Display',serif;font-size:18px;color:#3B0764;text-align:center;margin-bottom:20px">Welcome Back</h2>
+<div class="fg"><label class="fl">Email</label><input class="field" id="aEmail" type="email" placeholder="your@email.com"/></div>
+<div class="fg" id="aPassG"><label class="fl">Password</label><input class="field" id="aPass" type="password" placeholder="••••••"/></div>
+<div class="fg" id="aConfG" style="display:none"><label class="fl">Confirm Password</label><input class="field" id="aConf" type="password"/></div>
+<p id="aErr" style="color:var(--red);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<p id="aOk" style="color:var(--grn);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
+<button class="btn btn-gold" id="aBtn" onclick="doAuth()">Sign In</button>
+<div style="display:flex;justify-content:space-between;margin-top:14px;font-size:12px">
+<span style="color:var(--w50);cursor:pointer" onclick="setMode('forgot')">Forgot password?</span>
+<span id="aToggle" style="color:#3B0764;cursor:pointer;font-weight:600" onclick="setMode('signup')">Create Account →</span></div>
+<p id="aBack" style="text-align:center;margin-top:10px;font-size:12px;color:#3B0764;cursor:pointer;display:none" onclick="setMode('login')">← Back to Sign In</p></div>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:12px;margin-top:24px;text-align:center;max-width:300px;line-height:1.6">"For I know the plans I have for you, declares the Lord, plans to give you a hope and a future."<br/><span style="color:var(--gold)">— Jeremiah 29:11</span></p>
+</div>
+
+<!-- ═══════════════════════════════════════════ SETUP (5 steps + new faith step) -->
+<div id="setupScreen" class="screen" style="flex-direction:column;padding:20px;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="max-width:460px;width:100%;margin:0 auto;padding-top:12px">
+<div style="text-align:center;margin-bottom:16px">
+<h1 id="sTitle" style="font-family:'Playfair Display',serif;font-size:20px">Personal Details</h1>
+<p id="sLabel" style="font-size:11px;color:var(--w50);margin-top:4px">Step 1 of 6</p>
+<div class="steps" style="margin-top:10px"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div></div></div>
+<div style="background:var(--s2);border-radius:20px;padding:22px;border:1.5px solid #D4A017">
+
+<!-- Step 1: Personal -->
+<div id="s1">
+<div class="fg"><label class="fl">Full Name *</label><input class="field" id="fName"/></div>
+<div class="fr"><div class="fg"><label class="fl">Age *</label><input type="number" class="field" id="fAge" min="18" max="70"/></div>
+<div class="fg"><label class="fl">Gender *</label><select class="field" id="fGender"><option value="">Select</option><option>Male</option><option>Female</option></select></div></div>
+<div class="fg"><label class="fl">Religion *</label><select class="field" id="fReligion" onchange="toggleDenom()"><option value="">Select</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
+<div class="fg" id="denomGroup" style="display:none"><label class="fl">Denomination</label><select class="field" id="fDenom"><option value="">Select</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Seventh-day Adventist</option><option>Church of God</option><option>Assemblies of God</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Presbyterian</option><option>Anglican</option><option>Non-Denominational</option><option>Other</option></select></div>
+<div class="fr"><div class="fg"><label class="fl">State *</label><select class="field" id="fState" onchange="fillC()"><option value="">Select</option><option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Other / Outside India</option></select></div>
+<div class="fg"><label class="fl">City *</label><select class="field" id="fCity"><option value="">Select</option></select></div></div>
+<div class="fg"><label class="fl">Phone *</label><input class="field" id="fPhone" placeholder="+91 XXXXX XXXXX"/></div>
+<div class="fg"><label class="fl">Registering for</label><select class="field" id="fRegFor"><option value="Myself">Myself</option><option>My Son</option><option>My Daughter</option><option>My Brother</option><option>My Sister</option><option>Other</option></select></div></div>
+
+<!-- Step 2: About -->
+<div id="s2" style="display:none">
+<div class="fg"><label class="fl">Bio</label><textarea class="field" id="fBio" style="min-height:80px;resize:vertical" placeholder="Your faith journey..."></textarea></div>
+<div class="fr"><div class="fg"><label class="fl">Education</label><input class="field" id="fEdu"/></div>
+<div class="fg"><label class="fl">Occupation</label><input class="field" id="fOcc"/></div></div>
+<div class="fr"><div class="fg"><label class="fl">Height (cm)</label><input type="number" class="field" id="fHt"/></div>
+<div class="fg"><label class="fl">Mother Tongue</label><input class="field" id="fMT"/></div></div>
+<div class="fg"><label class="fl">Marital Status</label><select class="field" id="fMS"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select></div></div>
+
+<!-- Step 3: Photos -->
+<div id="s3" style="display:none">
+<p style="font-size:12px;color:var(--w80);margin-bottom:10px"><strong style="color:var(--gb)">Primary photo required.</strong> Upload up to 5 photos.</p>
+<div style="background:var(--w05);border:1px solid var(--gold);border-radius:12px;padding:10px;margin-bottom:14px"><p style="font-size:11px;color:var(--gold);margin:0">🔒 Photos are private until your profile is approved.</p></div>
+<div class="photo-grid" id="photoGrid"></div></div>
+
+<!-- Step 4: ID -->
+<div id="s4" style="display:none">
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),transparent);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:18px"><p style="font-size:12px;color:var(--w80);margin:0;line-height:1.6"><span style="font-size:16px">🪪</span> <strong style="color:var(--gb)">Government ID Required</strong><br/>Every member is verified. Your ID is encrypted and <strong>never shared</strong> with other members.</p></div>
+<div class="fg"><label class="fl">ID Type *</label><select class="field" id="fIdT"><option value="">Select</option><option>Aadhaar Card</option><option>PAN Card</option><option>Voter ID</option><option>Driving Licence</option><option>Passport</option></select></div>
+<div class="fg"><label class="fl">Upload ID *</label><div id="idSlot" onclick="document.getElementById('idInp').click()" style="border:2px dashed var(--w20);border-radius:14px;padding:28px;text-align:center;cursor:pointer;background:var(--w05);transition:all .2s"><span style="font-size:32px;opacity:.4">🪪</span><br/><span style="font-size:12px;color:var(--w50)">Tap to upload</span><input type="file" accept="image/*,.pdf" id="idInp" style="display:none" onchange="pickId(this)"/></div>
+<p id="idN" style="font-size:11px;color:var(--gb);margin-top:6px;display:none"></p></div></div>
+
+<!-- Step 5: Preferences (age/denom) -->
+<div id="s5" style="display:none">
+<p style="font-size:12px;color:var(--w80);margin-bottom:14px">Help us find your best matches. You can update these anytime.</p>
+<div class="fr"><div class="fg"><label class="fl">Min Age</label><input type="number" class="field" id="fPMin" value="18"/></div>
+<div class="fg"><label class="fl">Max Age</label><input type="number" class="field" id="fPMax" value="70"/></div></div>
+<div class="fg"><label class="fl">Pref. Denomination / Religion</label><select class="field" id="fPD"><option>Any</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
+<div class="fg"><label class="fl">Pref. City</label><input class="field" id="fPC" placeholder="Any"/></div></div>
+
+<!-- Step 6 (NEW): Faith preferences -->
+<div id="s6" style="display:none">
+<p style="font-size:13px;color:var(--w80);margin-bottom:6px;font-weight:600">🔒 Your Faith Privacy Controls</p>
+<p style="font-size:12px;color:var(--w50);margin-bottom:16px">You are always in full control of who you see and who can reach you.</p>
+
+<div class="fg">
+<label class="fl">🔍 Browse matches from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths will appear in your Discover feed?</p>
+<div class="faith-grid" id="setupBrowseGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="setupSelectAll('browse')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="setupClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+
+<div class="fg" style="margin-top:6px">
+<label class="fl">💌 Receive interest from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
+<div class="faith-grid" id="setupReceiveGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="setupSelectAll('receive')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="setupClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+</div>
+
+<p id="sErr" style="color:var(--red);font-size:11px;text-align:center;margin:10px 0;display:none"></p>
+<div style="display:flex;gap:10px;margin-top:18px">
+<button class="btn btn-dark" id="bkBtn" onclick="goBack()" style="display:none">← Back</button>
+<button class="btn btn-gold" id="nxBtn" onclick="goNext()">Next →</button>
+</div>
+</div></div></div>
+
+<!-- ═══════════════════════════════════════════ PENDING -->
+<div id="pendingScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;background:linear-gradient(180deg,var(--bg),var(--s1))">
+<div style="animation:fadeUp .8s ease"><div style="font-size:48px;margin-bottom:16px">🕊️✨</div>
+<h2 style="font-family:'Playfair Display',serif;font-size:24px;color:var(--gb)">Your Journey Has Begun</h2>
+<p style="color:var(--w80);font-size:14px;margin-top:12px;max-width:380px;line-height:1.8">Your profile is under review. Our team is carefully verifying your details.</p>
+<div style="background:var(--w05);border:1px solid rgba(232,184,48,.2);border-radius:16px;padding:20px;margin-top:20px;max-width:380px"><p style="color:var(--w80);font-size:13px;line-height:1.7;margin:0"><strong style="color:var(--gb)">🔔 What happens next?</strong><br/>Once approved, you'll be able to discover verified profiles and find your perfect match.</p></div>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:#3B0764;font-size:14px;margin-top:24px;line-height:1.6">"Delight yourself in the Lord, and He will give you the desires of your heart."<br/><span style="font-size:12px">— Psalm 37:4</span></p>
+<button class="btn btn-dark" style="max-width:200px;margin-top:24px" onclick="doSignOut()">Sign Out</button></div></div>
+
+<!-- ═══════════════════════════════════════════ REJECTED -->
+<div id="rejectedScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center">
+<div style="font-size:44px;margin-bottom:14px">😔</div>
+<h2 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--red)">Profile Not Approved</h2>
+<p style="color:var(--w80);font-size:13px;margin-top:10px">Contact: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cca5a2aaa38caea9aba5a2aaa3bea9baa9bee2a5a2">[email&#160;protected]</a></strong></p>
+<button class="btn btn-dark" style="max-width:180px;margin-top:20px" onclick="doSignOut()">Sign Out</button></div>
+
+<!-- ═══════════════════════════════════════════ MAIN APP -->
+<div id="mainApp" class="screen" style="flex-direction:column">
+<div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,var(--s1),transparent)">
+<div style="display:flex;align-items:center;gap:8px">
+<img src="https://beginforever.in/logo.png" alt="" style="width:28px;height:28px;border-radius:6px" onerror="this.style.display='none'"/>
+<span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold)">Begin Forever</span></div>
+<div style="display:flex;align-items:center;gap:10px">
+<span id="hName" style="font-size:12px;color:var(--w50)"></span>
+<span style="font-size:11px;color:var(--w50);cursor:pointer;background:var(--w10);padding:4px 10px;border-radius:8px" onclick="doSignOut()">Logout</span></div></div>
+
+<div style="flex:1;overflow-y:auto;padding:0 16px 80px" id="mainContent">
+
+<!-- HOME -->
+<div id="tHome" style="animation:fadeUp .4s ease">
+
+<!-- Welcome banner -->
+<div style="background:#3B0764;border-radius:var(--radius);padding:0;margin:12px 0;border:1.5px solid #D4A017;overflow:hidden;display:flex;min-height:160px">
+<div style="width:40%;background:url('https://images.unsplash.com/photo-1604604557971-f03fb2e5c0b0?w=400&q=80') center/cover;min-height:160px"></div>
+<div style="flex:1;padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center">
+<img src="https://beginforever.in/logo.png" alt="" style="width:44px;height:44px;border-radius:10px;margin:0 auto 8px" onerror="this.style.display='none'"/>
+<h2 style="font-family:'Playfair Display',serif;font-size:22px;color:#FFFFFF;font-weight:900">Begin Forever</h2>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:#E91E63;font-size:13px;margin-top:4px">Where God Writes Your Love Story</p>
+<p style="font-size:12px;color:rgba(255,255,255,.85);margin-top:8px">Welcome back, <span id="hWelcomeName" style="color:#FFD54F;font-weight:700"></span> 🙏</p>
+<p style="font-size:10px;color:rgba(255,255,255,.6);margin-top:4px">100% ID-Verified · Faith-First · All Faiths Welcome</p>
+</div></div>
+
+<!-- Stats bar -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="homeStats">
+<div class="stat-card"><div class="stat-num" id="statViews">–</div><div class="stat-label">Views</div></div>
+<div class="stat-card"><div class="stat-num" id="statInt">–</div><div class="stat-label">Interests</div></div>
+<div class="stat-card"><div class="stat-num" id="statMsg">–</div><div class="stat-label">Messages</div></div></div>
+
+<!-- Quick Actions -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+<div class="card" onclick="goTab('browse')" style="text-align:center;padding:14px"><span style="font-size:22px">🔍</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Discover Profiles</p></div>
+<div class="card" onclick="goTab('interests')" style="text-align:center;padding:14px;position:relative"><span style="font-size:22px">💝</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Interests</p><span id="intBadge" style="display:none;position:absolute;top:6px;right:8px;background:var(--red);color:var(--w);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700"></span></div>
+<div class="card" onclick="goTab('chat')" style="text-align:center;padding:14px"><span style="font-size:22px">💬</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Messages</p></div>
+<div class="card" onclick="goTab('views')" style="text-align:center;padding:14px"><span style="font-size:22px">👁️</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Who Viewed Me</p></div></div>
+
+<!-- Faith Preferences quick card -->
+<div style="background:#3B0764;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017;text-align:center;cursor:pointer" onclick="openFaithPrefs()">
+<p style="font-size:14px;color:#FFD54F;font-weight:700">⚙ Faith Preferences</p>
+<p style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">Control who you see & who reaches you</p>
+<p style="font-size:11px;color:#D4A017;margin-top:6px;font-weight:600">Tap to edit →</p></div>
+
+<!-- Platform Features -->
+<div style="background:#F0E6FA;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017">
+<h3 style="font-family:'Playfair Display',serif;font-size:15px;color:#3B0764;margin-bottom:12px">✦ Why Begin Forever?</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🪪</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">100% ID Verified</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Every profile verified with govt. ID</p></div>
+<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🕊️</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">Faith-First Matching</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Filters built around your beliefs</p></div>
+<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🔒</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">Private Messaging</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Chat only with mutual interests</p></div>
+<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🌍</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">All Faiths Welcome</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Christian, Hindu, Muslim & more</p></div></div></div>
+
+<!-- Subscription Plans preview -->
+<div style="background:#3B0764;border:1px solid rgba(212,160,23,.3);border-radius:var(--radius);padding:14px;margin-bottom:12px;text-align:center" onclick="goTab('plans')">
+<p style="font-size:13px;color:#FFD54F;font-weight:700">🎉 Founding Member Offer</p>
+<p style="font-size:11px;color:var(--w80);margin-top:4px">First 300 members get 1 WEEK FREE!</p>
+<div style="display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap">
+<div style="background:var(--w05);border-radius:10px;padding:10px 14px;text-align:center"><p style="font-family:'Playfair Display',serif;font-size:16px;color:#3B0764;font-weight:700">₹499</p><p style="font-size:10px;color:var(--w50)">Monthly</p></div>
+<div style="background:var(--gold);border-radius:10px;padding:10px 14px;text-align:center;position:relative"><div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;white-space:nowrap">POPULAR</div><p style="font-family:'Playfair Display',serif;font-size:16px;color:var(--s1);font-weight:700">₹1,299</p><p style="font-size:10px;color:var(--s2)">Quarterly</p></div>
+<div style="background:var(--w05);border-radius:10px;padding:10px 14px;text-align:center"><p style="font-family:'Playfair Display',serif;font-size:16px;color:#3B0764;font-weight:700">₹2,599</p><p style="font-size:10px;color:var(--w50)">Yearly</p></div></div>
+<p style="font-size:11px;color:var(--gold);margin-top:12px;font-weight:600">View Plans & Subscribe →</p></div>
+
+<!-- Reviews preview -->
+<div style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<h3 style="font-family:'Playfair Display',serif;font-size:15px;color:#3B0764">⭐ Member Reviews</h3>
+<span style="font-size:11px;color:#3B0764;cursor:pointer" onclick="goTab('reviews')">See All →</span></div>
+<div style="background:var(--w05);border-radius:12px;padding:12px;margin-bottom:8px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">P</div><div><p style="font-size:12px;font-weight:600">Priya M., Mumbai</p><p style="font-size:10px;color:var(--gold)">⭐⭐⭐⭐⭐ · Catholic</p></div></div><p style="font-size:11px;color:var(--w80);line-height:1.5">"Finally a platform where I feel safe. Every profile is genuine and faith-first!"</p></div>
+<div style="background:var(--w05);border-radius:12px;padding:12px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">R</div><div><p style="font-size:12px;font-weight:600">Rohit S., Bengaluru</p><p style="font-size:10px;color:var(--gold)">⭐⭐⭐⭐⭐ · CSI/CNI</p></div></div><p style="font-size:11px;color:var(--w80);line-height:1.5">"Govt ID verification means zero fake accounts. Highly recommend!"</p></div></div>
+
+<!-- Footer links -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+<a href="https://beginforever.in/privacy.html" style="text-decoration:none;background:var(--w05);border-radius:10px;padding:10px;text-align:center"><p style="font-size:10px;color:var(--w50)">Privacy Policy</p></a>
+<a href="https://beginforever.in/terms.html" style="text-decoration:none;background:var(--w05);border-radius:10px;padding:10px;text-align:center"><p style="font-size:10px;color:var(--w50)">Terms</p></a>
+<a href="https://beginforever.in/safety.html" style="text-decoration:none;background:var(--w05);border-radius:10px;padding:10px;text-align:center"><p style="font-size:10px;color:var(--w50)">Safety</p></a></div>
+<div style="text-align:center;padding:8px 0 4px">
+<p style="font-size:10px;color:var(--w50)">Begin Forever · A brand of Kyomi · Pune, India</p>
+<p style="font-size:10px;color:var(--w50);margin-top:2px">info@beginforever.in · +91 97000 25345</p>
+<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:10px;margin-top:6px">"Two are better than one" — Ecclesiastes 4:9</p></div>
+</div>
+
+<!-- BROWSE / DISCOVER -->
+<div id="tBrowse" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>✦</span> Discover</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<!-- Faith quick filter chips (NEW) -->
+<div id="browseChips" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;scrollbar-width:none"></div>
+<!-- Receive filter info bar (NEW) -->
+<div id="receiveBar" style="background:rgba(232,184,48,.07);border:1px solid rgba(232,184,48,.2);border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:11px;color:var(--w50)"></div>
+<div class="filter-bar">
+<select id="fltDenom" onchange="ldBrowse()"><option value="">All Denominations</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Orthodox</option><option>Mar Thoma</option><option>Other</option></select>
+<select id="fltAge" onchange="ldBrowse()"><option value="">All Ages</option><option value="18-25">18-25</option><option value="26-30">26-30</option><option value="31-35">31-35</option><option value="36-40">36-40</option><option value="41+">41+</option></select></div>
+<div id="bList"></div>
+<p id="bEmpty" style="text-align:center;color:var(--w50);margin-top:30px;display:none">🕊️ No profiles found.</p></div>
+
+<!-- INTERESTS -->
+<div id="tInterests" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>💝</span> Interests</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="display:flex;gap:6px;margin-bottom:12px">
+<button class="btn btn-sm btn-gold" id="intRecBtn" onclick="showInt('received')">Received</button>
+<button class="btn btn-sm btn-dark" id="intSentBtn" onclick="showInt('sent')">Sent</button>
+<button class="btn btn-sm btn-dark" id="intMutBtn" onclick="showInt('mutual')">Mutual ❤️</button></div>
+<div id="intList"></div>
+<p id="intEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No interests yet.</p></div>
+
+<!-- CHAT LIST -->
+<div id="tChat" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>💬</span> Messages</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div id="chatList"></div>
+<p id="chatEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No conversations yet.<br/>Send interests to start chatting!</p></div>
+
+<!-- CHAT WINDOW -->
+<div id="tChatWin" style="display:none">
+<div style="display:flex;align-items:center;gap:10px;margin:12px 0;padding-bottom:12px;border-bottom:1px solid var(--w10)">
+<button class="btn-outline" onclick="goTab('chat')" style="font-size:10px;padding:5px 8px">←</button>
+<div class="avatar" id="cwAv" style="width:38px;height:38px"></div>
+<div><p id="cwNm" style="font-size:14px;font-weight:600"></p><p id="cwIn" style="font-size:10px;color:var(--w50)"></p></div></div>
+<div id="cwMs" style="min-height:300px;max-height:55vh;overflow-y:auto;padding:8px 0"></div>
+<div style="display:flex;gap:8px;margin-top:10px;position:sticky;bottom:0;background:var(--bg);padding:8px 0">
+<input class="field" id="cwTx" placeholder="Type a message..." style="flex:1" onkeydown="if(event.key==='Enter')sendMsg()"/>
+<button class="btn btn-gold" style="width:auto;padding:12px 18px" onclick="sendMsg()">→</button></div></div>
+
+<!-- WHO VIEWED -->
+<div id="tViews" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>👁️</span> Who Viewed You</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div id="viewList"></div>
+<p id="viewEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No profile views yet.</p></div>
+
+<!-- MY PROFILE -->
+<div id="tProfile" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>👤</span> My Profile</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<!-- Profile hero -->
+<div id="profileHero" style="text-align:center;padding:16px 0"></div>
+<!-- Stats -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="profileStats">
+<div class="stat-card"><div class="stat-num" id="pStatViews">–</div><div class="stat-label">Views</div></div>
+<div class="stat-card"><div class="stat-num" id="pStatInt">–</div><div class="stat-label">Interests</div></div>
+<div class="stat-card"><div class="stat-num" id="pStatMsg">–</div><div class="stat-label">Messages</div></div></div>
+<!-- Profile details -->
+<div id="mInfo" style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017"></div>
+<!-- Edit button -->
+<button class="btn btn-gold" style="margin-bottom:10px" onclick="openEdit()">✏️ Edit Profile</button>
+<!-- Faith prefs shortcut -->
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),var(--s2));border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid rgba(232,184,48,.2)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<p style="font-size:13px;color:#3B0764;font-weight:600">⚙ Faith Preferences</p>
+<button class="btn-outline" style="font-size:10px;padding:5px 10px" onclick="openFaithPrefs()">Edit</button></div>
+<div id="profileFaithSummary"></div></div>
+<!-- Subscription shortcut -->
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer" onclick="goTab('plans')">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div><p style="font-size:13px;color:var(--gb);font-weight:700">👑 Subscription & Billing</p><p style="font-size:11px;color:var(--w50);margin-top:3px">View plans · Monthly · Quarterly · Yearly</p></div>
+<span style="font-size:18px;color:var(--gold)">→</span></div></div>
+<!-- Sign out -->
+<button class="btn btn-dark" style="margin-bottom:12px" onclick="doSignOut()">Sign Out</button></div>
+
+<!-- PLANS -->
+<div id="tPlans" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>👑</span> Plans</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:14px;text-align:center">
+<p style="font-size:13px;color:#FFD54F;font-weight:700">🎉 Founding Member Offer</p>
+<p style="font-size:11px;color:var(--w80);margin-top:4px">First 300 members get 1 WEEK FREE!</p></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="card glow-border" style="text-align:center;padding:20px" onclick="payRzp('Monthly',49900)">
+<p style="font-size:20px;margin-bottom:6px">🕊️</p>
+<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Monthly</p>
+<p style="font-family:'Playfair Display',serif;font-size:28px;color:#3B0764;font-weight:900;margin:8px 0">₹499<span style="font-size:14px;color:var(--w50)">/month</span></p>
+<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹499</button></div>
+<div class="card glow-border" style="text-align:center;padding:20px;border-color:var(--gold);position:relative" onclick="payRzp('Quarterly',129900)">
+<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--s1);padding:3px 14px;border-radius:20px;font-size:10px;font-weight:700">MOST POPULAR</div>
+<p style="font-size:20px;margin-bottom:6px">👑</p>
+<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Quarterly</p>
+<p style="font-family:'Playfair Display',serif;font-size:28px;color:#3B0764;font-weight:900;margin:8px 0">₹1,299<span style="font-size:14px;color:var(--w50)">/3 months</span></p>
+<p style="font-size:11px;color:var(--grn);font-weight:600">Save 13% · ₹433/month</p>
+<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹1,299 ✦</button></div>
+<div class="card glow-border" style="text-align:center;padding:20px" onclick="payRzp('Yearly',259900)">
+<p style="font-size:20px;margin-bottom:6px">✝</p>
+<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Yearly</p>
+<p style="font-family:'Playfair Display',serif;font-size:28px;color:#3B0764;font-weight:900;margin:8px 0">₹2,599<span style="font-size:14px;color:var(--w50)">/year</span></p>
+<p style="font-size:11px;color:var(--grn);font-weight:600">Save 57% · ₹217/month</p>
+<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹2,599</button></div></div>
+<div style="background:var(--w05);border-radius:12px;padding:14px;margin-top:14px"><p style="font-size:12px;color:var(--w80);text-align:center;line-height:1.6">✅ All plans include every feature<br/>✅ Unlimited interests · Messaging · Photo privacy<br/>✅ Cancel anytime · No lock-in</p></div></div>
+
+<!-- REVIEWS -->
+<div id="tReviews" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>⭐</span> Reviews</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="margin-bottom:14px">
+<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">P</div><div><p style="font-size:13px;font-weight:600">Priya M., Mumbai</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · Catholic</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"Finally a matrimony platform where I feel truly safe. The ID verification gives me so much confidence. Every profile is genuine."</p></div>
+<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">R</div><div><p style="font-size:13px;font-weight:600">Rohit S., Bengaluru</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · CSI / CNI</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"The best matrimony platform in India. Clean interface, genuine profiles, and government ID verification means zero fake accounts."</p></div>
+<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">S</div><div><p style="font-size:13px;font-weight:600">Sarah T., Kochi</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · Pentecostal</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"My family and I love this platform. Very family-friendly and faith-centered."</p></div>
+<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">D</div><div><p style="font-size:13px;font-weight:600">David K., Pune</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · Protestant</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"Denomination-specific matching is what sets Begin Forever apart. Found someone who shares my exact faith values."</p></div></div>
+<div style="background:var(--s2);border-radius:var(--radius);padding:16px;border:1.5px solid #D4A017">
+<h3 style="font-size:14px;color:var(--gold);margin-bottom:12px">✍️ Write a Review</h3>
+<div class="fg"><label class="fl">Your Rating</label><select class="field" id="revRating"><option>⭐⭐⭐⭐⭐ Excellent</option><option>⭐⭐⭐⭐ Very Good</option><option>⭐⭐⭐ Good</option><option>⭐⭐ Fair</option><option>⭐ Poor</option></select></div>
+<div class="fg"><label class="fl">Your Review</label><textarea class="field" id="revText" placeholder="Share your experience..." style="min-height:80px;resize:vertical"></textarea></div>
+<button class="btn btn-gold" onclick="submitReview()">Submit Review ✦</button></div></div>
+
+<!-- ADMIN -->
+<div id="tAdmin" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
+<h2 class="section-title"><span>⚙️</span> Admin</h2>
+<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
+<div style="display:flex;gap:6px;margin-bottom:12px">
+<button class="btn btn-sm btn-gold" onclick="ldAdmin('pending')">Pending</button>
+<button class="btn btn-sm btn-dark" onclick="ldAdmin('approved')">Approved</button>
+<button class="btn btn-sm btn-dark" onclick="ldAdmin('rejected')">Rejected</button></div>
+<div id="adList"></div>
+<p id="adEmpty" style="text-align:center;color:var(--w50);margin-top:16px;display:none">None found.</p></div>
+
+</div><!-- end mainContent -->
+
+<div class="tab-bar" id="tBar">
+<button class="tab-btn active" id="tabHome" onclick="goTab('home')"><span style="font-size:18px">🏠</span><span style="font-size:9px">Home</span></button>
+<button class="tab-btn" id="tabBrowse" onclick="goTab('browse')"><span style="font-size:18px">🔍</span><span style="font-size:9px">Discover</span></button>
+<button class="tab-btn" id="tabInterests" onclick="goTab('interests')"><span style="font-size:18px;position:relative">💝<span id="intDot" class="notif-dot" style="display:none"></span></span><span style="font-size:9px">Interests</span></button>
+<button class="tab-btn" id="tabChat" onclick="goTab('chat')"><span style="font-size:18px;position:relative">💬<span id="msgDot" class="notif-dot" style="display:none"></span></span><span style="font-size:9px">Chat</span></button>
+<button class="tab-btn" id="tabPlansTab" onclick="goTab('plans')"><span style="font-size:18px">👑</span><span style="font-size:9px">Plans</span></button>
+<button class="tab-btn" id="tabProfile" onclick="goTab('profile')"><span style="font-size:18px">👤</span><span style="font-size:9px">Profile</span></button>
+</div>
+</div><!-- end mainApp -->
+
+<!-- PROFILE VIEW MODAL -->
+<div class="modal-bg" id="profileModal"><div class="modal"><button class="modal-close" onclick="closeModal()">&times;</button><div id="pmC"></div></div></div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-bg" id="editModal"><div class="modal"><button class="modal-close" onclick="closeEdit()">&times;</button>
+<h2 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gb);margin-bottom:18px">Edit Profile</h2>
+<div class="fg"><label class="fl">Bio</label><textarea class="field" id="eBio" style="min-height:80px;resize:vertical"></textarea></div>
+<div class="fr"><div class="fg"><label class="fl">Education</label><input class="field" id="eEdu"/></div>
+<div class="fg"><label class="fl">Occupation</label><input class="field" id="eOcc"/></div></div>
+<div class="fg"><label class="fl">Phone</label><input class="field" id="ePh"/></div>
+<div class="fg"><label class="fl">Photos</label><div class="photo-grid" id="epGrid"></div></div>
+<p id="eErr" style="color:var(--red);font-size:11px;text-align:center;margin:8px 0;display:none"></p>
+<button class="btn btn-gold" onclick="saveEdit()">Save Changes ✦</button></div></div>
+
+<!-- FAITH PREFERENCES MODAL (NEW) -->
+<div class="modal-bg" id="faithModal"><div class="modal"><button class="modal-close" onclick="closeFaithPrefs()">&times;</button>
+<h2 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gb);margin-bottom:6px">⚙ Faith Preferences</h2>
+<p style="font-size:12px;color:var(--w50);margin-bottom:18px">Control who you see and who can reach you.</p>
+
+<div class="fg">
+<label class="fl">🔍 Browse matches from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths appear in your Discover feed?</p>
+<div class="faith-grid" id="fpBrowseGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="fpSelectAll('browse')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="fpClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+
+<div class="fg" style="margin-top:8px">
+<label class="fl">💌 Receive interest from</label>
+<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
+<div class="faith-grid" id="fpReceiveGrid"></div>
+<div style="display:flex;gap:14px;margin-bottom:4px">
+<span onclick="fpSelectAll('receive')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
+<span onclick="fpClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
+</div></div>
+
+<button class="btn btn-gold" style="margin-top:8px" onclick="saveFaithPrefs()">Save Preferences ✦</button>
+</div></div>
+
+<script src="app.js"></script>
+</body>
+</html>
