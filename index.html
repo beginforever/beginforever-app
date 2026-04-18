@@ -245,7 +245,7 @@ select.field option{background:#2D1148;color:#FFFFFF}
 <div style="position:absolute;inset:0;background:url('https://images.pexels.com/photos/3024988/pexels-photo-3024988.jpeg?auto=compress&cs=tinysrgb&w=800') center/cover no-repeat;opacity:0.18"></div>
 <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,10,51,0.6) 0%,rgba(30,10,51,0.85) 100%)"></div>
 <div style="position:relative;z-index:1">
-<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:80px;height:80px;border-radius:18px;margin:0 auto 14px;display:block;border:2.5px solid rgba(232,184,48,.6);box-shadow:0 8px 32px rgba(0,0,0,.5)" onerror="this.style.display='none'"/>
+<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:96px;height:96px;border-radius:20px;margin:0 auto 14px;display:block;border:3px solid #E8B830;box-shadow:0 8px 32px rgba(0,0,0,.6)" onerror="this.style.display='none'"/>
 <h2 style="font-family:'Playfair Display',serif;font-size:24px;color:#FFFFFF;font-weight:900">Begin Forever</h2>
 <p style="font-family:'Playfair Display',serif;font-style:italic;color:#E91E63;font-size:14px;margin-top:4px">Where God Writes Your Love Story</p>
 <p style="font-size:12px;color:rgba(255,255,255,.85);margin-top:10px">Welcome back, <span id="hWelcomeName" style="color:#FFD54F;font-weight:700"></span> 🙏</p>
@@ -254,16 +254,16 @@ select.field option{background:#2D1148;color:#FFFFFF}
 
 <!-- Stats bar -->
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="homeStats">
-<div class="stat-card"><div class="stat-num" id="statViews">–</div><div class="stat-label">Views</div></div>
-<div class="stat-card"><div class="stat-num" id="statInt">–</div><div class="stat-label">Interests</div></div>
-<div class="stat-card"><div class="stat-num" id="statMsg">–</div><div class="stat-label">Messages</div></div></div>
+<div class="stat-card" style="background:rgba(255,255,255,.18)!important;border:2px solid #E8B830!important"><div class="stat-num" id="statViews" style="color:#fff!important;font-size:26px!important">–</div><div class="stat-label">Views</div></div>
+<div class="stat-card" style="background:rgba(255,255,255,.18)!important;border:2px solid #E8B830!important"><div class="stat-num" id="statInt" style="color:#fff!important;font-size:26px!important">–</div><div class="stat-label">Interests</div></div>
+<div class="stat-card" style="background:rgba(255,255,255,.18)!important;border:2px solid #E8B830!important"><div class="stat-num" id="statMsg" style="color:#fff!important;font-size:26px!important">–</div><div class="stat-label">Messages</div></div></div>
 
 <!-- Quick Actions -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-<div class="card" onclick="goTab('browse')" style="text-align:center;padding:14px"><span style="font-size:22px">🔍</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Discover Profiles</p></div>
-<div class="card" onclick="goTab('interests')" style="text-align:center;padding:14px;position:relative"><span style="font-size:22px">💝</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Interests</p><span id="intBadge" style="display:none;position:absolute;top:6px;right:8px;background:var(--red);color:var(--w);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700"></span></div>
-<div class="card" onclick="goTab('chat')" style="text-align:center;padding:14px"><span style="font-size:22px">💬</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Messages</p></div>
-<div class="card" onclick="goTab('views')" style="text-align:center;padding:14px"><span style="font-size:22px">👁️</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Who Viewed Me</p></div></div>
+<div class="card" onclick="goTab('browse')" style="text-align:center;padding:14px;background:rgba(255,255,255,.15)!important;border:1.5px solid #E8B830!important"><span style="font-size:22px">🔍</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Discover Profiles</p></div>
+<div class="card" onclick="goTab('interests')" style="text-align:center;padding:14px;position:relative;background:rgba(255,255,255,.15)!important;border:1.5px solid #E8B830!important"><span style="font-size:22px">💝</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Interests</p><span id="intBadge" style="display:none;position:absolute;top:6px;right:8px;background:var(--red);color:var(--w);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700"></span></div>
+<div class="card" onclick="goTab('chat')" style="text-align:center;padding:14px;background:rgba(255,255,255,.15)!important;border:1.5px solid #E8B830!important"><span style="font-size:22px">💬</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Messages</p></div>
+<div class="card" onclick="goTab('views')" style="text-align:center;padding:14px;background:rgba(255,255,255,.15)!important;border:1.5px solid #E8B830!important"><span style="font-size:22px">👁️</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Who Viewed Me</p></div></div>
 
 <!-- Faith Preferences quick card -->
 <div style="background:#3B0764;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017;text-align:center;cursor:pointer" onclick="openFaithPrefs()">
@@ -275,10 +275,10 @@ select.field option{background:#2D1148;color:#FFFFFF}
 <div style="background:rgba(255,255,255,.06);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017">
 <h3 style="font-family:'Playfair Display',serif;font-size:15px;color:#FFD54F;margin-bottom:12px">✦ Why Begin Forever?</h3>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div style="background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🪪</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">100% ID Verified</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Every profile verified with govt. ID</p></div>
-<div style="background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🕊️</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">Faith-First Matching</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Filters built around your beliefs</p></div>
-<div style="background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🔒</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">Private Messaging</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Chat only with mutual interests</p></div>
-<div style="background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🌍</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">All Faiths Welcome</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Christian, Hindu, Muslim & more</p></div></div></div>
+<div style="background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🪪</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">100% ID Verified</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Every profile verified with govt. ID</p></div>
+<div style="background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🕊️</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">Faith-First Matching</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Filters built around your beliefs</p></div>
+<div style="background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🔒</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">Private Messaging</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Chat only with mutual interests</p></div>
+<div style="background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><span style="font-size:22px">🌍</span><p style="font-size:11px;color:#FFFFFF;font-weight:700;margin-top:6px">All Faiths Welcome</p><p style="font-size:10px;color:rgba(255,255,255,.75);margin-top:3px">Christian, Hindu, Muslim & more</p></div></div></div>
 
 <!-- Subscription Plans preview -->
 <div style="background:#3B0764;border:1.5px solid #D4A017;border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:center" onclick="goTab('plans')">
@@ -300,9 +300,9 @@ select.field option{background:#2D1148;color:#FFFFFF}
 
 <!-- Footer links -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
-<a href="https://beginforever.in/privacy.html" style="text-decoration:none;background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><p style="font-size:13px;color:#FFD54F;font-weight:700">Privacy Policy</p></a>
-<a href="https://beginforever.in/terms.html" style="text-decoration:none;background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><p style="font-size:13px;color:#FFD54F;font-weight:700">Terms</p></a>
-<a href="https://beginforever.in/safety.html" style="text-decoration:none;background:rgba(255,255,255,.13);border:1.5px solid rgba(232,184,48,.5);border-radius:12px;padding:14px;text-align:center"><p style="font-size:13px;color:#FFD54F;font-weight:700">Safety</p></a></div>
+<a href="https://beginforever.in/privacy.html" style="text-decoration:none;background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><p style="font-size:13px;color:#FFD54F;font-weight:700">Privacy Policy</p></a>
+<a href="https://beginforever.in/terms.html" style="text-decoration:none;background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><p style="font-size:13px;color:#FFD54F;font-weight:700">Terms</p></a>
+<a href="https://beginforever.in/safety.html" style="text-decoration:none;background:rgba(255,255,255,.18);border:2px solid #E8B830;border-radius:12px;padding:14px;text-align:center"><p style="font-size:13px;color:#FFD54F;font-weight:700">Safety</p></a></div>
 <div style="text-align:center;padding:8px 0 4px">
 <p style="font-size:10px;color:var(--w50)">Begin Forever · A brand of Kyomi · Pune, India</p>
 <p style="font-size:10px;color:var(--w50);margin-top:2px">info@beginforever.in · +91 97000 25345</p>
@@ -372,9 +372,9 @@ select.field option{background:#2D1148;color:#FFFFFF}
 <div id="profileHero" style="text-align:center;padding:16px 0"></div>
 <!-- Stats -->
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="profileStats">
-<div class="stat-card"><div class="stat-num" id="pStatViews">–</div><div class="stat-label">Views</div></div>
-<div class="stat-card"><div class="stat-num" id="pStatInt">–</div><div class="stat-label">Interests</div></div>
-<div class="stat-card"><div class="stat-num" id="pStatMsg">–</div><div class="stat-label">Messages</div></div></div>
+<div class="stat-card" style="background:rgba(255,255,255,.18)!important;border:2px solid #E8B830!important"><div class="stat-num" id="pStatViews" style="color:#fff!important">–</div><div class="stat-label">Views</div></div>
+<div class="stat-card" style="background:rgba(255,255,255,.18)!important;border:2px solid #E8B830!important"><div class="stat-num" id="pStatInt" style="color:#fff!important">–</div><div class="stat-label">Interests</div></div>
+<div class="stat-card" style="background:rgba(255,255,255,.18)!important;border:2px solid #E8B830!important"><div class="stat-num" id="pStatMsg" style="color:#fff!important">–</div><div class="stat-label">Messages</div></div></div>
 <!-- Profile details -->
 <div id="mInfo" style="background:rgba(255,255,255,.06);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017"></div>
 <!-- Edit button -->
