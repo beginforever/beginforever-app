@@ -126,7 +126,11 @@ async function goNext(){
 
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP(){
-  try{var r=await sb.from('profiles').select('*').eq('id',U.id).limit(1);P=(r.data&&r.data.length>0)?r.data[0]:null}catch(x){P=null}
+  try{
+    var r=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
+    console.log('loadP result:',JSON.stringify(r));
+    P=(r.data&&r.data.length>0)?r.data[0]:null;
+  }catch(x){console.error('loadP error:',x);P=null}
   if(!P){show('setupScreen');updUI();return}
   if(P.status==='pending'){show('pendingScreen');return}
   if(P.status==='rejected'){show('rejectedScreen');return}
