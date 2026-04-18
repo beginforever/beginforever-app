@@ -185,21 +185,35 @@ select.field option{background:#2D1148;color:#FFFFFF}
 
 <div class="fg">
 <label class="fl">🔍 Browse matches from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths will appear in your Discover feed?</p>
-<div class="faith-grid" id="setupBrowseGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="setupSelectAll('browse')" style="color:#FFD54F;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="setupClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+<p style="font-size:11px;color:var(--w50);margin-bottom:8px">Hold Ctrl/Cmd to select multiple faiths</p>
+<select class="field" id="setupBrowseSelect" multiple style="min-height:140px;padding:8px">
+<option value="Christian" selected>✝️ Christian</option>
+<option value="Hindu" selected>🕉️ Hindu</option>
+<option value="Muslim" selected>☪️ Muslim</option>
+<option value="Sikh" selected>☬ Sikh</option>
+<option value="Jain" selected>🕊️ Jain</option>
+<option value="Buddhist" selected>☸️ Buddhist</option>
+<option value="Other" selected>🌐 Other</option>
+</select>
+<span onclick="setupSelectAllNew('browse')" style="color:#FFD54F;font-size:11px;cursor:pointer;font-weight:600;margin-top:4px;display:inline-block">Select All</span>
+<span onclick="setupClearAllNew('browse')" style="color:var(--w50);font-size:11px;cursor:pointer;margin-left:12px">Clear</span>
+</div>
 
 <div class="fg" style="margin-top:6px">
 <label class="fl">💌 Receive interest from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
-<div class="faith-grid" id="setupReceiveGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="setupSelectAll('receive')" style="color:#FFD54F;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="setupClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+<p style="font-size:11px;color:var(--w50);margin-bottom:8px">Hold Ctrl/Cmd to select multiple faiths</p>
+<select class="field" id="setupReceiveSelect" multiple style="min-height:140px;padding:8px">
+<option value="Christian" selected>✝️ Christian</option>
+<option value="Hindu" selected>🕉️ Hindu</option>
+<option value="Muslim" selected>☪️ Muslim</option>
+<option value="Sikh" selected>☬ Sikh</option>
+<option value="Jain" selected>🕊️ Jain</option>
+<option value="Buddhist" selected>☸️ Buddhist</option>
+<option value="Other" selected>🌐 Other</option>
+</select>
+<span onclick="setupSelectAllNew('receive')" style="color:#FFD54F;font-size:11px;cursor:pointer;font-weight:600;margin-top:4px;display:inline-block">Select All</span>
+<span onclick="setupClearAllNew('receive')" style="color:var(--w50);font-size:11px;cursor:pointer;margin-left:12px">Clear</span>
+</div>
 </div>
 
 <p id="sErr" style="color:var(--red);font-size:11px;text-align:center;margin:10px 0;display:none"></p>
@@ -483,21 +497,35 @@ select.field option{background:#2D1148;color:#FFFFFF}
 
 <div class="fg">
 <label class="fl">🔍 Browse matches from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths appear in your Discover feed?</p>
-<div class="faith-grid" id="fpBrowseGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="fpSelectAll('browse')" style="color:#FFD54F;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="fpClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+<p style="font-size:11px;color:var(--w50);margin-bottom:8px">Hold Ctrl/Cmd to select multiple</p>
+<select class="field" id="fpBrowseSelect" multiple style="min-height:140px;padding:8px">
+<option value="Christian">✝️ Christian</option>
+<option value="Hindu">🕉️ Hindu</option>
+<option value="Muslim">☪️ Muslim</option>
+<option value="Sikh">☬ Sikh</option>
+<option value="Jain">🕊️ Jain</option>
+<option value="Buddhist">☸️ Buddhist</option>
+<option value="Other">🌐 Other</option>
+</select>
+<span onclick="fpSelectAllNew('browse')" style="color:#FFD54F;font-size:11px;cursor:pointer;font-weight:600;margin-top:4px;display:inline-block">Select All</span>
+<span onclick="fpClearAllNew('browse')" style="color:var(--w50);font-size:11px;cursor:pointer;margin-left:12px">Clear</span>
+</div>
 
 <div class="fg" style="margin-top:8px">
 <label class="fl">💌 Receive interest from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
-<div class="faith-grid" id="fpReceiveGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="fpSelectAll('receive')" style="color:#FFD54F;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="fpClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+<p style="font-size:11px;color:var(--w50);margin-bottom:8px">Hold Ctrl/Cmd to select multiple</p>
+<select class="field" id="fpReceiveSelect" multiple style="min-height:140px;padding:8px">
+<option value="Christian">✝️ Christian</option>
+<option value="Hindu">🕉️ Hindu</option>
+<option value="Muslim">☪️ Muslim</option>
+<option value="Sikh">☬ Sikh</option>
+<option value="Jain">🕊️ Jain</option>
+<option value="Buddhist">☸️ Buddhist</option>
+<option value="Other">🌐 Other</option>
+</select>
+<span onclick="fpSelectAllNew('receive')" style="color:#FFD54F;font-size:11px;cursor:pointer;font-weight:600;margin-top:4px;display:inline-block">Select All</span>
+<span onclick="fpClearAllNew('receive')" style="color:var(--w50);font-size:11px;cursor:pointer;margin-left:12px">Clear</span>
+</div>
 
 <button class="btn btn-gold" style="margin-top:8px" onclick="saveFaithPrefs()">Save Preferences ✦</button>
 </div></div>
