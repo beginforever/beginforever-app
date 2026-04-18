@@ -16,6 +16,14 @@ var FAITHS=[
   {key:'Other',    icon:'🌐',color:'#888',   bg:'rgba(136,136,136,0.15)'}
 ];
 function faithByKey(k){return FAITHS.find(function(f){return f.key===k})||FAITHS[6]}
+// ── MULTI-SELECT FAITH HELPERS
+function getSelectValues(id){var s=document.getElementById(id);if(!s)return FAITHS.map(function(f){return f.key});return Array.from(s.selectedOptions).map(function(o){return o.value})}
+function setSelectValues(id,arr){var s=document.getElementById(id);if(!s)return;Array.from(s.options).forEach(function(o){o.selected=arr.indexOf(o.value)>-1})}
+function setupSelectAllNew(t){var id=t==='browse'?'setupBrowseSelect':'setupReceiveSelect';var s=document.getElementById(id);if(s)Array.from(s.options).forEach(function(o){o.selected=true})}
+function setupClearAllNew(t){var id=t==='browse'?'setupBrowseSelect':'setupReceiveSelect';var s=document.getElementById(id);if(s)Array.from(s.options).forEach(function(o){o.selected=false})}
+function fpSelectAllNew(t){var id=t==='browse'?'fpBrowseSelect':'fpReceiveSelect';var s=document.getElementById(id);if(s)Array.from(s.options).forEach(function(o){o.selected=true})}
+function fpClearAllNew(t){var id=t==='browse'?'fpBrowseSelect':'fpReceiveSelect';var s=document.getElementById(id);if(s)Array.from(s.options).forEach(function(o){o.selected=false})}
+
 
 // ── FAITH PREFS STATE (loaded from localStorage + Supabase)
 var fpBrowse=FAITHS.map(function(f){return f.key});   // default: all
@@ -105,7 +113,7 @@ async function goNext(){
   // step 6 — submit
   if(setupBrowse.length===0){e.textContent='Select at least one faith to browse';e.style.display='';return}
   if(setupReceive.length===0){e.textContent='Select at least one faith to receive interests from';e.style.display='';return}
-  fpBrowse=setupBrowse.slice();fpReceive=setupReceive.slice();saveFaithPrefsLocal();
+  fpBrowse=getSelectValues('setupBrowseSelect');fpReceive=getSelectValues('setupReceiveSelect');saveFaithPrefsLocal();
   var btn=document.getElementById('nxBtn');btn.disabled=true;btn.innerHTML='<div class="spinner spinner-sm" style="margin:0 auto"></div>';
   try{
     var urls=['','','','',''];
@@ -175,8 +183,8 @@ async function loadStats(){
 
 // ═══════════════════════════════════════════ FAITH PREFS MODAL
 function openFaithPrefs(){
-  renderFpGrid('fpBrowseGrid',fpBrowse,'browse');
-  renderFpGrid('fpReceiveGrid',fpReceive,'receive');
+  setSelectValues('fpBrowseSelect',fpBrowse);
+  setSelectValues('fpReceiveSelect',fpReceive);
   document.getElementById('faithModal').classList.add('show');
 }
 function closeFaithPrefs(){document.getElementById('faithModal').classList.remove('show')}
@@ -190,6 +198,7 @@ function renderFpGrid(containerId,arr,type){
 function fpSelectAll(t){if(t==='browse'){fpBrowse=FAITHS.map(function(f){return f.key});renderFpGrid('fpBrowseGrid',fpBrowse,'browse')}else{fpReceive=FAITHS.map(function(f){return f.key});renderFpGrid('fpReceiveGrid',fpReceive,'receive')}}
 function fpClearAll(t){if(t==='browse'){fpBrowse=[];renderFpGrid('fpBrowseGrid',fpBrowse,'browse')}else{fpReceive=[];renderFpGrid('fpReceiveGrid',fpReceive,'receive')}}
 async function saveFaithPrefs(){
+  fpBrowse=getSelectValues('fpBrowseSelect');fpReceive=getSelectValues('fpReceiveSelect');
   saveFaithPrefsLocal();
   try{await sb.from('profiles').update({faith_browse:JSON.stringify(fpBrowse),faith_receive:JSON.stringify(fpReceive)}).eq('id',U.id)}catch(x){}
   closeFaithPrefs();renderFaithPrefSummary();renderBrowseChips();
