@@ -360,48 +360,80 @@ async function ldAdmin(st){
   var r=await sb.from('profiles').select('*').eq('status',st).order('created_at',{ascending:false});
   var d=r.data||[];
   document.getElementById('adEmpty').style.display=d.length?'none':'';
-  var l=document.getElementById('adList');l.innerHTML='';
+  var l=document.getElementById('adList');
+  l.innerHTML='';
   d.forEach(function(p){
     var f=faithByKey(p.religion||'Other');
-    var photos=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(function(x){return x});
-    var photoHtml=photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0">'+photos.map(function(u){return '<img src="'+u+'" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1.5px solid #E8B830"/>'}).join('')+'</div>':'<p style="font-size:11px;color:var(--red);margin:8px 0">⚠️ No photos uploaded</p>';
-    var idHtml=p.id_proof_url?'<div style="margin:10px 0"><p style="font-size:11px;color:var(--gold);font-weight:600;margin-bottom:6px">🪪 '+(p.id_proof_type||'ID Proof')+'</p><a href="'+p.id_proof_url+'" target="_blank" style="display:block"><img src="'+p.id_proof_url+'" style="width:100%;max-width:280px;border-radius:8px;border:1.5px solid #E8B830"/></a><a href="'+p.id_proof_url+'" target="_blank" style="font-size:11px;color:#E8B830">Open ID document →</a></div>':'<p style="font-size:11px;color:var(--red);margin:8px 0">⚠️ No ID uploaded</p>';
+    var photos=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean);
+    var photoHtml='';
+    if(photos.length){
+      photoHtml='<div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0">';
+      photos.forEach(function(u){photoHtml+='<img src="'+u+'" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1.5px solid #E8B830"/>';});
+      photoHtml+='</div>';
+    } else {
+      photoHtml='<p style="font-size:11px;color:red;margin:8px 0">No photos uploaded</p>';
+    }
+    var idHtml='';
+    if(p.id_proof_url){
+      idHtml='<div style="margin:10px 0">'
+        +'<p style="font-size:11px;color:#E8B830;font-weight:600;margin-bottom:6px">ID: '+(p.id_proof_type||'Proof')+'</p>'
+        +'<a href="'+p.id_proof_url+'" target="_blank">'
+        +'<img src="'+p.id_proof_url+'" style="width:100%;max-width:280px;border-radius:8px;border:1.5px solid #E8B830"/>'
+        +'</a>'
+        +'<br/><a href="'+p.id_proof_url+'" target="_blank" style="font-size:11px;color:#E8B830">Open ID →</a>'
+        +'</div>';
+    } else {
+      idHtml='<p style="font-size:11px;color:red;margin:8px 0">No ID uploaded</p>';
+    }
     var details='<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;margin:10px 0;font-size:12px">'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
-      +'<p><span style="color:var(--w50)">Email:</span> '+p.email+'</p>'
-      +'<p><span style="color:var(--w50)">Phone:</span> '+(p.phone||'—')+'</p>'
-      +'<p><span style="color:var(--w50)">Age:</span> '+p.age+'</p>'
-      +'<p><span style="color:var(--w50)">Gender:</span> '+(p.gender||'—')+'</p>'
-      +'<p><span style="color:var(--w50)">Religion:</span> '+(p.religion||'—')+'</p>'
-      +'<p><span style="color:var(--w50)">Denomination:</span> '+(p.denomination||'—')+'</p>'
-      +'<p><span style="color:var(--w50)">City:</span> '+p.city+', '+p.state+'</p>'
-      +'<p><span style="color:var(--w50)">Marital:</span> '+(p.marital_status||'—')+'</p>'
-      +'<p><span style="color:var(--w50)">Education:</span> '+(p.education||'—')+'</p>'
-      +'<p><span style="color:var(--w50)">Occupation:</span> '+(p.occupation||'—')+'</p>'
+      +'<p>Email: '+p.email+'</p>'
+      +'<p>Phone: '+(p.phone||'-')+'</p>'
+      +'<p>Age: '+p.age+'</p>'
+      +'<p>Gender: '+(p.gender||'-')+'</p>'
+      +'<p>Religion: '+(p.religion||'-')+'</p>'
+      +'<p>Denomination: '+(p.denomination||'-')+'</p>'
+      +'<p>City: '+p.city+', '+p.state+'</p>'
+      +'<p>Marital: '+(p.marital_status||'-')+'</p>'
+      +'<p>Education: '+(p.education||'-')+'</p>'
+      +'<p>Occupation: '+(p.occupation||'-')+'</p>'
       +'</div>'
-      +(p.bio?'<p style="margin-top:8px"><span style="color:var(--w50)">Bio:</span> '+p.bio+'</p>':'')
+      +(p.bio?'<p style="margin-top:6px">Bio: '+p.bio+'</p>':'')
       +'</div>';
     var act='';
-    if(st==='pending')act='<div style="display:flex;gap:6px;margin-top:12px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="adAct(''+p.id+'','approved')">✅ Approve</button><button class="btn btn-red btn-sm" style="flex:1" onclick="adAct(''+p.id+'','rejected')">❌ Reject</button></div>';
-    if(st==='approved')act='<div style="margin-top:10px"><button class="btn btn-red btn-sm" onclick="adAct(''+p.id+'','rejected')">Revoke Approval</button></div>';
+    if(st==='pending'){
+      act='<div style="display:flex;gap:6px;margin-top:12px">'
+        +'<button class="btn btn-grn btn-sm" style="flex:1" onclick="adAct(\''+p.id+'\',\'approved\')">Approve</button>'
+        +'<button class="btn btn-red btn-sm" style="flex:1" onclick="adAct(\''+p.id+'\',\'rejected\')">Reject</button>'
+        +'</div>';
+    }
+    if(st==='approved'){
+      act='<div style="margin-top:10px"><button class="btn btn-red btn-sm" onclick="adAct(this)" data-id="'+pid+'" data-st="rejected">Revoke</button></div>';
+    }
+    var statusColor=st==='pending'?'#E8B830':st==='approved'?'#2ED573':'#FF4757';
     l.innerHTML+='<div class="card" style="margin-bottom:16px">'
       +'<div style="display:flex;gap:10px;align-items:center">'
       +'<div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'
-      +(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div>'
-      +'<div style="flex:1"><h3 style="font-size:15px;margin:0;font-weight:700">'+p.full_name+', '+p.age+'</h3>'
+      +(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')
+      +'</div>'
+      +'<div style="flex:1">'
+      +'<h3 style="font-size:15px;margin:0;font-weight:700">'+p.full_name+', '+p.age+'</h3>'
       +'<p style="font-size:12px;color:'+f.color+'">'+f.icon+' '+(p.denomination||p.religion||'')+'</p>'
-      +'<p style="font-size:11px;color:var(--w50)">'+p.city+', '+p.state+'</p></div>'
-      +'<span style="font-size:10px;padding:4px 10px;border-radius:20px;background:'+(st==='pending'?'rgba(232,184,48,.2)':st==='approved'?'rgba(46,213,115,.2)':'rgba(255,71,87,.2)')+';color:'+(st==='pending'?'#E8B830':st==='approved'?'var(--grn)':'var(--red)')+'">'+st.toUpperCase()+'</span>'
+      +'<p style="font-size:11px;color:var(--w50)">'+p.city+', '+p.state+'</p>'
+      +'</div>'
+      +'<span style="font-size:10px;padding:4px 10px;border-radius:20px;color:'+statusColor+'">'+st.toUpperCase()+'</span>'
       +'</div>'
       +details+photoHtml+idHtml+act
       +'</div>';
   });
 }
-async function adAct(id,st){
+async function adAct(btn){
+  var id=btn.getAttribute('data-id');
+  var st=btn.getAttribute('data-st');
   var r=await sb.from('profiles').update({status:st}).eq('id',id);
   if(r.error){alert('Error: '+r.error.message);return;}
-  alert(st==='approved'?'✅ Profile approved! User can now access the app.':'❌ Profile rejected.');
-  ldAdmin(st==='approved'?'pending':'pending');
+  alert(st==='approved'?'Profile approved!':'Profile rejected.');
+  ldAdmin('pending');
 }
 
 // ═══════════════════════════════════════════ NOTIFICATIONS
