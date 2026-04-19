@@ -530,6 +530,16 @@ select.field option{background:#2D1148;color:#FFFFFF}
 <button class="btn btn-gold" style="margin-top:8px" onclick="saveFaithPrefs()">Save Preferences ✦</button>
 </div></div>
 
+<script>
+setTimeout(function(){
+  var ls=document.getElementById('loadingScreen');
+  if(ls&&(ls.style.display!=='none'&&ls.classList.contains('active'))){
+    ls.style.display='none';ls.classList.remove('active');
+    var as=document.getElementById('authScreen');
+    if(as){as.style.display='flex';as.classList.add('active');}
+  }
+},6000);
+</script>
 <script src="app.js"></script>
 </body>
 </html>
