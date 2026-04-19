@@ -48,7 +48,7 @@ function toggleDenom(){var r=document.getElementById('fReligion').value;document
 
 // ═══════════════════════════════════════════ AUTH
 function setMode(m){mode=m;document.getElementById('aErr').style.display='none';document.getElementById('aOk').style.display='none';var t=document.getElementById('aTitle'),pg=document.getElementById('aPassG'),cg=document.getElementById('aConfG'),b=document.getElementById('aBtn'),tg=document.getElementById('aToggle'),bk=document.getElementById('aBack');if(m==='login'){t.textContent='Welcome Back';pg.style.display='';cg.style.display='none';b.textContent='Sign In';tg.style.display='';bk.style.display='none'}else if(m==='signup'){t.textContent='Create Account';pg.style.display='';cg.style.display='';b.textContent='Create Account';tg.style.display='none';bk.style.display=''}else{t.textContent='Reset Password';pg.style.display='none';cg.style.display='none';b.textContent='Send Reset Link';tg.style.display='none';bk.style.display=''}}
-async function doAuth(){var em=document.getElementById('aEmail').value.trim(),pw=document.getElementById('aPass').value,cf=document.getElementById('aConf').value,er=document.getElementById('aErr'),ok=document.getElementById('aOk');er.style.display='none';ok.style.display='none';if(!em){er.textContent='Enter email';er.style.display='';return}if(mode!=='forgot'&&!pw){er.textContent='Enter password';er.style.display='';return}var b=document.getElementById('aBtn'),o=b.textContent;b.disabled=true;b.innerHTML='<div class="spinner spinner-sm" style="margin:0 auto"></div>';try{if(mode==='signup'){if(pw.length<6)throw{message:'Password: 6+ characters'};if(pw!==cf)throw{message:'Passwords must match'};var r=await sb.auth.signUp({email:em,password:pw});if(r.error)throw r.error;ok.innerHTML='✅ Account created! Please <strong>sign in</strong> now with your email and password.';ok.style.display='';ok.style.padding='10px';ok.style.background='rgba(46,213,115,.1)';ok.style.borderRadius='8px';ok.style.border='1px solid #2ED573';b.disabled=false;b.textContent=o;authHandled=false;setMode('login')}else if(mode==='login'){var r=await sb.auth.signInWithPassword({email:em,password:pw});if(r.error)throw r.error}else{var r=await sb.auth.resetPasswordForEmail(em);if(r.error)throw r.error;ok.textContent='Reset link sent!';ok.style.display='';b.disabled=false;b.textContent=o}}catch(e){er.textContent=e.message||'Error';er.style.display='';b.disabled=false;b.textContent=o}}
+async function doAuth(){var em=document.getElementById('aEmail').value.trim(),pw=document.getElementById('aPass').value,cf=document.getElementById('aConf').value,er=document.getElementById('aErr'),ok=document.getElementById('aOk');er.style.display='none';ok.style.display='none';if(!em){er.textContent='Enter email';er.style.display='';return}if(mode!=='forgot'&&!pw){er.textContent='Enter password';er.style.display='';return}var b=document.getElementById('aBtn'),o=b.textContent;b.disabled=true;b.innerHTML='<div class="spinner spinner-sm" style="margin:0 auto"></div>';try{if(mode==='signup'){if(pw.length<6)throw{message:'Password: 6+ characters'};if(pw!==cf)throw{message:'Passwords must match'};var r=await sb.auth.signUp({email:em,password:pw});if(r.error)throw r.error;ok.innerHTML='✅ Account created! Please <strong>sign in</strong> now with your email and password.';ok.style.display='';ok.style.padding='10px';ok.style.background='rgba(46,213,115,.1)';ok.style.borderRadius='8px';ok.style.border='1px solid #2ED573';b.disabled=false;b.textContent=o;setMode('login')}else if(mode==='login'){var r=await sb.auth.signInWithPassword({email:em,password:pw});if(r.error)throw r.error}else{var r=await sb.auth.resetPasswordForEmail(em);if(r.error)throw r.error;ok.textContent='Reset link sent!';ok.style.display='';b.disabled=false;b.textContent=o}}catch(e){er.textContent=e.message||'Error';er.style.display='';b.disabled=false;b.textContent=o}}
 async function doSignOut(){await sb.auth.signOut();U=null;P=null;show('authScreen')}
 
 // ═══════════════════════════════════════════ STATE / CITIES
@@ -128,11 +128,12 @@ async function goNext(){
 async function loadP(){
   try{
     var r=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
-    console.log('loadP result:',JSON.stringify(r));
     P=(r.data&&r.data.length>0)?r.data[0]:null;
-  }catch(x){console.error('loadP error:',x);P=null}
-  if(!P){show('setupScreen');updUI();return}
-  if(P.status==='rejected'){show('rejectedScreen');return}
+  }catch(x){P=null;}
+  if(!P){show('setupScreen');updUI();return;}
+  if(P.status==='pending'){
+    // show app with pending banner instead of blocking screen
+  } else if(P.status==='rejected'){show('rejectedScreen');return;}
   loadFaithPrefs();
   if(P.faith_browse){try{fpBrowse=JSON.parse(P.faith_browse)}catch(x){}}
   if(P.faith_receive){try{fpReceive=JSON.parse(P.faith_receive)}catch(x){}}
