@@ -132,13 +132,19 @@ async function loadP(){
     P=(r.data&&r.data.length>0)?r.data[0]:null;
   }catch(x){console.error('loadP error:',x);P=null}
   if(!P){show('setupScreen');updUI();return}
-  if(P.status==='pending'){show('pendingScreen');return}
   if(P.status==='rejected'){show('rejectedScreen');return}
   loadFaithPrefs();
   if(P.faith_browse){try{fpBrowse=JSON.parse(P.faith_browse)}catch(x){}}
   if(P.faith_receive){try{fpReceive=JSON.parse(P.faith_receive)}catch(x){}}
   document.getElementById('hName').textContent=P.full_name.split(' ')[0];
   if(P.is_admin){var bar=document.getElementById('tBar');if(!document.getElementById('adTab')){var ab=document.createElement('button');ab.className='tab-btn';ab.id='adTab';ab.onclick=function(){goTab('admin')};ab.innerHTML='<span style="font-size:18px">⚙️</span><span style="font-size:9px">Admin</span>';bar.appendChild(ab)}}
+  // Show pending banner for pending users
+  var pb=document.getElementById('pendingBanner');
+  if(P.status==='pending'){
+    if(!pb){pb=document.createElement('div');pb.id='pendingBanner';pb.style.cssText='background:rgba(232,184,48,.15);border-bottom:1px solid rgba(232,184,48,.4);padding:10px 16px;text-align:center;font-size:12px;color:#FFD54F;';pb.innerHTML='⏳ Your profile is under review. You can explore the app — Discover will unlock once approved.';document.getElementById('mainApp').insertBefore(pb,document.getElementById('mainApp').firstChild)}
+  } else {
+    if(pb)pb.remove();
+  }
   show('mainApp');renderHome();checkNotifs()
 }
 
@@ -151,7 +157,7 @@ function goTab(t){
   var activeMap={home:'tabHome',browse:'tabBrowse',interests:'tabInterests',chat:'tabChat',chatWin:'tabChat',views:'tabProfile',plans:'tabPlansTab',profile:'tabProfile',reviews:'tabHome',admin:'tabHome'};
   var activeId=activeMap[t];if(activeId){var ab=document.getElementById(activeId);if(ab)ab.classList.add('active')}
   if(t==='home')renderHome();
-  if(t==='browse')ldBrowse();
+  if(t==='browse'){if(P&&P.status==='pending'){document.getElementById('bList').innerHTML='';document.getElementById('bEmpty').style.display='none';document.getElementById('bList').innerHTML='<div style="text-align:center;padding:40px 20px"><div style="font-size:40px">🔒</div><p style="color:#FFD54F;font-size:14px;font-weight:700;margin-top:12px">Profile Under Review</p><p style="color:var(--w50);font-size:12px;margin-top:8px">Discover unlocks once our team approves your profile. This usually takes 24-48 hours.</p></div>';return}ldBrowse();}
   if(t==='interests')ldInt('received');
   if(t==='chat')ldChats();
   if(t==='views')ldViews();
@@ -349,8 +355,53 @@ function pickEP(i,inp){var f=inp.files[0];if(!f)return;editPhotos[i]=f;var s=doc
 async function saveEdit(){var upd={bio:document.getElementById('eBio').value.trim(),education:document.getElementById('eEdu').value.trim(),occupation:document.getElementById('eOcc').value.trim(),phone:document.getElementById('ePh').value.trim()};for(var i=0;i<5;i++){if(editPhotos[i]){var ext=editPhotos[i].name.split('.').pop(),path=U.id+'/p'+i+'_'+Date.now()+'.'+ext;var r=await sb.storage.from('profile-photos').upload(path,editPhotos[i],{upsert:true});if(!r.error){var url=sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;if(i===0)upd.photo_url=url;else upd['photo_'+(i+1)+'_url']=url}}}await sb.from('profiles').update(upd).eq('id',U.id);var r2=await sb.from('profiles').select('*').eq('id',U.id).limit(1);P=r2.data[0];closeEdit();renderHome();alert('Profile updated! ✅')}
 
 // ═══════════════════════════════════════════ ADMIN
-async function ldAdmin(st){var r=await sb.from('profiles').select('*').eq('status',st).order('created_at',{ascending:false});var d=r.data||[];document.getElementById('adEmpty').style.display=d.length?'none':'';var l=document.getElementById('adList');l.innerHTML='';d.forEach(function(p){var f=faithByKey(p.religion||'Other');var act='';if(st==='pending')act='<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="adAct(\''+p.id+'\',\'approved\')">✅ Approve</button><button class="btn btn-red btn-sm" style="flex:1" onclick="adAct(\''+p.id+'\',\'rejected\')">❌ Reject</button></div>';l.innerHTML+='<div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'+(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div><div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">'+p.full_name+', '+p.age+'</h3><p style="font-size:11px;color:'+f.color+'">'+f.icon+' '+(p.denomination?p.denomination+' · ':'')+p.city+'</p><p style="font-size:10px;color:var(--w50)">'+p.email+' · '+(p.phone||'')+'</p><p style="font-size:10px;color:var(--w50)">ID: '+(p.id_proof_type||'N/A')+'</p></div></div>'+(p.bio?'<p style="font-size:12px;color:var(--w50);margin-top:8px">'+p.bio+'</p>':'')+act+'</div>'})}
-async function adAct(id,st){await sb.from('profiles').update({status:st}).eq('id',id);ldAdmin('pending')}
+async function ldAdmin(st){
+  var r=await sb.from('profiles').select('*').eq('status',st).order('created_at',{ascending:false});
+  var d=r.data||[];
+  document.getElementById('adEmpty').style.display=d.length?'none':'';
+  var l=document.getElementById('adList');l.innerHTML='';
+  d.forEach(function(p){
+    var f=faithByKey(p.religion||'Other');
+    var photos=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(function(x){return x});
+    var photoHtml=photos.length?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0">'+photos.map(function(u){return '<img src="'+u+'" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1.5px solid #E8B830"/>'}).join('')+'</div>':'<p style="font-size:11px;color:var(--red);margin:8px 0">⚠️ No photos uploaded</p>';
+    var idHtml=p.id_proof_url?'<div style="margin:10px 0"><p style="font-size:11px;color:var(--gold);font-weight:600;margin-bottom:6px">🪪 '+( p.id_proof_type||'ID Proof')+'</p><img src="'+p.id_proof_url+'" style="width:100%;max-width:280px;border-radius:8px;border:1.5px solid #E8B830" onerror="this.outerHTML='<p style=color:var(--red);font-size:11px>ID image failed to load — <a href='+p.id_proof_url+' target=_blank style=color:#E8B830>Open link</a></p>'"/></div>':'<p style="font-size:11px;color:var(--red);margin:8px 0">⚠️ No ID uploaded</p>';
+    var details='<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px;margin:10px 0;font-size:12px">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+      +'<p><span style="color:var(--w50)">Email:</span> '+p.email+'</p>'
+      +'<p><span style="color:var(--w50)">Phone:</span> '+(p.phone||'—')+'</p>'
+      +'<p><span style="color:var(--w50)">Age:</span> '+p.age+'</p>'
+      +'<p><span style="color:var(--w50)">Gender:</span> '+(p.gender||'—')+'</p>'
+      +'<p><span style="color:var(--w50)">Religion:</span> '+(p.religion||'—')+'</p>'
+      +'<p><span style="color:var(--w50)">Denomination:</span> '+(p.denomination||'—')+'</p>'
+      +'<p><span style="color:var(--w50)">City:</span> '+p.city+', '+p.state+'</p>'
+      +'<p><span style="color:var(--w50)">Marital:</span> '+(p.marital_status||'—')+'</p>'
+      +'<p><span style="color:var(--w50)">Education:</span> '+(p.education||'—')+'</p>'
+      +'<p><span style="color:var(--w50)">Occupation:</span> '+(p.occupation||'—')+'</p>'
+      +'</div>'
+      +(p.bio?'<p style="margin-top:8px"><span style="color:var(--w50)">Bio:</span> '+p.bio+'</p>':'')
+      +'</div>';
+    var act='';
+    if(st==='pending')act='<div style="display:flex;gap:6px;margin-top:12px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="adAct(''+p.id+'','approved')">✅ Approve</button><button class="btn btn-red btn-sm" style="flex:1" onclick="adAct(''+p.id+'','rejected')">❌ Reject</button></div>';
+    if(st==='approved')act='<div style="margin-top:10px"><button class="btn btn-red btn-sm" onclick="adAct(''+p.id+'','rejected')">Revoke Approval</button></div>';
+    l.innerHTML+='<div class="card" style="margin-bottom:16px">'
+      +'<div style="display:flex;gap:10px;align-items:center">'
+      +'<div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+'">'
+      +(!p.photo_url?'<span style="font-size:18px;opacity:.3">👤</span>':'')+'</div>'
+      +'<div style="flex:1"><h3 style="font-size:15px;margin:0;font-weight:700">'+p.full_name+', '+p.age+'</h3>'
+      +'<p style="font-size:12px;color:'+f.color+'">'+f.icon+' '+(p.denomination||p.religion||'')+'</p>'
+      +'<p style="font-size:11px;color:var(--w50)">'+p.city+', '+p.state+'</p></div>'
+      +'<span style="font-size:10px;padding:4px 10px;border-radius:20px;background:'+(st==='pending'?'rgba(232,184,48,.2)':st==='approved'?'rgba(46,213,115,.2)':'rgba(255,71,87,.2)')+';color:'+(st==='pending'?'#E8B830':st==='approved'?'var(--grn)':'var(--red)')+'">'+st.toUpperCase()+'</span>'
+      +'</div>'
+      +details+photoHtml+idHtml+act
+      +'</div>';
+  });
+}
+async function adAct(id,st){
+  var r=await sb.from('profiles').update({status:st}).eq('id',id);
+  if(r.error){alert('Error: '+r.error.message);return;}
+  alert(st==='approved'?'✅ Profile approved! User can now access the app.':'❌ Profile rejected.');
+  ldAdmin(st==='approved'?'pending':'pending');
+}
 
 // ═══════════════════════════════════════════ NOTIFICATIONS
 async function checkNotifs(){try{var r=await sb.from('interests').select('id',{count:'exact'}).eq('to_user',U.id).eq('status','pending');if(r.count>0){document.getElementById('intDot').style.display='';document.getElementById('intBadge').style.display='';document.getElementById('intBadge').textContent=r.count}var mr=await sb.from('messages').select('id',{count:'exact'}).eq('receiver_id',U.id).eq('is_read',false);if(mr.count>0)document.getElementById('msgDot').style.display=''}catch(x){}}
