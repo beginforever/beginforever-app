@@ -43,7 +43,7 @@ function saveFaithPrefsLocal(){
 }
 
 // ═══════════════════════════════════════════ HELPERS
-function show(id){document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active')});var el=document.getElementById(id);if(el){el.style.display='flex';el.classList.add('active')}}
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active')});var el=document.getElementById(id);if(el){el.style.display='flex';el.classList.add('active')}};window._appReady=true;
 function toggleDenom(){var r=document.getElementById('fReligion').value;document.getElementById('denomGroup').style.display=r==='Christian'?'':'none'}
 
 // ═══════════════════════════════════════════ AUTH
@@ -130,10 +130,9 @@ async function loadP(){
     var r=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
     P=(r.data&&r.data.length>0)?r.data[0]:null;
   }catch(x){P=null;}
-  if(!P){show('setupScreen');updUI();return;}
-  if(P.status==='pending'){
-    // show app with pending banner instead of blocking screen
-  } else if(P.status==='rejected'){show('rejectedScreen');return;}
+  try{
+    if(!P){show('setupScreen');updUI();return;}
+    if(P.status==='rejected'){show('rejectedScreen');return;}
   loadFaithPrefs();
   if(P.faith_browse){try{fpBrowse=JSON.parse(P.faith_browse)}catch(x){}}
   if(P.faith_receive){try{fpReceive=JSON.parse(P.faith_receive)}catch(x){}}
@@ -146,7 +145,8 @@ async function loadP(){
   } else {
     if(pb)pb.remove();
   }
-  show('mainApp');renderHome();checkNotifs()
+    show('mainApp');renderHome();checkNotifs();
+  }catch(err){show('authScreen');}
 }
 
 // ═══════════════════════════════════════════ TABS
@@ -415,11 +415,19 @@ function submitReview(){var txt=document.getElementById('revText').value.trim();
 
 // ═══════════════════════════════════════════ AUTH STATE LISTENER
 var authHandled=false;
+// Fallback - always show auth screen after 5s no matter what
+setTimeout(function(){
+  if(!window._appReady){
+    window._appReady=true;
+    document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active');});
+    var as=document.getElementById('authScreen');
+    if(as){as.style.display='flex';as.classList.add('active');}
+  }
+},5000);
 sb.auth.onAuthStateChange(function(ev,sess){
   if(authHandled)return;
   authHandled=true;
   if(sess&&sess.user){U=sess.user;loadP();}
   else{U=null;P=null;show('authScreen');}
 });
-setTimeout(function(){if(!authHandled){authHandled=true;show('authScreen');}},5000);
 
