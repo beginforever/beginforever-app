@@ -43,7 +43,7 @@ function saveFaithPrefsLocal(){
 }
 
 // ═══════════════════════════════════════════ HELPERS
-function show(id){document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active')});var el=document.getElementById(id);if(el){el.style.display='flex';el.classList.add('active')}};window._appReady=true;
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active')});var el=document.getElementById(id);if(el){el.style.display='flex';el.classList.add('active');}}
 function toggleDenom(){var r=document.getElementById('fReligion').value;document.getElementById('denomGroup').style.display=r==='Christian'?'':'none'}
 
 // ═══════════════════════════════════════════ AUTH
@@ -414,20 +414,19 @@ function payRzp(plan,amt){var opts={key:'rzp_live_SausbldU6Vqpy0',amount:amt,cur
 function submitReview(){var txt=document.getElementById('revText').value.trim();if(!txt){alert('Please write your review');return}alert('Thank you for your review! 🙏 It will be published after moderation.');document.getElementById('revText').value=''}
 
 // ═══════════════════════════════════════════ AUTH STATE LISTENER
-var authHandled=false;
-// Fallback - always show auth screen after 5s no matter what
-setTimeout(function(){
-  if(!window._appReady){
-    window._appReady=true;
-    document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';s.classList.remove('active');});
-    var as=document.getElementById('authScreen');
-    if(as){as.style.display='flex';as.classList.add('active');}
-  }
-},5000);
+// Fallback: force auth screen after 6s if nothing loaded
+var _startupTimer=setTimeout(function(){
+  var ls=document.getElementById('loadingScreen');
+  if(ls&&ls.classList.contains('active')){show('authScreen');}
+},6000);
+
 sb.auth.onAuthStateChange(function(ev,sess){
-  if(authHandled)return;
-  authHandled=true;
-  if(sess&&sess.user){U=sess.user;loadP();}
-  else{U=null;P=null;show('authScreen');}
+  if(ev==='SIGNED_IN'||ev==='INITIAL_SESSION'){
+    clearTimeout(_startupTimer);
+    if(sess&&sess.user){U=sess.user;loadP();}
+    else{show('authScreen');}
+  } else if(ev==='SIGNED_OUT'){
+    U=null;P=null;show('authScreen');
+  }
 });
 
