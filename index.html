@@ -2,498 +2,980 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#FDFAF4"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <title>Begin Forever</title>
-<meta name="description" content="India's first 100% ID-verified matrimony platform. Faith-first!"/>
-<meta name="keywords" content="Christian matrimony, Indian Christian wedding, faith-based matchmaking, Begin Forever, True Love, Find Love, Find your soulmate, your Truematch"/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@1,400;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#FDFAF4;--s1:#FAF6EE;--s2:#FFFFFF;--s3:#F5ECD4;--royal:#4A1080;--gold:#E8B830;--gb:#FFD54F;--gp:#FFF3CD;--w:#2D1B4E;--w80:rgba(45,27,78,.85);--w50:rgba(45,27,78,.5);--w20:rgba(59,7,100,.15);--w10:rgba(59,7,100,.08);--w05:rgba(59,7,100,.04);--red:#FF4757;--grn:#2ED573;--pink:#FF6B9D;--radius:16px}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--w);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-input,select,textarea,button{font-family:'DM Sans',sans-serif}
-input::placeholder,textarea::placeholder{color:rgba(59,7,100,.35)}
-.screen{display:none;min-height:100vh}.screen.active{display:flex}
+:root{--dp:#1A0A2E;--dp2:#0D051A;--dp3:#280840;--gold:#D4A017;--gold2:#F5C842;--gold3:#A07810;--w10:rgba(255,255,255,.1);--w20:rgba(255,255,255,.2);--w50:rgba(255,255,255,.5);--w80:rgba(255,255,255,.8);--ink:#1A0A2E;--g3:#4ade80;--err:#f87171}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--dp2)}
+#app{position:relative;width:100%;max-width:430px;height:100%;margin:0 auto;overflow:hidden;background:var(--dp2)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+.bg-dp{background:linear-gradient(160deg,var(--dp) 0%,var(--dp2) 100%)}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sb{height:24px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;font-size:11px;font-weight:700;color:var(--w50)}
+.sb-light{color:rgba(255,255,255,.4)}
+.eyb-sm{font-size:9px;letter-spacing:.12em;color:rgba(201,168,46,.75);text-transform:uppercase;font-weight:700}
+.serif{font-family:'Cinzel',serif}
+.card-dark{background:rgba(255,255,255,.05);border:1px solid var(--w10);border-radius:16px;padding:16px}
+.btn{width:100%;padding:15px;border:none;border-radius:14px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;transition:.2s;position:relative}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--dp)}
+.btn-outline{background:transparent;border:1.5px solid rgba(201,168,46,.4);color:var(--gold2)}
+.btn-ghost{background:var(--w10);color:white}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.inp{width:100%;padding:13px 16px;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;outline:none;transition:.2s}
+.inp-dark{background:rgba(255,255,255,.07);border:1.5px solid rgba(201,168,46,.25);color:white}
+.inp-dark::placeholder{color:var(--w50)}
+.inp-dark:focus{border-color:var(--gold);background:rgba(255,255,255,.1)}
+.inp-dark.err{border-color:var(--err)}
+select.inp-dark option{background:#280840;color:white}
+.chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;border:1.5px solid transparent}
+.chip-dark{background:var(--w10);color:var(--w80);border-color:var(--w10)}
+.chip-dark.on{background:rgba(201,168,46,.15);border-color:rgba(201,168,46,.5);color:var(--gold2)}
+.spinner{width:22px;height:22px;border:2.5px solid rgba(201,168,46,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.spinner{width:22px;height:22px;border:2.5px solid var(--w10);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
-.spinner-sm{width:16px;height:16px;border-width:2px}
-.btn{padding:14px 24px;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;transition:all .2s;letter-spacing:.3px}
-.btn:active{transform:scale(.97)}
-.btn-gold{background:linear-gradient(135deg,#D4A017,#F5C842);color:#3B0764;box-shadow:0 4px 20px rgba(232,184,48,.25)}
-.btn-dark{background:var(--w10);color:var(--w);border:1px solid var(--w20)}
-.btn-grn{background:var(--grn);color:#FFFFFF}
-.btn-red{background:var(--red);color:#FFFFFF}
-.btn-sm{padding:10px 16px;font-size:12px;width:auto}
-.btn-outline{background:transparent;border:1.5px solid #3B0764;color:#3B0764;padding:8px 16px;border-radius:10px;font-size:12px;cursor:pointer;font-weight:600}
-.field{width:100%;padding:13px 16px;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;background:#FFFFFF;color:#2D1B4E;font-size:14px;outline:none;transition:border-color .2s}
-.field:focus{border-color:var(--gold);background:#FFFDF5}
-select.field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23E8B830' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-color:#FFFFFF}
-select.field option{background:#FFFFFF;color:#2D1B4E}
-.fg{margin-bottom:14px}.fl{display:block;font-size:11px;color:#3B0764;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:#3B0764;border:1px solid rgba(212,160,23,.3);color:#FFFFFF;border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
-.card:hover{border-color:#D4A017;transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,7,100,.3)}
-.card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(232,184,48,.06),transparent);pointer-events:none}
-.avatar{width:52px;height:52px;border-radius:50%;background:var(--s3);border:2px solid var(--gold);flex-shrink:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
-.avatar-lg{width:90px;height:90px;border-width:3px}
-.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px}
-.tab-bar{position:fixed;bottom:0;left:0;right:0;background:#3B0764;border-top:none;display:flex;padding:8px 4px;padding-bottom:max(8px,env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(59,7,100,.3)}
-.tab-btn{flex:1;border:none;background:none;color:rgba(255,255,255,.6);font-size:9px;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .2s;position:relative}
-.tab-btn.active{color:#FFD54F}
-.tab-btn.active::before{content:'';position:absolute;top:-8px;width:20px;height:3px;background:var(--gold);border-radius:2px}
-.notif-dot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:0;right:calc(50% - 12px);animation:pulse 2s infinite}
-.section-title{font-family:'Playfair Display',serif;font-size:20px;color:#3B0764;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.section-title span{color:#D4A017}
-.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.photo-slot{aspect-ratio:1;border:2px dashed var(--w20);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background-size:cover;background-position:center;font-size:9px;color:var(--w50);transition:all .2s}
-.photo-slot:hover{border-color:var(--gold)}
-.steps{display:flex;gap:5px;justify-content:center;margin-bottom:12px}
-.step-dot{width:7px;height:7px;border-radius:50%;background:var(--w20);transition:all .3s}
-.step-dot.active{background:var(--gold);box-shadow:0 0 8px rgba(232,184,48,.4)}
-.modal-bg{position:fixed;inset:0;background:rgba(59,7,100,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(4px)}
-.modal-bg.show{display:flex}
-.modal{background:#FFFFFF;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:24px;border-top:1px solid var(--w20);animation:slideUp .3s ease}
-.modal-close{position:sticky;top:0;right:0;font-size:22px;color:var(--w50);cursor:pointer;background:var(--s2);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;float:right;z-index:1}
-.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;padding:2px 0}
-.filter-bar select{padding:7px 24px 7px 10px;border-radius:20px;border:1px solid rgba(59,7,100,.15);background:#FFFFFF;color:#2D1B4E;font-size:11px;font-weight:500;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%23E8B830' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer;transition:all .2s}
-.filter-bar select:focus{border-color:var(--gold)}
-.filter-bar select option{background:#FFFFFF;color:#2D1B4E}
-.msg-bubble{max-width:78%;padding:10px 14px;border-radius:16px;margin-bottom:5px;font-size:13px;line-height:1.5}
-.msg-sent{background:linear-gradient(135deg,#3B0764,#5B1A8A);color:#FFFFFF;margin-left:auto;border-bottom-right-radius:4px}
-.msg-recv{background:var(--s3);margin-right:auto;border-bottom-left-radius:4px}
-.msg-time{font-size:9px;color:var(--w50);margin-top:2px}
-.stat-card{background:#F0E6FA;border-radius:12px;padding:14px;text-align:center;border:1.5px solid #D4A017}
-.stat-num{font-family:'Playfair Display',serif;font-size:24px;color:#3B0764;font-weight:700}
-.stat-label{font-size:10px;color:var(--w50);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
-.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--w10);font-size:13px}
-.info-row:last-child{border-bottom:none}
-.info-label{color:var(--w50);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-.info-value{color:var(--w80);text-align:right}
-.glow-border{border:1.5px solid var(--gold);box-shadow:0 0 15px rgba(232,184,48,.1)}
-/* ── FAITH CHIP (new) ── */
-.faith-chip{border-radius:14px;padding:12px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .2s;border:1.5px solid var(--w20);background:var(--w05)}
-.faith-chip:hover{transform:translateY(-2px)}
-.faith-chip.on{border-color:var(--gold)}
-.faith-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.faith-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid}
+.tabbar{height:64px;background:rgba(42,16,64,.96);backdrop-filter:blur(16px);border-top:1px solid var(--w10);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px;flex-shrink:0}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--w50);font-size:10px;padding:4px 12px;border-radius:10px;transition:.2s}
+.tab.on{color:#fff}
+.tab svg{width:22px;height:22px}
+.tab-dot{width:4px;height:4px;border-radius:50%;background:transparent}
+.tab.on .tab-dot{background:var(--gold)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease both}
+
+/* ── VERIFICATION BADGE ── */
+.verif-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.verif-done{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35);color:var(--g3)}
+.verif-pending{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);color:var(--gold2)}
+.verif-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+
+/* ── COMING SOON OVERLAYS ── */
+.cs-overlay{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column}
+.cs-blur-bg{position:absolute;inset:0;backdrop-filter:blur(8px);background:rgba(13,5,26,.7)}
+
+/* ── OTP BOXES ── */
+.otp-row{display:flex;gap:8px;justify-content:center}
+.otp-box{width:48px;height:56px;border-radius:12px;background:rgba(255,255,255,.07);border:1.5px solid rgba(201,168,46,.25);color:white;font-size:22px;font-weight:700;text-align:center;font-family:'Cinzel',serif;transition:.2s}
+.otp-box:focus{border-color:var(--gold);background:rgba(255,255,255,.12);outline:none}
+
+/* ── PROFILE CARD ── */
+.pcard{border-radius:20px;overflow:hidden;position:relative;background:var(--dp3);border:1px solid var(--w10);margin-bottom:12px}
+.pcard-img{width:100%;height:200px;object-fit:cover;background:linear-gradient(135deg,var(--dp3),var(--dp))}
+.pcard-img-placeholder{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,var(--dp3),var(--dp))}
+.pcard-body{padding:14px 16px}
+.pcard-name{font-family:'Cinzel',serif;font-size:16px;color:white;font-weight:700;margin-bottom:2px}
+.pcard-meta{font-size:12px;color:var(--w50);margin-bottom:10px}
+.pcard-actions{display:flex;gap:8px}
+
+/* ── LOCK / LAUNCH SCREENS ── */
+.launch-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:20px;padding:4px 12px;font-size:10px;font-weight:800;color:var(--dp);letter-spacing:.04em;text-transform:uppercase}
+.count-wrap{display:flex;gap:8px;justify-content:center}
+.count-box{background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:8px 12px;text-align:center;min-width:52px}
+.count-num{font-family:'Cinzel',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1}
+.count-lbl{font-size:9px;color:var(--w50);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.feature-pill{background:rgba(255,255,255,.06);border:0.5px solid var(--w20);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--w80)}
+.timeline-row{display:flex;align-items:center}
+.t-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.t-dot.done{background:var(--g3)}
+.t-dot.now{background:var(--gold2);box-shadow:0 0 0 3px rgba(245,200,66,.2)}
+.t-dot.soon{background:rgba(255,255,255,.2)}
+.t-line{flex:1;height:1px;background:var(--w10)}
+.t-label{font-size:10px;line-height:1.3;text-align:center;width:52px;flex-shrink:0}
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- ═══════════════════════════════════════════ LOADING -->
-<div id="loadingScreen" class="screen active" style="align-items:center;justify-content:center;flex-direction:column;text-align:center">
-<div style="animation:fadeUp .8s ease">
-<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:80px;height:80px;border-radius:16px;margin-bottom:12px" onerror="this.style.display='none'"/>
-<div class="spinner" style="margin:0 auto"></div>
-<p style="font-family:'Playfair Display',serif;font-size:18px;color:#3B0764;margin-top:12px">Begin Forever</p>
-<p style="font-size:11px;color:var(--w50);margin-top:4px">India's First ID-Verified Matrimony Platform</p>
-</div></div>
-
-<!-- ═══════════════════════════════════════════ AUTH -->
-<div id="authScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;background:linear-gradient(180deg,var(--bg),var(--s1))">
-<div style="text-align:center;margin-bottom:28px;animation:fadeUp .6s ease">
-<img src="https://beginforever.in/logo.png" alt="Begin Forever" style="width:72px;height:72px;border-radius:14px;margin-bottom:8px" onerror="this.style.display='none'"/>
-<h1 style="font-family:'Playfair Display',serif;font-size:28px;margin-top:4px;letter-spacing:1px">Begin Forever</h1>
-<p style="font-family:'Playfair Display',serif;font-style:italic;color:#D4A017;font-size:13px;margin-top:4px">Where God Writes Your Love Story</p>
-<p style="font-size:11px;color:var(--w50);margin-top:6px">100% ID-Verified · Faith-First · All Faiths Welcome</p></div>
-<div style="width:100%;max-width:360px;background:var(--s2);border-radius:24px;padding:28px;border:1.5px solid #D4A017;animation:fadeUp .8s ease;box-shadow:0 20px 60px rgba(0,0,0,.4)">
-<h2 id="aTitle" style="font-family:'Playfair Display',serif;font-size:18px;color:#3B0764;text-align:center;margin-bottom:20px">Welcome Back</h2>
-<div class="fg"><label class="fl">Email</label><input class="field" id="aEmail" type="email" placeholder="your@email.com"/></div>
-<div class="fg" id="aPassG"><label class="fl">Password</label><input class="field" id="aPass" type="password" placeholder="••••••"/></div>
-<div class="fg" id="aConfG" style="display:none"><label class="fl">Confirm Password</label><input class="field" id="aConf" type="password"/></div>
-<p id="aErr" style="color:var(--red);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
-<p id="aOk" style="color:var(--grn);font-size:12px;text-align:center;margin-bottom:10px;display:none"></p>
-<button class="btn btn-gold" id="aBtn" onclick="doAuth()">Sign In</button>
-<div style="display:flex;justify-content:space-between;margin-top:14px;font-size:12px">
-<span style="color:var(--w50);cursor:pointer" onclick="setMode('forgot')">Forgot password?</span>
-<span id="aToggle" style="color:#3B0764;cursor:pointer;font-weight:600" onclick="setMode('signup')">Create Account →</span></div>
-<p id="aBack" style="text-align:center;margin-top:10px;font-size:12px;color:#3B0764;cursor:pointer;display:none" onclick="setMode('login')">← Back to Sign In</p></div>
-<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:12px;margin-top:24px;text-align:center;max-width:300px;line-height:1.6">"For I know the plans I have for you, declares the Lord, plans to give you a hope and a future."<br/><span style="color:var(--gold)">— Jeremiah 29:11</span></p>
+<!-- ═══════ SPLASH ═══════ -->
+<div id="screen-splash" class="screen bg-dp active" style="align-items:center;justify-content:center;text-align:center;padding:40px">
+  <img src="/logo.png" style="width:90px;height:90px;border-radius:22px;margin-bottom:20px;box-shadow:0 8px 30px rgba(212,160,23,.25)" onerror="this.style.display='none'"/>
+  <h1 class="serif" style="font-size:28px;color:white;margin-bottom:6px">Begin Forever</h1>
+  <p style="font-size:13px;color:var(--w50);margin-bottom:40px">India's most trusted matrimony</p>
+  <div class="spinner" id="splash-spinner"></div>
 </div>
 
-<!-- ═══════════════════════════════════════════ SETUP (5 steps + new faith step) -->
-<div id="setupScreen" class="screen" style="flex-direction:column;padding:20px;background:linear-gradient(180deg,var(--bg),var(--s1))">
-<div style="max-width:460px;width:100%;margin:0 auto;padding-top:12px">
-<div style="text-align:center;margin-bottom:16px">
-<h1 id="sTitle" style="font-family:'Playfair Display',serif;font-size:20px">Personal Details</h1>
-<p id="sLabel" style="font-size:11px;color:var(--w50);margin-top:4px">Step 1 of 6</p>
-<div class="steps" style="margin-top:10px"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div></div></div>
-<div style="background:var(--s2);border-radius:20px;padding:22px;border:1.5px solid #D4A017">
-
-<!-- Step 1: Personal -->
-<div id="s1">
-<div class="fg"><label class="fl">Full Name *</label><input class="field" id="fName"/></div>
-<div class="fr"><div class="fg"><label class="fl">Age *</label><input type="number" class="field" id="fAge" min="18" max="70"/></div>
-<div class="fg"><label class="fl">Gender *</label><select class="field" id="fGender"><option value="">Select</option><option>Male</option><option>Female</option></select></div></div>
-<div class="fg"><label class="fl">Religion *</label><select class="field" id="fReligion" onchange="toggleDenom()"><option value="">Select</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
-<div class="fg" id="denomGroup" style="display:none"><label class="fl">Denomination</label><select class="field" id="fDenom"><option value="">Select</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Seventh-day Adventist</option><option>Church of God</option><option>Assemblies of God</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Presbyterian</option><option>Anglican</option><option>Non-Denominational</option><option>Other</option></select></div>
-<div class="fr"><div class="fg"><label class="fl">State *</label><select class="field" id="fState" onchange="fillC()"><option value="">Select</option><option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Other / Outside India</option></select></div>
-<div class="fg"><label class="fl">City *</label><select class="field" id="fCity"><option value="">Select</option></select></div></div>
-<div class="fg"><label class="fl">Phone *</label><input class="field" id="fPhone" placeholder="+91 XXXXX XXXXX"/></div>
-<div class="fg"><label class="fl">Registering for</label><select class="field" id="fRegFor"><option value="Myself">Myself</option><option>My Son</option><option>My Daughter</option><option>My Brother</option><option>My Sister</option><option>Other</option></select></div></div>
-
-<!-- Step 2: About -->
-<div id="s2" style="display:none">
-<div class="fg"><label class="fl">Bio</label><textarea class="field" id="fBio" style="min-height:80px;resize:vertical" placeholder="Your faith journey..."></textarea></div>
-<div class="fr"><div class="fg"><label class="fl">Education</label><input class="field" id="fEdu"/></div>
-<div class="fg"><label class="fl">Occupation</label><input class="field" id="fOcc"/></div></div>
-<div class="fr"><div class="fg"><label class="fl">Height (cm)</label><input type="number" class="field" id="fHt"/></div>
-<div class="fg"><label class="fl">Mother Tongue</label><input class="field" id="fMT"/></div></div>
-<div class="fg"><label class="fl">Marital Status</label><select class="field" id="fMS"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select></div></div>
-
-<!-- Step 3: Photos -->
-<div id="s3" style="display:none">
-<p style="font-size:12px;color:var(--w80);margin-bottom:10px"><strong style="color:var(--gb)">Primary photo required.</strong> Upload up to 5 photos.</p>
-<div style="background:var(--w05);border:1px solid var(--gold);border-radius:12px;padding:10px;margin-bottom:14px"><p style="font-size:11px;color:var(--gold);margin:0">🔒 Photos are private until your profile is approved.</p></div>
-<div class="photo-grid" id="photoGrid"></div></div>
-
-<!-- Step 4: ID -->
-<div id="s4" style="display:none">
-<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),transparent);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:18px"><p style="font-size:12px;color:var(--w80);margin:0;line-height:1.6"><span style="font-size:16px">🪪</span> <strong style="color:var(--gb)">Government ID Required</strong><br/>Every member is verified. Your ID is encrypted and <strong>never shared</strong> with other members.</p></div>
-<div class="fg"><label class="fl">ID Type *</label><select class="field" id="fIdT"><option value="">Select</option><option>Aadhaar Card</option><option>PAN Card</option><option>Voter ID</option><option>Driving Licence</option><option>Passport</option></select></div>
-<div class="fg"><label class="fl">Upload ID *</label><div id="idSlot" onclick="document.getElementById('idInp').click()" style="border:2px dashed var(--w20);border-radius:14px;padding:28px;text-align:center;cursor:pointer;background:var(--w05);transition:all .2s"><span style="font-size:32px;opacity:.4">🪪</span><br/><span style="font-size:12px;color:var(--w50)">Tap to upload</span><input type="file" accept="image/*,.pdf" id="idInp" style="display:none" onchange="pickId(this)"/></div>
-<p id="idN" style="font-size:11px;color:var(--gb);margin-top:6px;display:none"></p></div></div>
-
-<!-- Step 5: Preferences (age/denom) -->
-<div id="s5" style="display:none">
-<p style="font-size:12px;color:var(--w80);margin-bottom:14px">Help us find your best matches. You can update these anytime.</p>
-<div class="fr"><div class="fg"><label class="fl">Min Age</label><input type="number" class="field" id="fPMin" value="18"/></div>
-<div class="fg"><label class="fl">Max Age</label><input type="number" class="field" id="fPMax" value="70"/></div></div>
-<div class="fg"><label class="fl">Pref. Denomination / Religion</label><select class="field" id="fPD"><option>Any</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
-<div class="fg"><label class="fl">Pref. City</label><input class="field" id="fPC" placeholder="Any"/></div></div>
-
-<!-- Step 6 (NEW): Faith preferences -->
-<div id="s6" style="display:none">
-<p style="font-size:13px;color:var(--w80);margin-bottom:6px;font-weight:600">🔒 Your Faith Privacy Controls</p>
-<p style="font-size:12px;color:var(--w50);margin-bottom:16px">You are always in full control of who you see and who can reach you.</p>
-
-<div class="fg">
-<label class="fl">🔍 Browse matches from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths will appear in your Discover feed?</p>
-<div class="faith-grid" id="setupBrowseGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="setupSelectAll('browse')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="setupClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
-
-<div class="fg" style="margin-top:6px">
-<label class="fl">💌 Receive interest from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
-<div class="faith-grid" id="setupReceiveGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="setupSelectAll('receive')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="setupClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+<!-- ═══════ TOUR 1 ═══════ -->
+<div id="screen-tour1" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:40px">
+  <div style="font-size:64px;margin-bottom:24px">🪪</div>
+  <h2 class="serif" style="font-size:26px;color:white;margin-bottom:12px">100% ID Verified</h2>
+  <p style="color:var(--w50);font-size:15px;line-height:1.7;max-width:300px;margin:0 auto 40px">Every single profile is verified with a government-issued ID. Zero fake accounts.</p>
+  <button class="btn btn-gold" onclick="showScreen('tour2')" style="max-width:260px">Next →</button>
+  <button class="btn btn-ghost" onclick="showScreen('login')" style="max-width:260px;margin-top:10px">Skip</button>
 </div>
 
-<p id="sErr" style="color:var(--red);font-size:11px;text-align:center;margin:10px 0;display:none"></p>
-<div style="display:flex;gap:10px;margin-top:18px">
-<button class="btn btn-dark" id="bkBtn" onclick="goBack()" style="display:none">← Back</button>
-<button class="btn btn-gold" id="nxBtn" onclick="goNext()">Next →</button>
-</div>
-</div></div></div>
-
-<!-- ═══════════════════════════════════════════ PENDING -->
-<div id="pendingScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;background:linear-gradient(180deg,var(--bg),var(--s1))">
-<div style="animation:fadeUp .8s ease"><div style="font-size:48px;margin-bottom:16px">🕊️✨</div>
-<h2 style="font-family:'Playfair Display',serif;font-size:24px;color:var(--gb)">Your Journey Has Begun</h2>
-<p style="color:var(--w80);font-size:14px;margin-top:12px;max-width:380px;line-height:1.8">Your profile is under review. Our team is carefully verifying your details.</p>
-<div style="background:var(--w05);border:1px solid rgba(232,184,48,.2);border-radius:16px;padding:20px;margin-top:20px;max-width:380px"><p style="color:var(--w80);font-size:13px;line-height:1.7;margin:0"><strong style="color:var(--gb)">🔔 What happens next?</strong><br/>Once approved, you'll be able to discover verified profiles and find your perfect match.</p></div>
-<p style="font-family:'Playfair Display',serif;font-style:italic;color:#3B0764;font-size:14px;margin-top:24px;line-height:1.6">"Delight yourself in the Lord, and He will give you the desires of your heart."<br/><span style="font-size:12px">— Psalm 37:4</span></p>
-<button class="btn btn-dark" style="max-width:200px;margin-top:24px" onclick="doSignOut()">Sign Out</button></div></div>
-
-<!-- ═══════════════════════════════════════════ REJECTED -->
-<div id="rejectedScreen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center">
-<div style="font-size:44px;margin-bottom:14px">😔</div>
-<h2 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--red)">Profile Not Approved</h2>
-<p style="color:var(--w80);font-size:13px;margin-top:10px">Contact: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cca5a2aaa38caea9aba5a2aaa3bea9baa9bee2a5a2">[email&#160;protected]</a></strong></p>
-<button class="btn btn-dark" style="max-width:180px;margin-top:20px" onclick="doSignOut()">Sign Out</button></div>
-
-<!-- ═══════════════════════════════════════════ MAIN APP -->
-<div id="mainApp" class="screen" style="flex-direction:column">
-<div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,var(--s1),transparent)">
-<div style="display:flex;align-items:center;gap:8px">
-<img src="https://beginforever.in/logo.png" alt="" style="width:28px;height:28px;border-radius:6px" onerror="this.style.display='none'"/>
-<span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold)">Begin Forever</span></div>
-<div style="display:flex;align-items:center;gap:10px">
-<span id="hName" style="font-size:12px;color:var(--w50)"></span>
-<span style="font-size:11px;color:var(--w50);cursor:pointer;background:var(--w10);padding:4px 10px;border-radius:8px" onclick="doSignOut()">Logout</span></div></div>
-
-<div style="flex:1;overflow-y:auto;padding:0 16px 80px" id="mainContent">
-
-<!-- HOME -->
-<div id="tHome" style="animation:fadeUp .4s ease">
-
-<!-- Welcome banner -->
-<div style="background:#3B0764;border-radius:var(--radius);margin:12px 0;border:1.5px solid #D4A017;overflow:hidden;position:relative;padding:28px 20px;text-align:center;background-image:url('https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=70');background-size:cover;background-position:center">
-<div style="position:absolute;inset:0;background:rgba(59,7,100,.82);border-radius:var(--radius)"></div>
-<div style="position:relative;z-index:1">
-<img src="https://beginforever.in/logo.png" alt="" style="width:48px;height:48px;border-radius:10px;margin:0 auto 8px;display:block" onerror="this.style.display='none'"/>
-<h2 style="font-family:'Playfair Display',serif;font-size:24px;color:#FFFFFF;font-weight:900">Begin Forever</h2>
-<p style="font-family:'Playfair Display',serif;font-style:italic;color:#E91E63;font-size:14px;margin-top:4px">Where God Writes Your Love Story</p>
-<p style="font-size:12px;color:rgba(255,255,255,.85);margin-top:10px">Welcome back, <span id="hWelcomeName" style="color:#FFD54F;font-weight:700"></span> 🙏</p>
-<p style="font-size:10px;color:rgba(255,255,255,.6);margin-top:4px">100% ID-Verified · Faith-First · All Faiths Welcome</p>
-</div></div>
-
-<!-- Stats bar -->
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="homeStats">
-<div class="stat-card"><div class="stat-num" id="statViews">–</div><div class="stat-label">Views</div></div>
-<div class="stat-card"><div class="stat-num" id="statInt">–</div><div class="stat-label">Interests</div></div>
-<div class="stat-card"><div class="stat-num" id="statMsg">–</div><div class="stat-label">Messages</div></div></div>
-
-<!-- Quick Actions -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-<div class="card" onclick="goTab('browse')" style="text-align:center;padding:14px"><span style="font-size:22px">🔍</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Discover Profiles</p></div>
-<div class="card" onclick="goTab('interests')" style="text-align:center;padding:14px;position:relative"><span style="font-size:22px">💝</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Interests</p><span id="intBadge" style="display:none;position:absolute;top:6px;right:8px;background:var(--red);color:var(--w);font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700"></span></div>
-<div class="card" onclick="goTab('chat')" style="text-align:center;padding:14px"><span style="font-size:22px">💬</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Messages</p></div>
-<div class="card" onclick="goTab('views')" style="text-align:center;padding:14px"><span style="font-size:22px">👁️</span><p style="font-size:12px;margin-top:4px;color:#FFFFFF;font-weight:600">Who Viewed Me</p></div></div>
-
-<!-- Faith Preferences quick card -->
-<div style="background:#3B0764;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017;text-align:center;cursor:pointer" onclick="openFaithPrefs()">
-<p style="font-size:14px;color:#FFD54F;font-weight:700">⚙ Faith Preferences</p>
-<p style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">Control who you see & who reaches you</p>
-<p style="font-size:11px;color:#D4A017;margin-top:6px;font-weight:600">Tap to edit →</p></div>
-
-<!-- Platform Features -->
-<div style="background:#F0E6FA;border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017">
-<h3 style="font-family:'Playfair Display',serif;font-size:15px;color:#3B0764;margin-bottom:12px">✦ Why Begin Forever?</h3>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🪪</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">100% ID Verified</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Every profile verified with govt. ID</p></div>
-<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🕊️</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">Faith-First Matching</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Filters built around your beliefs</p></div>
-<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🔒</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">Private Messaging</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Chat only with mutual interests</p></div>
-<div style="background:#FFFFFF;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><span style="font-size:22px">🌍</span><p style="font-size:11px;color:#3B0764;font-weight:700;margin-top:6px">All Faiths Welcome</p><p style="font-size:10px;color:#5B1A8A;margin-top:2px">Christian, Hindu, Muslim & more</p></div></div></div>
-
-<!-- Subscription Plans preview -->
-<div style="background:#3B0764;border:1.5px solid #D4A017;border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:center" onclick="goTab('plans')">
-<p style="font-size:14px;color:#FFD54F;font-weight:700">🎉 Founding Member Offer</p>
-<p style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">First 300 members get 1 WEEK FREE!</p>
-<div style="display:flex;justify-content:center;gap:10px;margin-top:14px">
-<div style="background:rgba(255,255,255,.1);border:1px solid rgba(212,160,23,.4);border-radius:10px;padding:12px 16px;text-align:center;flex:1"><p style="font-family:'Playfair Display',serif;font-size:18px;color:#FFFFFF;font-weight:700">₹499</p><p style="font-size:10px;color:rgba(255,255,255,.7)">Monthly</p></div>
-<div style="background:#D4A017;border-radius:10px;padding:12px 16px;text-align:center;flex:1;position:relative"><div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#229954;color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700">POPULAR</div><p style="font-family:'Playfair Display',serif;font-size:18px;color:#3B0764;font-weight:700">₹1,299</p><p style="font-size:10px;color:#3B0764">Quarterly</p></div>
-<div style="background:rgba(255,255,255,.1);border:1px solid rgba(212,160,23,.4);border-radius:10px;padding:12px 16px;text-align:center;flex:1"><p style="font-family:'Playfair Display',serif;font-size:18px;color:#FFFFFF;font-weight:700">₹2,599</p><p style="font-size:10px;color:rgba(255,255,255,.7)">Yearly</p></div></div>
-<p style="font-size:12px;color:#D4A017;margin-top:12px;font-weight:600">View Plans & Subscribe →</p></div>
-
-<!-- Reviews preview -->
-<div style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-<h3 style="font-family:'Playfair Display',serif;font-size:15px;color:#3B0764">⭐ Member Reviews</h3>
-<span style="font-size:11px;color:#3B0764;cursor:pointer" onclick="goTab('reviews')">See All →</span></div>
-<div style="background:var(--w05);border-radius:12px;padding:12px;margin-bottom:8px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">P</div><div><p style="font-size:12px;font-weight:600">Priya M., Mumbai</p><p style="font-size:10px;color:var(--gold)">⭐⭐⭐⭐⭐ · Catholic</p></div></div><p style="font-size:11px;color:var(--w80);line-height:1.5">"Finally a platform where I feel safe. Every profile is genuine and faith-first!"</p></div>
-<div style="background:var(--w05);border-radius:12px;padding:12px"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">R</div><div><p style="font-size:12px;font-weight:600">Rohit S., Bengaluru</p><p style="font-size:10px;color:var(--gold)">⭐⭐⭐⭐⭐ · CSI/CNI</p></div></div><p style="font-size:11px;color:var(--w80);line-height:1.5">"Govt ID verification means zero fake accounts. Highly recommend!"</p></div></div>
-
-<!-- Footer links -->
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
-<a href="https://beginforever.in/privacy.html" style="text-decoration:none;background:#F0E6FA;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><p style="font-size:13px;color:#3B0764;font-weight:700">Privacy Policy</p></a>
-<a href="https://beginforever.in/terms.html" style="text-decoration:none;background:#F0E6FA;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><p style="font-size:13px;color:#3B0764;font-weight:700">Terms</p></a>
-<a href="https://beginforever.in/safety.html" style="text-decoration:none;background:#F0E6FA;border:1px solid #D4A017;border-radius:10px;padding:12px;text-align:center"><p style="font-size:13px;color:#3B0764;font-weight:700">Safety</p></a></div>
-<div style="text-align:center;padding:8px 0 4px">
-<p style="font-size:10px;color:var(--w50)">Begin Forever · A brand of Kyomi · Pune, India</p>
-<p style="font-size:10px;color:var(--w50);margin-top:2px">info@beginforever.in · +91 97000 25345</p>
-<p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--w50);font-size:10px;margin-top:6px">"Two are better than one" — Ecclesiastes 4:9</p></div>
+<!-- ═══════ TOUR 2 ═══════ -->
+<div id="screen-tour2" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:40px">
+  <div style="font-size:64px;margin-bottom:24px">🙏</div>
+  <h2 class="serif" style="font-size:26px;color:white;margin-bottom:12px">All Faiths Welcome</h2>
+  <p style="color:var(--w50);font-size:15px;line-height:1.7;max-width:300px;margin:0 auto 40px">Hindu, Muslim, Christian, Sikh, Jain, Buddhist — real intentions, rooted in faith.</p>
+  <button class="btn btn-gold" onclick="showScreen('tour3')" style="max-width:260px">Next →</button>
 </div>
 
-<!-- BROWSE / DISCOVER -->
-<div id="tBrowse" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>✦</span> Discover</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<!-- Faith quick filter chips (NEW) -->
-<div id="browseChips" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;scrollbar-width:none"></div>
-<!-- Receive filter info bar (NEW) -->
-<div id="receiveBar" style="background:rgba(232,184,48,.07);border:1px solid rgba(232,184,48,.2);border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:11px;color:var(--w50)"></div>
-<div class="filter-bar">
-<select id="fltDenom" onchange="ldBrowse()"><option value="">All Denominations</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Orthodox</option><option>Mar Thoma</option><option>Other</option></select>
-<select id="fltAge" onchange="ldBrowse()"><option value="">All Ages</option><option value="18-25">18-25</option><option value="26-30">26-30</option><option value="31-35">31-35</option><option value="36-40">36-40</option><option value="41+">41+</option></select></div>
-<div id="bList"></div>
-<p id="bEmpty" style="text-align:center;color:var(--w50);margin-top:30px;display:none">🕊️ No profiles found.</p></div>
-
-<!-- INTERESTS -->
-<div id="tInterests" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>💝</span> Interests</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<div style="display:flex;gap:6px;margin-bottom:12px">
-<button class="btn btn-sm btn-gold" id="intRecBtn" onclick="showInt('received')">Received</button>
-<button class="btn btn-sm btn-dark" id="intSentBtn" onclick="showInt('sent')">Sent</button>
-<button class="btn btn-sm btn-dark" id="intMutBtn" onclick="showInt('mutual')">Mutual ❤️</button></div>
-<div id="intList"></div>
-<p id="intEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No interests yet.</p></div>
-
-<!-- CHAT LIST -->
-<div id="tChat" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>💬</span> Messages</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<div id="chatList"></div>
-<p id="chatEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No conversations yet.<br/>Send interests to start chatting!</p></div>
-
-<!-- CHAT WINDOW -->
-<div id="tChatWin" style="display:none">
-<div style="display:flex;align-items:center;gap:10px;margin:12px 0;padding-bottom:12px;border-bottom:1px solid var(--w10)">
-<button class="btn-outline" onclick="goTab('chat')" style="font-size:10px;padding:5px 8px">←</button>
-<div class="avatar" id="cwAv" style="width:38px;height:38px"></div>
-<div><p id="cwNm" style="font-size:14px;font-weight:600"></p><p id="cwIn" style="font-size:10px;color:var(--w50)"></p></div></div>
-<div id="cwMs" style="min-height:300px;max-height:55vh;overflow-y:auto;padding:8px 0"></div>
-<div style="display:flex;gap:8px;margin-top:10px;position:sticky;bottom:0;background:var(--bg);padding:8px 0">
-<input class="field" id="cwTx" placeholder="Type a message..." style="flex:1" onkeydown="if(event.key==='Enter')sendMsg()"/>
-<button class="btn btn-gold" style="width:auto;padding:12px 18px" onclick="sendMsg()">→</button></div></div>
-
-<!-- WHO VIEWED -->
-<div id="tViews" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>👁️</span> Who Viewed You</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<div id="viewList"></div>
-<p id="viewEmpty" style="text-align:center;color:var(--w50);margin-top:20px;display:none">No profile views yet.</p></div>
-
-<!-- MY PROFILE -->
-<div id="tProfile" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>👤</span> My Profile</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<!-- Profile hero -->
-<div id="profileHero" style="text-align:center;padding:16px 0"></div>
-<!-- Stats -->
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="profileStats">
-<div class="stat-card"><div class="stat-num" id="pStatViews">–</div><div class="stat-label">Views</div></div>
-<div class="stat-card"><div class="stat-num" id="pStatInt">–</div><div class="stat-label">Interests</div></div>
-<div class="stat-card"><div class="stat-num" id="pStatMsg">–</div><div class="stat-label">Messages</div></div></div>
-<!-- Profile details -->
-<div id="mInfo" style="background:var(--s2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1.5px solid #D4A017"></div>
-<!-- Edit button -->
-<button class="btn btn-gold" style="margin-bottom:10px" onclick="openEdit()">✏️ Edit Profile</button>
-<!-- Faith prefs shortcut -->
-<div style="background:linear-gradient(135deg,rgba(232,184,48,.08),var(--s2));border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1px solid rgba(232,184,48,.2)">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-<p style="font-size:13px;color:#3B0764;font-weight:600">⚙ Faith Preferences</p>
-<button class="btn-outline" style="font-size:10px;padding:5px 10px" onclick="openFaithPrefs()">Edit</button></div>
-<div id="profileFaithSummary"></div></div>
-<!-- Subscription shortcut -->
-<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:10px;cursor:pointer" onclick="goTab('plans')">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<div><p style="font-size:13px;color:var(--gb);font-weight:700">👑 Subscription & Billing</p><p style="font-size:11px;color:var(--w50);margin-top:3px">View plans · Monthly · Quarterly · Yearly</p></div>
-<span style="font-size:18px;color:var(--gold)">→</span></div></div>
-<!-- Sign out -->
-<button class="btn btn-dark" style="margin-bottom:12px" onclick="doSignOut()">Sign Out</button></div>
-
-<!-- PLANS -->
-<div id="tPlans" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>👑</span> Plans</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<div style="background:linear-gradient(135deg,rgba(232,184,48,.1),var(--s2));border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:14px;text-align:center">
-<p style="font-size:13px;color:#FFD54F;font-weight:700">🎉 Founding Member Offer</p>
-<p style="font-size:11px;color:var(--w80);margin-top:4px">First 300 members get 1 WEEK FREE!</p></div>
-<div style="display:flex;flex-direction:column;gap:10px">
-<div class="card glow-border" style="text-align:center;padding:20px" onclick="payRzp('Monthly',49900)">
-<p style="font-size:20px;margin-bottom:6px">🕊️</p>
-<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Monthly</p>
-<p style="font-family:'Playfair Display',serif;font-size:28px;color:#3B0764;font-weight:900;margin:8px 0">₹499<span style="font-size:14px;color:var(--w50)">/month</span></p>
-<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹499</button></div>
-<div class="card glow-border" style="text-align:center;padding:20px;border-color:var(--gold);position:relative" onclick="payRzp('Quarterly',129900)">
-<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--s1);padding:3px 14px;border-radius:20px;font-size:10px;font-weight:700">MOST POPULAR</div>
-<p style="font-size:20px;margin-bottom:6px">👑</p>
-<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Quarterly</p>
-<p style="font-family:'Playfair Display',serif;font-size:28px;color:#3B0764;font-weight:900;margin:8px 0">₹1,299<span style="font-size:14px;color:var(--w50)">/3 months</span></p>
-<p style="font-size:11px;color:var(--grn);font-weight:600">Save 13% · ₹433/month</p>
-<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹1,299 ✦</button></div>
-<div class="card glow-border" style="text-align:center;padding:20px" onclick="payRzp('Yearly',259900)">
-<p style="font-size:20px;margin-bottom:6px">✝</p>
-<p style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Yearly</p>
-<p style="font-family:'Playfair Display',serif;font-size:28px;color:#3B0764;font-weight:900;margin:8px 0">₹2,599<span style="font-size:14px;color:var(--w50)">/year</span></p>
-<p style="font-size:11px;color:var(--grn);font-weight:600">Save 57% · ₹217/month</p>
-<button class="btn btn-gold" style="margin-top:8px">Subscribe ₹2,599</button></div></div>
-<div style="background:var(--w05);border-radius:12px;padding:14px;margin-top:14px"><p style="font-size:12px;color:var(--w80);text-align:center;line-height:1.6">✅ All plans include every feature<br/>✅ Unlimited interests · Messaging · Photo privacy<br/>✅ Cancel anytime · No lock-in</p></div></div>
-
-<!-- REVIEWS -->
-<div id="tReviews" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>⭐</span> Reviews</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<div style="margin-bottom:14px">
-<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">P</div><div><p style="font-size:13px;font-weight:600">Priya M., Mumbai</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · Catholic</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"Finally a matrimony platform where I feel truly safe. The ID verification gives me so much confidence. Every profile is genuine."</p></div>
-<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">R</div><div><p style="font-size:13px;font-weight:600">Rohit S., Bengaluru</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · CSI / CNI</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"The best matrimony platform in India. Clean interface, genuine profiles, and government ID verification means zero fake accounts."</p></div>
-<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">S</div><div><p style="font-size:13px;font-weight:600">Sarah T., Kochi</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · Pentecostal</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"My family and I love this platform. Very family-friendly and faith-centered."</p></div>
-<div style="background:var(--w05);border-radius:14px;padding:14px;margin-bottom:8px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--royal),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700">D</div><div><p style="font-size:13px;font-weight:600">David K., Pune</p><p style="font-size:11px;color:var(--gold)">⭐⭐⭐⭐⭐ · Protestant</p></div></div><p style="font-size:12px;color:var(--w80);line-height:1.6">"Denomination-specific matching is what sets Begin Forever apart. Found someone who shares my exact faith values."</p></div></div>
-<div style="background:var(--s2);border-radius:var(--radius);padding:16px;border:1.5px solid #D4A017">
-<h3 style="font-size:14px;color:var(--gold);margin-bottom:12px">✍️ Write a Review</h3>
-<div class="fg"><label class="fl">Your Rating</label><select class="field" id="revRating"><option>⭐⭐⭐⭐⭐ Excellent</option><option>⭐⭐⭐⭐ Very Good</option><option>⭐⭐⭐ Good</option><option>⭐⭐ Fair</option><option>⭐ Poor</option></select></div>
-<div class="fg"><label class="fl">Your Review</label><textarea class="field" id="revText" placeholder="Share your experience..." style="min-height:80px;resize:vertical"></textarea></div>
-<button class="btn btn-gold" onclick="submitReview()">Submit Review ✦</button></div></div>
-
-<!-- ADMIN -->
-<div id="tAdmin" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0">
-<h2 class="section-title"><span>⚙️</span> Admin</h2>
-<button class="btn-outline" onclick="goTab('home')" style="font-size:10px;padding:5px 10px">← Home</button></div>
-<div style="display:flex;gap:6px;margin-bottom:12px">
-<button class="btn btn-sm btn-gold" onclick="ldAdmin('pending')">Pending</button>
-<button class="btn btn-sm btn-dark" onclick="ldAdmin('approved')">Approved</button>
-<button class="btn btn-sm btn-dark" onclick="ldAdmin('rejected')">Rejected</button></div>
-<div id="adList"></div>
-<p id="adEmpty" style="text-align:center;color:var(--w50);margin-top:16px;display:none">None found.</p></div>
-
-</div><!-- end mainContent -->
-
-<div class="tab-bar" id="tBar">
-<button class="tab-btn active" id="tabHome" onclick="goTab('home')"><span style="font-size:18px">🏠</span><span style="font-size:9px">Home</span></button>
-<button class="tab-btn" id="tabBrowse" onclick="goTab('browse')"><span style="font-size:18px">🔍</span><span style="font-size:9px">Discover</span></button>
-<button class="tab-btn" id="tabInterests" onclick="goTab('interests')"><span style="font-size:18px;position:relative">💝<span id="intDot" class="notif-dot" style="display:none"></span></span><span style="font-size:9px">Interests</span></button>
-<button class="tab-btn" id="tabChat" onclick="goTab('chat')"><span style="font-size:18px;position:relative">💬<span id="msgDot" class="notif-dot" style="display:none"></span></span><span style="font-size:9px">Chat</span></button>
-<button class="tab-btn" id="tabPlansTab" onclick="goTab('plans')"><span style="font-size:18px">👑</span><span style="font-size:9px">Plans</span></button>
-<button class="tab-btn" id="tabProfile" onclick="goTab('profile')"><span style="font-size:18px">👤</span><span style="font-size:9px">Profile</span></button>
+<!-- ═══════ TOUR 3 ═══════ -->
+<div id="screen-tour3" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:40px">
+  <div style="font-size:64px;margin-bottom:24px">💍</div>
+  <h2 class="serif" style="font-size:26px;color:white;margin-bottom:12px">Real Intentions Only</h2>
+  <p style="color:var(--w50);font-size:15px;line-height:1.7;max-width:300px;margin:0 auto 40px">We're 300 founding members strong. Genuine matrimony — nothing less.</p>
+  <button class="btn btn-gold" onclick="showScreen('signup')" style="max-width:260px">Create My Profile ✦</button>
+  <button class="btn btn-outline" onclick="showScreen('login')" style="max-width:260px;margin-top:10px">Already registered? Login</button>
 </div>
-</div><!-- end mainApp -->
 
-<!-- PROFILE VIEW MODAL -->
-<div class="modal-bg" id="profileModal"><div class="modal"><button class="modal-close" onclick="closeModal()">&times;</button><div id="pmC"></div></div></div>
+<!-- ═══════ LOGIN ═══════ -->
+<div id="screen-login" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div class="scroll" style="padding:32px 24px">
+    <div style="text-align:center;margin-bottom:32px">
+      <img src="/logo.png" style="width:60px;height:60px;border-radius:16px;margin-bottom:14px" onerror="this.style.display='none'"/>
+      <h2 class="serif" style="font-size:24px;color:white;margin-bottom:6px">Welcome Back</h2>
+      <p style="font-size:13px;color:var(--w50)">Sign in to your account</p>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Email Address</label>
+      <input id="login-email" type="email" class="inp inp-dark" placeholder="your@email.com"/>
+    </div>
+    <div style="margin-bottom:8px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Password</label>
+      <input id="login-pass" type="password" class="inp inp-dark" placeholder="Your password"/>
+    </div>
+    <p id="login-err" style="font-size:12px;color:var(--err);margin-bottom:12px;display:none"></p>
+    <button class="btn btn-gold" onclick="doLogin()" id="login-btn" style="margin-bottom:14px">Sign In</button>
+    <p style="text-align:center;font-size:13px;color:var(--w50);margin-bottom:20px">
+      <span style="color:var(--gold2);cursor:pointer" onclick="showScreen('forgot')">Forgot password?</span>
+    </p>
+    <div style="border-top:1px solid var(--w10);padding-top:20px;text-align:center">
+      <p style="font-size:13px;color:var(--w50)">New to Begin Forever?</p>
+      <button class="btn btn-outline" onclick="showScreen('signup')" style="margin-top:10px">Create My Profile ✦</button>
+    </div>
+  </div>
+</div>
 
-<!-- EDIT PROFILE MODAL -->
-<div class="modal-bg" id="editModal"><div class="modal"><button class="modal-close" onclick="closeEdit()">&times;</button>
-<h2 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--gb);margin-bottom:18px">Edit Profile</h2>
-<div class="fg"><label class="fl">Bio</label><textarea class="field" id="eBio" style="min-height:80px;resize:vertical"></textarea></div>
-<div class="fr"><div class="fg"><label class="fl">Education</label><input class="field" id="eEdu"/></div>
-<div class="fg"><label class="fl">Occupation</label><input class="field" id="eOcc"/></div></div>
-<div class="fg"><label class="fl">Phone</label><input class="field" id="ePh"/></div>
-<div class="fg"><label class="fl">Photos</label><div class="photo-grid" id="epGrid"></div></div>
-<p id="eErr" style="color:var(--red);font-size:11px;text-align:center;margin:8px 0;display:none"></p>
-<button class="btn btn-gold" onclick="saveEdit()">Save Changes ✦</button></div></div>
+<!-- ═══════ SIGNUP — STEP 1: EMAIL + PASSWORD ═══════ -->
+<div id="screen-signup" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <button onclick="showScreen('login')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
+    <div>
+      <p class="eyb-sm">Step 1 of 4</p>
+      <h2 class="serif" style="font-size:20px;color:white">Create Account</h2>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:4px">
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--gold)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--w10)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--w10)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--w10)"></div>
+    </div>
+  </div>
+  <div class="scroll" style="padding:16px 20px 32px">
+    <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:rgba(255,255,255,.7);line-height:1.5">
+      ✦ You'll verify your email and phone number to keep Begin Forever safe and genuine.
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Full Name</label>
+      <input id="su-name" type="text" class="inp inp-dark" placeholder="Your full name"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Email Address</label>
+      <input id="su-email" type="email" class="inp inp-dark" placeholder="your@email.com"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Password</label>
+      <input id="su-pass" type="password" class="inp inp-dark" placeholder="At least 8 characters"/>
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Phone Number</label>
+      <input id="su-phone" type="tel" class="inp inp-dark" placeholder="+91 XXXXX XXXXX"/>
+      <p style="font-size:11px;color:var(--w50);margin-top:5px">We'll send an OTP to verify this number via SMS</p>
+    </div>
+    <p id="su-err" style="font-size:12px;color:var(--err);margin-bottom:12px;display:none"></p>
+    <button class="btn btn-gold" onclick="doSignup()" id="su-btn">Continue — Verify Email →</button>
+    <p style="text-align:center;font-size:12px;color:var(--w50);margin-top:16px;line-height:1.6">By continuing you agree to our <span style="color:var(--gold2)">Terms of Service</span> and <span style="color:var(--gold2)">Privacy Policy</span></p>
+  </div>
+</div>
 
-<!-- FAITH PREFERENCES MODAL (NEW) -->
-<div class="modal-bg" id="faithModal"><div class="modal"><button class="modal-close" onclick="closeFaithPrefs()">&times;</button>
-<h2 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gb);margin-bottom:6px">⚙ Faith Preferences</h2>
-<p style="font-size:12px;color:var(--w50);margin-bottom:18px">Control who you see and who can reach you.</p>
+<!-- ═══════ EMAIL VERIFY — STEP 2 ═══════ -->
+<div id="screen-email-verify" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <button onclick="showScreen('signup')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
+    <div>
+      <p class="eyb-sm">Step 2 of 4</p>
+      <h2 class="serif" style="font-size:20px;color:white">Verify Email</h2>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:4px">
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--g3)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--gold)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--w10)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--w10)"></div>
+    </div>
+  </div>
+  <div class="scroll" style="padding:24px 20px 32px;text-align:center">
+    <div style="font-size:52px;margin-bottom:16px">📧</div>
+    <h3 class="serif" style="font-size:20px;color:white;margin-bottom:8px">Check Your Inbox</h3>
+    <p style="font-size:14px;color:var(--w50);line-height:1.7;margin-bottom:6px">We've sent a verification link to:</p>
+    <p style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);margin-bottom:24px" id="ev-email-display">your@email.com</p>
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--w10);border-radius:16px;padding:20px;margin-bottom:24px;text-align:left">
+      <p style="font-size:13px;color:white;font-weight:700;margin-bottom:10px">What to do:</p>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold2);font-weight:700;flex-shrink:0">1</div>
+        <p style="font-size:13px;color:var(--w80);line-height:1.5">Open the email from Begin Forever in your inbox (check spam too)</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold2);font-weight:700;flex-shrink:0">2</div>
+        <p style="font-size:13px;color:var(--w80);line-height:1.5">Click the <strong style="color:white">Verify my email</strong> link inside</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold2);font-weight:700;flex-shrink:0">3</div>
+        <p style="font-size:13px;color:var(--w80);line-height:1.5">Return here and tap <strong style="color:white">I've verified my email</strong></p>
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="checkEmailVerified()" id="ev-check-btn" style="margin-bottom:12px">I've Verified My Email ✓</button>
+    <button onclick="resendVerifyEmail()" style="background:none;border:none;color:var(--gold2);font-size:13px;cursor:pointer;padding:8px" id="ev-resend-btn">Resend verification email</button>
+    <p id="ev-msg" style="font-size:12px;color:var(--err);margin-top:12px;display:none"></p>
+  </div>
+</div>
 
-<div class="fg">
-<label class="fl">🔍 Browse matches from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Which faiths appear in your Discover feed?</p>
-<div class="faith-grid" id="fpBrowseGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="fpSelectAll('browse')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="fpClearAll('browse')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+<!-- ═══════ PHONE VERIFY — STEP 3 ═══════ -->
+<div id="screen-phone-verify" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <button onclick="showScreen('email-verify')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
+    <div>
+      <p class="eyb-sm">Step 3 of 4</p>
+      <h2 class="serif" style="font-size:20px;color:white">Verify Phone</h2>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:4px">
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--g3)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--g3)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--gold)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--w10)"></div>
+    </div>
+  </div>
+  <div class="scroll" style="padding:24px 20px 32px">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:48px;margin-bottom:14px">📱</div>
+      <h3 class="serif" style="font-size:20px;color:white;margin-bottom:8px">Enter OTP</h3>
+      <p style="font-size:13px;color:var(--w50);line-height:1.6">We've sent a 6-digit code to</p>
+      <p style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);margin-top:4px" id="pv-phone-display">+91 XXXXX XXXXX</p>
+    </div>
 
-<div class="fg" style="margin-top:8px">
-<label class="fl">💌 Receive interest from</label>
-<p style="font-size:11px;color:var(--w50);margin-bottom:10px">Only these faiths can send you interest requests.</p>
-<div class="faith-grid" id="fpReceiveGrid"></div>
-<div style="display:flex;gap:14px;margin-bottom:4px">
-<span onclick="fpSelectAll('receive')" style="color:#3B0764;font-size:12px;cursor:pointer;font-weight:600">Select All</span>
-<span onclick="fpClearAll('receive')" style="color:var(--w50);font-size:12px;cursor:pointer">Clear</span>
-</div></div>
+    <!-- Phone input (shown if not yet sent) -->
+    <div id="pv-input-section">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Phone Number</label>
+      <input id="pv-phone" type="tel" class="inp inp-dark" placeholder="+91 XXXXX XXXXX" style="margin-bottom:14px"/>
+      <button class="btn btn-gold" onclick="sendPhoneOTP()" id="pv-send-btn">Send OTP via SMS</button>
+    </div>
 
-<button class="btn btn-gold" style="margin-top:8px" onclick="saveFaithPrefs()">Save Preferences ✦</button>
-</div></div>
+    <!-- OTP boxes (shown after SMS sent) -->
+    <div id="pv-otp-section" style="display:none">
+      <div class="otp-row" style="margin-bottom:20px">
+        <input type="tel" maxlength="1" class="otp-box" id="otp0" oninput="otpMove(this,0)"/>
+        <input type="tel" maxlength="1" class="otp-box" id="otp1" oninput="otpMove(this,1)"/>
+        <input type="tel" maxlength="1" class="otp-box" id="otp2" oninput="otpMove(this,2)"/>
+        <input type="tel" maxlength="1" class="otp-box" id="otp3" oninput="otpMove(this,3)"/>
+        <input type="tel" maxlength="1" class="otp-box" id="otp4" oninput="otpMove(this,4)"/>
+        <input type="tel" maxlength="1" class="otp-box" id="otp5" oninput="otpMove(this,5)"/>
+      </div>
+      <button class="btn btn-gold" onclick="verifyPhoneOTP()" id="pv-verify-btn">Verify Phone Number ✓</button>
+      <p style="text-align:center;margin-top:14px">
+        <span id="pv-resend-btn" onclick="resendOTP()" style="color:var(--gold2);font-size:13px;cursor:pointer">Resend OTP</span>
+        <span id="pv-timer" style="font-size:13px;color:var(--w50);display:none">Resend in <span id="pv-timer-count">30</span>s</span>
+      </p>
+    </div>
+    <p id="pv-err" style="font-size:12px;color:var(--err);margin-top:12px;text-align:center;display:none"></p>
+  </div>
+</div>
 
-<script src="app.js"></script>
+<!-- ═══════ SETUP 1: PROFILE BASICS ═══════ -->
+<div id="screen-setup1" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <div>
+      <p class="eyb-sm">Step 4 of 4 — Profile Setup</p>
+      <h2 class="serif" style="font-size:20px;color:white">About You</h2>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:4px">
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--g3)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--g3)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--g3)"></div>
+      <div style="width:20px;height:4px;border-radius:2px;background:var(--gold)"></div>
+    </div>
+  </div>
+  <div class="scroll" style="padding:16px 20px 32px">
+    <div class="verif-row">
+      <span class="verif-badge verif-done">✓ Email verified</span>
+      <span class="verif-badge verif-done">✓ Phone verified</span>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Age</label>
+      <input id="s1-age" type="number" class="inp inp-dark" placeholder="Your age (18–70)" min="18" max="70"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Gender</label>
+      <select id="s1-gender" class="inp inp-dark">
+        <option value="" disabled selected>Select gender</option>
+        <option>Male</option><option>Female</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Religion</label>
+      <select id="s1-religion" class="inp inp-dark" onchange="toggleSetupDenom()">
+        <option value="" disabled selected>Select religion</option>
+        <option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option>
+      </select>
+    </div>
+    <div id="s1-denom-wrap" style="display:none;margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Denomination</label>
+      <input id="s1-denom" type="text" class="inp inp-dark" placeholder="e.g. Catholic, Sunni, Vaishnavite…"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">City</label>
+      <input id="s1-city" type="text" class="inp inp-dark" placeholder="Your city"/>
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">State</label>
+      <select id="s1-state" class="inp inp-dark">
+        <option value="" disabled selected>Select state</option>
+        <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Uttar Pradesh</option><option>West Bengal</option><option>Other</option>
+      </select>
+    </div>
+    <p id="s1-err" style="font-size:12px;color:var(--err);margin-bottom:12px;display:none"></p>
+    <button class="btn btn-gold" onclick="saveSetup1()">Save &amp; Continue →</button>
+  </div>
+</div>
+
+<!-- ═══════ PENDING ═══════ -->
+<div id="screen-pending" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:32px">
+  <div style="font-size:52px;margin-bottom:16px">⏳</div>
+  <h2 class="serif" style="font-size:24px;color:white;margin-bottom:12px">Profile Under Review</h2>
+  <p style="font-size:14px;color:var(--w50);line-height:1.7;max-width:300px;margin:0 auto 24px">Our team is reviewing your profile. You'll receive an email once it's approved — usually within 24 hours.</p>
+  <div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:16px;padding:20px;margin-bottom:24px;text-align:left;max-width:300px">
+    <p style="font-size:13px;color:white;font-weight:700;margin-bottom:8px">While you wait:</p>
+    <p style="font-size:12px;color:var(--w50);line-height:1.6">• Complete your profile photo<br/>• Upload your ID document<br/>• Share your referral link and earn free days</p>
+  </div>
+  <button class="btn btn-gold" style="max-width:260px" onclick="showScreen('discover')">Preview App →</button>
+</div>
+
+<!-- ═══════ DISCOVER ═══════ -->
+<div id="screen-discover" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:0 20px 8px;display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0">
+    <div>
+      <p class="eyb-sm">For you · <span id="disc-count">0</span> matches</p>
+      <h2 class="serif" style="font-size:22px;color:#fff;margin-top:2px">Discover</h2>
+    </div>
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,46,.1);border:1px solid rgba(201,168,46,.2);display:flex;align-items:center;justify-content:center;cursor:pointer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M3 6h18M6 12h12M9 18h6"/></svg>
+    </div>
+  </div>
+  <!-- Faith chips -->
+  <div style="display:flex;gap:8px;overflow-x:auto;padding:0 20px 10px;flex-shrink:0">
+    <div class="chip chip-dark on" onclick="setFaithFilter(this,'all')">All faiths</div>
+    <div class="chip chip-dark" onclick="setFaithFilter(this,'christian')">Christian</div>
+    <div class="chip chip-dark" onclick="setFaithFilter(this,'hindu')">Hindu</div>
+    <div class="chip chip-dark" onclick="setFaithFilter(this,'muslim')">Muslim</div>
+    <div class="chip chip-dark" onclick="setFaithFilter(this,'sikh')">Sikh</div>
+  </div>
+  <!-- Cards area -->
+  <div class="scroll" style="padding:0 20px 12px;position:relative">
+    <div id="disc-cards">
+      <div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div>
+    </div>
+  </div>
+  <!-- OPTION 1: Blurred preview + countdown overlay on Discover -->
+  <div id="discover-cs" class="cs-overlay">
+    <div class="cs-blur-bg"></div>
+    <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+      <span class="launch-badge" style="margin-bottom:14px">Early Access Opening Soon</span>
+      <h3 class="serif" style="font-size:22px;color:white;margin-bottom:8px;line-height:1.3">Your matches are waiting</h3>
+      <p style="font-size:13px;color:var(--w50);line-height:1.6;margin-bottom:20px;max-width:280px">Browsing opens when the platform launches. Your profile is ready — you'll be notified instantly.</p>
+      <div class="count-wrap" style="margin-bottom:20px">
+        <div class="count-box"><div class="count-num" id="cs-days">14</div><div class="count-lbl">days</div></div>
+        <div class="count-box"><div class="count-num" id="cs-hrs">06</div><div class="count-lbl">hrs</div></div>
+        <div class="count-box"><div class="count-num" id="cs-min">32</div><div class="count-lbl">min</div></div>
+      </div>
+      <button class="btn btn-outline" style="max-width:240px" onclick="shareReferral()">Refer &amp; earn free days 🎁</button>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
+  </div>
+</div>
+
+<!-- ═══════ INTERESTS ═══════ -->
+<div id="screen-interests" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:0 20px 12px;flex-shrink:0">
+    <p class="eyb-sm">Incoming &amp; sent</p>
+    <h2 class="serif" style="font-size:22px;color:#fff;margin-top:2px">Interests</h2>
+  </div>
+  <div class="scroll" style="padding:0 20px 12px">
+    <div id="interests-list"><div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div></div>
+  </div>
+  <!-- OPTION 3: Journey timeline on Interests -->
+  <div id="interests-cs" class="cs-overlay">
+    <div class="cs-blur-bg"></div>
+    <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:24px">
+      <div style="text-align:center;margin-bottom:20px">
+        <span class="launch-badge">Coming Soon</span>
+        <h3 class="serif" style="font-size:20px;color:white;margin-top:12px;margin-bottom:8px">Send &amp; Receive Interests</h3>
+        <p style="font-size:13px;color:var(--w50);line-height:1.6;max-width:280px;margin:0 auto">This feature unlocks when the platform launches. You're almost there.</p>
+      </div>
+      <!-- Timeline -->
+      <div style="background:rgba(255,255,255,.04);border:1px solid var(--w10);border-radius:16px;padding:16px 12px;margin-bottom:16px">
+        <p style="font-size:10px;color:rgba(212,160,23,.8);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:12px">Your journey</p>
+        <div style="display:flex;align-items:center">
+          <div style="display:flex;flex-direction:column;align-items:center;width:56px">
+            <div class="t-dot done" style="margin-bottom:4px"></div>
+            <p class="t-label" style="color:var(--g3);font-size:9px">Profile<br>created</p>
+          </div>
+          <div class="t-line" style="margin-bottom:12px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:56px">
+            <div class="t-dot done" style="margin-bottom:4px"></div>
+            <p class="t-label" style="color:var(--g3);font-size:9px">Email<br>verified</p>
+          </div>
+          <div class="t-line" style="margin-bottom:12px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:56px">
+            <div class="t-dot done" style="margin-bottom:4px"></div>
+            <p class="t-label" style="color:var(--g3);font-size:9px">Phone<br>verified</p>
+          </div>
+          <div class="t-line" style="margin-bottom:12px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:56px">
+            <div class="t-dot now" style="margin-bottom:4px"></div>
+            <p class="t-label" style="color:var(--gold2);font-size:9px">Awaiting<br>launch</p>
+          </div>
+          <div class="t-line" style="margin-bottom:12px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:56px">
+            <div class="t-dot soon" style="margin-bottom:4px"></div>
+            <p class="t-label" style="color:var(--w50);font-size:9px">Send<br>interests</p>
+          </div>
+        </div>
+      </div>
+      <!-- Teaser grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:rgba(255,255,255,.04);border:1px solid var(--w10);border-radius:14px;padding:12px;position:relative;overflow:hidden">
+          <div style="height:32px;background:rgba(255,255,255,.06);border-radius:8px;margin-bottom:8px"></div>
+          <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;width:70%;margin-bottom:4px"></div>
+          <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;width:50%"></div>
+          <div style="position:absolute;top:8px;right:8px;background:rgba(212,160,23,.85);border-radius:6px;padding:2px 6px;font-size:8px;font-weight:700;color:var(--dp)">Locked</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid var(--w10);border-radius:14px;padding:12px;position:relative;overflow:hidden">
+          <div style="height:32px;background:rgba(255,255,255,.06);border-radius:8px;margin-bottom:8px"></div>
+          <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;width:70%;margin-bottom:4px"></div>
+          <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;width:50%"></div>
+          <div style="position:absolute;top:8px;right:8px;background:rgba(212,160,23,.85);border-radius:6px;padding:2px 6px;font-size:8px;font-weight:700;color:var(--dp)">Locked</div>
+        </div>
+      </div>
+      <!-- Referral strip -->
+      <div style="background:linear-gradient(135deg,rgba(153,53,86,.25),rgba(212,160,23,.1));border:1px solid rgba(212,160,23,.3);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px" onclick="shareReferral()">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(212,160,23,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div style="flex:1">
+          <p style="font-size:12px;font-weight:700;color:var(--gold2);margin-bottom:2px">Refer friends — earn free days</p>
+          <p style="font-size:11px;color:var(--w50)">3 friends = +7 days · 5 friends = +14 days</p>
+        </div>
+        <span style="color:var(--w50);font-size:16px">›</span>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
+    <div class="tab on" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
+  </div>
+</div>
+
+<!-- ═══════ MESSAGES ═══════ -->
+<div id="screen-messages" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div style="padding:0 20px 12px;flex-shrink:0">
+    <p class="eyb-sm">Your conversations</p>
+    <h2 class="serif" style="font-size:22px;color:#fff;margin-top:2px">Messages</h2>
+  </div>
+  <div class="scroll" style="padding:0 20px 12px">
+    <div id="msg-list"><div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div></div>
+  </div>
+  <!-- OPTION 2: Premium lock gate on Messages -->
+  <div id="messages-cs" class="cs-overlay">
+    <div class="cs-blur-bg"></div>
+    <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center">
+      <div style="width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(212,160,23,.4);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(212,160,23,.1);display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+      </div>
+      <h3 class="serif" style="font-size:22px;color:white;margin-bottom:8px;line-height:1.3">Messages unlock<br>at launch</h3>
+      <p style="font-size:13px;color:var(--w50);line-height:1.6;margin-bottom:20px;max-width:260px">You're a founding member. When we open, you get 1 week free premium — full messaging included.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px">
+        <span class="feature-pill">Unlimited messages</span>
+        <span class="feature-pill">Read receipts</span>
+        <span class="feature-pill">Voice introductions</span>
+        <span class="feature-pill">Video profile</span>
+      </div>
+      <div style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--g3);margin-bottom:16px">
+        ✓ Your founding member perk: 1 week free premium at launch
+      </div>
+      <button class="btn btn-outline" style="max-width:240px" onclick="shareReferral()">Refer friends, earn more free days</button>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
+    <div class="tab on" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
+  </div>
+</div>
+
+<!-- ═══════ MY PROFILE ═══════ -->
+<div id="screen-myprofile" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div class="scroll" style="padding:0 20px 20px">
+    <div style="text-align:center;padding:20px 0 16px">
+      <div id="mp-avatar" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--dp3),var(--gold3));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:2px solid rgba(212,160,23,.4)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(212,160,23,.6)" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      </div>
+      <h2 class="serif" style="font-size:20px;color:white;margin-bottom:4px" id="mp-name">Your Name</h2>
+      <p style="font-size:12px;color:var(--w50);margin-bottom:10px" id="mp-meta">— · —</p>
+      <!-- Verification badges -->
+      <div id="mp-verif-row" class="verif-row" style="justify-content:center"></div>
+      <!-- Founding member badge -->
+      <div id="mp-founding" style="display:none;background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:1px solid rgba(212,160,23,.35);border-radius:10px;padding:8px 14px;font-size:11px;color:var(--gold2);margin-top:6px">
+        ✦ Founding Member · 1 week free premium at launch
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      <div class="card-dark" style="text-align:center"><p class="serif" style="font-size:20px;color:#fff;font-weight:700" id="mp-interests-count">0</p><p style="font-size:9px;letter-spacing:.1em;color:var(--w50);text-transform:uppercase;margin-top:3px">Interests</p></div>
+      <div class="card-dark" style="text-align:center"><p class="serif" style="font-size:20px;color:#fff;font-weight:700" id="mp-views-count">0</p><p style="font-size:9px;letter-spacing:.1em;color:var(--w50);text-transform:uppercase;margin-top:3px">Profile Views</p></div>
+      <div class="card-dark" style="text-align:center"><p class="serif" style="font-size:20px;color:var(--gold2);font-weight:700" id="mp-days-count">7</p><p style="font-size:9px;letter-spacing:.1em;color:var(--w50);text-transform:uppercase;margin-top:3px">Free Days</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-outline" onclick="showScreen('edit-profile')" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.6"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+        <span style="color:white;font-size:14px">Edit Profile</span>
+      </button>
+      <button class="btn btn-ghost" onclick="shareReferral()" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        <span style="color:white;font-size:14px">Refer Friends · Earn Free Days</span>
+      </button>
+      <button class="btn btn-ghost" onclick="doLogout()" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span style="color:rgba(255,255,255,.5);font-size:14px">Sign Out</span>
+      </button>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
+    <div class="tab" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
+    <div class="tab on" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
+  </div>
+</div>
+
+<!-- ═══════ FORGOT PASSWORD ═══════ -->
+<div id="screen-forgot" class="screen bg-dp">
+  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
+  <div class="scroll" style="padding:32px 24px">
+    <button onclick="showScreen('login')" style="background:none;border:none;color:var(--gold2);font-size:13px;cursor:pointer;margin-bottom:20px">← Back to Login</button>
+    <h2 class="serif" style="font-size:22px;color:white;margin-bottom:8px">Reset Password</h2>
+    <p style="font-size:14px;color:var(--w50);margin-bottom:24px;line-height:1.6">Enter your email and we'll send you a reset link.</p>
+    <input id="forgot-email" type="email" class="inp inp-dark" placeholder="your@email.com" style="margin-bottom:14px"/>
+    <p id="forgot-msg" style="font-size:12px;margin-bottom:14px;display:none"></p>
+    <button class="btn btn-gold" onclick="doForgot()">Send Reset Link</button>
+  </div>
+</div>
+
+</div><!-- /#app -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SB_URL='https://neftjxvovxocqabxjvme.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+// ── PLATFORM LAUNCH FLAG ──
+// Set to true when platform is live to remove coming-soon overlays
+const PLATFORM_LIVE=false;
+
+let currentUser=null;
+let currentProfile=null;
+let phoneSession=null; // stores phone verification session
+let pendingPhone=null; // phone number awaiting OTP
+let faithFilter='all';
+let otpTimer=null;
+
+// ── SCREEN ROUTER ──
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const s=document.getElementById('screen-'+name);
+  if(s)s.classList.add('active');
+  if(name==='discover')loadDiscover();
+  if(name==='interests')loadInterests();
+  if(name==='messages')loadMessages();
+  if(name==='myprofile')loadMyProfile();
+}
+
+// ── LAUNCH STATE: show/hide coming-soon overlays ──
+function applyLaunchState(){
+  ['discover-cs','interests-cs','messages-cs'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display=PLATFORM_LIVE?'none':'flex';
+  });
+}
+
+// ── SPLASH / INIT ──
+async function init(){
+  applyLaunchState();
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){
+    currentUser=session.user;
+    await loadProfile();
+    routeAfterAuth();
+  } else {
+    const seen=localStorage.getItem('bf_tour_seen');
+    showScreen(seen?'login':'tour1');
+  }
+}
+
+async function loadProfile(){
+  if(!currentUser)return;
+  const{data}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  currentProfile=data;
+}
+
+function routeAfterAuth(){
+  if(!currentProfile){
+    // Email verified but no profile yet — check phone
+    if(currentUser.phone_confirmed_at||currentUser.user_metadata?.phone_verified){
+      showScreen('setup1');
+    } else if(currentUser.email_confirmed_at){
+      // Email done, need phone
+      document.getElementById('pv-phone').value=currentUser.user_metadata?.phone_pending||'';
+      document.getElementById('pv-phone-display').textContent=currentUser.user_metadata?.phone_pending||'';
+      showScreen('phone-verify');
+    } else {
+      document.getElementById('ev-email-display').textContent=currentUser.email;
+      showScreen('email-verify');
+    }
+    return;
+  }
+  if(currentProfile.status==='pending'||currentProfile.status==='rejected'){
+    showScreen('pending');
+  } else {
+    showScreen('discover');
+  }
+}
+
+// ── AUTH: SIGNUP ──
+async function doSignup(){
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pass=document.getElementById('su-pass').value;
+  const phone=document.getElementById('su-phone').value.trim();
+  const err=document.getElementById('su-err');
+  err.style.display='none';
+  if(!name||!email||!pass||!phone){err.textContent='All fields are required.';err.style.display='block';return;}
+  if(pass.length<8){err.textContent='Password must be at least 8 characters.';err.style.display='block';return;}
+  const btn=document.getElementById('su-btn');
+  btn.disabled=true;btn.textContent='Creating account…';
+  const{data,error}=await sb.auth.signUp({
+    email,password:pass,
+    options:{data:{full_name:name,phone_pending:phone},emailRedirectTo:window.location.origin}
+  });
+  btn.disabled=false;btn.textContent='Continue — Verify Email →';
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  currentUser=data.user;
+  pendingPhone=phone;
+  document.getElementById('ev-email-display').textContent=email;
+  showScreen('email-verify');
+}
+
+// ── AUTH: CHECK EMAIL VERIFIED ──
+async function checkEmailVerified(){
+  const btn=document.getElementById('ev-check-btn');
+  const msg=document.getElementById('ev-msg');
+  btn.disabled=true;btn.textContent='Checking…';
+  // Refresh session to get updated email_confirmed_at
+  await sb.auth.refreshSession();
+  const{data:{user}}=await sb.auth.getUser();
+  btn.disabled=false;btn.textContent='I\'ve Verified My Email ✓';
+  if(!user||!user.email_confirmed_at){
+    msg.textContent='Email not verified yet. Please click the link in your inbox.';
+    msg.style.color='var(--err)';msg.style.display='block';
+    return;
+  }
+  currentUser=user;
+  msg.style.display='none';
+  // Move to phone verification
+  const phone=pendingPhone||user.user_metadata?.phone_pending||'';
+  document.getElementById('pv-phone').value=phone;
+  document.getElementById('pv-phone-display').textContent=phone||'Enter your number below';
+  if(phone){document.getElementById('pv-input-section').style.display='none';document.getElementById('pv-phone-display').textContent=phone;}
+  showScreen('phone-verify');
+}
+
+async function resendVerifyEmail(){
+  const{data:{user}}=await sb.auth.getUser();
+  if(!user)return;
+  const{error}=await sb.auth.resend({type:'signup',email:user.email});
+  const btn=document.getElementById('ev-resend-btn');
+  btn.textContent=error?'Failed — try again':'Email sent!';
+  setTimeout(()=>{btn.textContent='Resend verification email';},3000);
+}
+
+// ── AUTH: PHONE OTP ──
+async function sendPhoneOTP(){
+  const phone=document.getElementById('pv-phone').value.trim();
+  const err=document.getElementById('pv-err');
+  err.style.display='none';
+  if(!phone){err.textContent='Please enter your phone number.';err.style.display='block';return;}
+  const btn=document.getElementById('pv-send-btn');
+  btn.disabled=true;btn.textContent='Sending OTP…';
+  // Use Supabase phone OTP (Twilio under the hood)
+  const{data,error}=await sb.auth.signInWithOtp({phone:phone.replace(/\s/g,'')});
+  btn.disabled=false;btn.textContent='Send OTP via SMS';
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  pendingPhone=phone;
+  phoneSession=data;
+  document.getElementById('pv-phone-display').textContent=phone;
+  document.getElementById('pv-input-section').style.display='none';
+  document.getElementById('pv-otp-section').style.display='block';
+  document.getElementById('otp0').focus();
+  startOTPTimer();
+}
+
+async function verifyPhoneOTP(){
+  const otp=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
+  const err=document.getElementById('pv-err');
+  err.style.display='none';
+  if(otp.length<6){err.textContent='Please enter the full 6-digit code.';err.style.display='block';return;}
+  const btn=document.getElementById('pv-verify-btn');
+  btn.disabled=true;btn.textContent='Verifying…';
+  const phone=(pendingPhone||'').replace(/\s/g,'');
+  const{data,error}=await sb.auth.verifyOtp({phone,token:otp,type:'sms'});
+  btn.disabled=false;btn.textContent='Verify Phone Number ✓';
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  // Update user metadata to mark phone verified
+  await sb.auth.updateUser({data:{phone_verified:true,phone_number:phone}});
+  currentUser=data.user||currentUser;
+  showScreen('setup1');
+}
+
+async function resendOTP(){
+  clearOTPTimer();
+  document.getElementById('pv-resend-btn').style.display='none';
+  document.getElementById('pv-timer').style.display='inline';
+  await sendPhoneOTPDirect();
+  startOTPTimer();
+}
+
+async function sendPhoneOTPDirect(){
+  const phone=(pendingPhone||'').replace(/\s/g,'');
+  if(phone)await sb.auth.signInWithOtp({phone});
+}
+
+function startOTPTimer(){
+  let s=30;
+  document.getElementById('pv-resend-btn').style.display='none';
+  document.getElementById('pv-timer').style.display='inline';
+  document.getElementById('pv-timer-count').textContent=s;
+  clearOTPTimer();
+  otpTimer=setInterval(()=>{
+    s--;document.getElementById('pv-timer-count').textContent=s;
+    if(s<=0){
+      clearOTPTimer();
+      document.getElementById('pv-resend-btn').style.display='inline';
+      document.getElementById('pv-timer').style.display='none';
+    }
+  },1000);
+}
+function clearOTPTimer(){if(otpTimer){clearInterval(otpTimer);otpTimer=null;}}
+
+function otpMove(el,idx){
+  if(el.value.length===1&&idx<5)document.getElementById('otp'+(idx+1)).focus();
+  if(el.value.length===0&&idx>0)document.getElementById('otp'+(idx-1)).focus();
+}
+
+// ── AUTH: SAVE SETUP 1 ──
+async function saveSetup1(){
+  const age=parseInt(document.getElementById('s1-age').value);
+  const gender=document.getElementById('s1-gender').value;
+  const religion=document.getElementById('s1-religion').value;
+  const denom=document.getElementById('s1-denom').value.trim();
+  const city=document.getElementById('s1-city').value.trim();
+  const state=document.getElementById('s1-state').value;
+  const err=document.getElementById('s1-err');
+  err.style.display='none';
+  if(!age||age<18||age>70){err.textContent='Please enter a valid age (18–70).';err.style.display='block';return;}
+  if(!gender||!religion||!city||!state){err.textContent='All fields are required.';err.style.display='block';return;}
+  const{data:{user}}=await sb.auth.getUser();
+  const uMeta=user.user_metadata||{};
+  const{error}=await sb.from('profiles').upsert({
+    id:user.id,
+    full_name:uMeta.full_name||'',
+    email:user.email,
+    phone:uMeta.phone_number||pendingPhone||'',
+    age,gender,religion,denomination:denom,city,state,
+    status:'pending',is_founding_member:true
+  });
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  await loadProfile();
+  showScreen('pending');
+}
+
+// ── AUTH: LOGIN ──
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-err');
+  err.style.display='none';
+  if(!email||!pass){err.textContent='Please enter email and password.';err.style.display='block';return;}
+  const btn=document.getElementById('login-btn');
+  btn.disabled=true;btn.textContent='Signing in…';
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Sign In';
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  currentUser=data.user;
+  await loadProfile();
+  routeAfterAuth();
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser=null;currentProfile=null;
+  localStorage.removeItem('bf_tour_seen');
+  showScreen('login');
+}
+
+async function doForgot(){
+  const email=document.getElementById('forgot-email').value.trim();
+  const msg=document.getElementById('forgot-msg');
+  if(!email){msg.textContent='Please enter your email.';msg.style.color='var(--err)';msg.style.display='block';return;}
+  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
+  msg.textContent=error?error.message:'Reset link sent! Check your inbox.';
+  msg.style.color=error?'var(--err)':'var(--g3)';
+  msg.style.display='block';
+}
+
+// ── PROFILE DATA ──
+function toggleSetupDenom(){
+  const r=document.getElementById('s1-religion').value;
+  const wrap=document.getElementById('s1-denom-wrap');
+  wrap.style.display=(r==='Christian'||r==='Muslim'||r==='Hindu'||r==='Sikh')?'block':'none';
+}
+
+async function loadMyProfile(){
+  if(!currentProfile)return;
+  document.getElementById('mp-name').textContent=currentProfile.full_name||'Your Name';
+  document.getElementById('mp-meta').textContent=`${currentProfile.religion||'—'} · ${currentProfile.city||'—'}`;
+  // Verification badges
+  const row=document.getElementById('mp-verif-row');
+  const u=currentUser||{};
+  let badges='';
+  if(u.email_confirmed_at)badges+=`<span class="verif-badge verif-done">✓ Email verified</span>`;
+  if(u.user_metadata?.phone_verified||u.phone_confirmed_at)badges+=`<span class="verif-badge verif-done">✓ Phone verified</span>`;
+  if(u.user_metadata?.id_verified)badges+=`<span class="verif-badge verif-done">✓ ID verified</span>`;
+  if(!u.email_confirmed_at)badges+=`<span class="verif-badge verif-pending">⚠ Email unverified</span>`;
+  row.innerHTML=badges;
+  if(currentProfile.is_founding_member)document.getElementById('mp-founding').style.display='block';
+  // Stats
+  const{count:i}=await sb.from('interests').select('*',{count:'exact',head:true}).eq('receiver_id',currentUser.id);
+  document.getElementById('mp-interests-count').textContent=i||0;
+  const{count:v}=await sb.from('profile_views').select('*',{count:'exact',head:true}).eq('viewed_id',currentUser.id);
+  document.getElementById('mp-views-count').textContent=v||0;
+}
+
+// ── DISCOVER ──
+function setFaithFilter(el,val){
+  faithFilter=val;
+  document.querySelectorAll('#screen-discover .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  loadDiscover();
+}
+
+async function loadDiscover(){
+  if(!currentUser)return;
+  if(!PLATFORM_LIVE)return; // Don't load real data if not live
+  const container=document.getElementById('disc-cards');
+  container.innerHTML='<div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div>';
+  let q=sb.from('profiles').select('id,full_name,age,city,religion,photo_url').eq('status','approved').neq('id',currentUser.id);
+  if(faithFilter!=='all')q=q.ilike('religion',faithFilter);
+  const{data}=await q.limit(20);
+  document.getElementById('disc-count').textContent=(data||[]).length;
+  if(!data||!data.length){container.innerHTML='<div style="text-align:center;padding:40px 20px"><p style="color:var(--w50);font-size:14px">No profiles yet — you\'ll be the first! 🌟</p></div>';return;}
+  container.innerHTML=data.map(p=>`
+    <div class="pcard">
+      <div class="pcard-img-placeholder">${p.religion==='Christian'?'✝️':p.religion==='Muslim'?'☪️':p.religion==='Hindu'?'🕉️':p.religion==='Sikh'?'☬':p.religion==='Jain'?'🕊️':'✨'}</div>
+      <div class="pcard-body">
+        <p class="pcard-name">${p.full_name||'Member'}</p>
+        <p class="pcard-meta">${p.age||'—'} · ${p.religion||'—'} · ${p.city||'—'}</p>
+        <div class="pcard-actions">
+          <button class="btn btn-gold" style="flex:1;padding:10px;font-size:13px" onclick="sendInterest('${p.id}')">Send Interest ✦</button>
+          <button class="btn btn-ghost" style="width:44px;padding:10px;font-size:13px">👁</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function sendInterest(toId){
+  if(!currentUser)return;
+  const{error}=await sb.from('interests').upsert({from_user_id:currentUser.id,to_user_id:toId,status:'pending'},{onConflict:'from_user_id,to_user_id'});
+  if(!error){const btn=event.target;btn.textContent='Sent ✓';btn.disabled=true;}
+}
+
+// ── INTERESTS ──
+async function loadInterests(){
+  if(!currentUser||!PLATFORM_LIVE)return;
+  const{data}=await sb.from('interests').select('*,from_user:from_user_id(full_name,age,city,religion)').eq('to_user_id',currentUser.id).eq('status','pending');
+  const c=document.getElementById('interests-list');
+  if(!data||!data.length){c.innerHTML='<div style="text-align:center;padding:40px 20px"><p style="color:var(--w50);font-size:14px">No interests yet.</p></div>';return;}
+  c.innerHTML=data.map(i=>`<div class="card-dark" style="margin-bottom:10px;display:flex;align-items:center;gap:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--dp3);display:flex;align-items:center;justify-content:center;font-size:20px">💍</div><div style="flex:1"><p style="color:white;font-size:14px;font-weight:700">${i.from_user?.full_name||'Member'}</p><p style="color:var(--w50);font-size:12px">${i.from_user?.age||'—'} · ${i.from_user?.religion||'—'} · ${i.from_user?.city||'—'}</p></div><button class="btn btn-gold" style="width:70px;padding:8px;font-size:11px" onclick="acceptInterest('${i.id}',this)">Accept</button></div>`).join('');
+}
+
+async function acceptInterest(id,btn){
+  const{error}=await sb.from('interests').update({status:'accepted',responded_at:new Date().toISOString()}).eq('id',id);
+  if(!error){btn.textContent='✓ Done';btn.disabled=true;}
+}
+
+// ── MESSAGES ──
+async function loadMessages(){
+  if(!currentUser||!PLATFORM_LIVE)return;
+  const c=document.getElementById('msg-list');
+  c.innerHTML='<div style="text-align:center;padding:40px 20px"><p style="color:var(--w50);font-size:14px">No conversations yet.</p></div>';
+}
+
+// ── REFERRAL ──
+function shareReferral(){
+  const link=`https://beginforever.in?ref=${currentUser?.id?.slice(0,8)||'friend'}`;
+  if(navigator.share){navigator.share({title:'Begin Forever',text:'Join India\'s most trusted matrimony!',url:link});}
+  else{navigator.clipboard?.writeText(link).then(()=>alert('Link copied!'));}
+}
+
+// ── COUNTDOWN (dummy — replace with real launch date) ──
+function updateCountdown(){
+  const launch=new Date('2026-05-16T00:00:00+05:30');
+  const now=new Date();
+  const diff=Math.max(0,launch-now);
+  const days=Math.floor(diff/864e5);
+  const hrs=Math.floor((diff%864e5)/36e5);
+  const min=Math.floor((diff%36e5)/6e4);
+  const d=document.getElementById('cs-days');
+  const h=document.getElementById('cs-hrs');
+  const m=document.getElementById('cs-min');
+  if(d)d.textContent=String(days).padStart(2,'0');
+  if(h)h.textContent=String(hrs).padStart(2,'0');
+  if(m)m.textContent=String(min).padStart(2,'0');
+}
+
+// ── BOOT ──
+localStorage.setItem('bf_tour_seen','1');
+setInterval(updateCountdown,60000);
+updateCountdown();
+init();
+</script>
 </body>
 </html>
