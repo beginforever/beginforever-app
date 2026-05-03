@@ -118,7 +118,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen" class="screen active" style="display:flex;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="font-size:24px;margin-bottom:16px;">✦ 🌟 ✦</div>
+  <img src="/logo.png" style="width:80px;height:80px;border-radius:18px;margin-bottom:16px;box-shadow:0 8px 30px rgba(212,160,23,.25)" onerror="this.style.display='none'"/>
   <div class="spinner"></div>
   <p style="font-family:'Cinzel',serif;color:var(--gold);margin-top:16px;font-size:14px;">Begin Forever</p>
 </div>
@@ -126,7 +126,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 <!-- AUTH SCREEN -->
 <div id="authScreen" class="screen" style="display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
   <div style="text-align:center;margin-bottom:32px;">
-    <div style="font-size:28px;margin-bottom:8px;">✦ 🌟 ✦</div>
+    <img src="/logo.png" style="width:72px;height:72px;border-radius:16px;margin-bottom:12px;box-shadow:0 8px 30px rgba(212,160,23,.25)" onerror="this.style.display='none'"/>
     <h1 style="font-family:'Cinzel',serif;font-size:28px;color:var(--white);">Begin Forever</h1>
     <p style="color:var(--gold);font-family:'EB Garamond',serif;font-style:italic;font-size:14px;margin-top:8px;">India's most trusted matrimony platform</p>
   </div>
@@ -807,11 +807,14 @@ function shareReferral() {
 
 // INIT
 async function loadUserProfile() {
-  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  myProfile = data;
+  try {
+    const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+    myProfile = (!error && data) ? data : null;
+  } catch(e) { myProfile = null; }
+  
   if (!myProfile) { showScreen('setupScreen'); updateSetupUI(); return; }
-  if (myProfile.status === 'pending') { document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile is being reviewed by our team. You'll receive an email once approved — usually within 24 hours.`; showScreen('pendingScreen'); return; }
-  if (myProfile.status === 'rejected') { document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support for more information.'; showScreen('rejectedScreen'); return; }
+  if (myProfile.status === 'pending') { document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile is being reviewed. You'll receive an email once approved — usually within 24 hours.`; showScreen('pendingScreen'); return; }
+  if (myProfile.status === 'rejected') { document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support.'; showScreen('rejectedScreen'); return; }
   document.getElementById('headerName').textContent = myProfile.full_name.split(' ')[0];
   if (myProfile.is_admin) {
     const tabBar = document.getElementById('tabBar');
@@ -822,7 +825,7 @@ async function loadUserProfile() {
       tabBar.appendChild(adminBtn);
     }
   }
-  await loadAllInterests();
+  try { await loadAllInterests(); } catch(e) {}
   showScreen('mainApp');
   switchTab('browse');
 }
