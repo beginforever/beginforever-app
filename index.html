@@ -443,7 +443,7 @@ async function handleAuth() {
       sucEl.textContent = 'Password reset link sent!';
       sucEl.style.display = '';
     }
-  } catch (err) { errEl.textContent = err.message; errEl.style.display = ''; }
+  } catch (err) { errEl.textContent = err.message || 'Something went wrong. Please try again.'; errEl.style.display = ''; }
   btn.disabled = false;
   btn.textContent = authMode === 'login' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link';
 }
