@@ -2,1020 +2,844 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Begin Forever"/>
+<meta name="theme-color" content="#0D0118"/>
 <title>Begin Forever</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@1,400;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--dp:#1A0A2E;--dp2:#0D051A;--dp3:#280840;--gold:#D4A017;--gold2:#F5C842;--gold3:#A07810;--w10:rgba(255,255,255,.1);--w20:rgba(255,255,255,.2);--w50:rgba(255,255,255,.5);--w70:rgba(255,255,255,.7);--w80:rgba(255,255,255,.8);--ink:#1A0A2E;--g3:#4ade80;--err:#f87171}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--dp2)}
-#app{position:relative;width:100%;max-width:430px;height:100%;margin:0 auto;overflow:hidden;background:var(--dp2)}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
-.screen.active{display:flex}
-.bg-dp{background:linear-gradient(160deg,var(--dp) 0%,var(--dp2) 100%)}
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.sb{height:24px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;font-size:11px;font-weight:700;color:var(--w50)}
-.sb-light{color:rgba(255,255,255,.4)}
-.eyb-sm{font-size:9px;letter-spacing:.12em;color:rgba(201,168,46,.75);text-transform:uppercase;font-weight:700}
-.serif{font-family:'Cinzel',serif}
-.card-dark{background:rgba(255,255,255,.05);border:1px solid var(--w10);border-radius:16px;padding:16px}
-.btn{width:100%;padding:15px;border:none;border-radius:14px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;transition:.2s;position:relative}
-.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--dp)}
-.btn-outline{background:transparent;border:1.5px solid rgba(201,168,46,.4);color:var(--gold2)}
-.btn-ghost{background:var(--w10);color:white}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.inp{width:100%;padding:13px 16px;border-radius:12px;font-family:'Nunito',sans-serif;font-size:15px;outline:none;transition:.2s}
-.inp-dark{background:rgba(255,255,255,.07);border:1.5px solid rgba(201,168,46,.25);color:white}
-.inp-dark::placeholder{color:var(--w50)}
-.inp-dark:focus{border-color:var(--gold);background:rgba(255,255,255,.1)}
-.inp-dark.err{border-color:var(--err)}
-select.inp-dark option{background:#280840;color:white}
-.chip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;border:1.5px solid transparent}
-.chip-dark{background:var(--w10);color:var(--w80);border-color:var(--w10)}
-.chip-dark.on{background:rgba(201,168,46,.15);border-color:rgba(201,168,46,.5);color:var(--gold2)}
-.spinner{width:22px;height:22px;border:2.5px solid rgba(201,168,46,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
-@keyframes spin{to{transform:rotate(360deg)}}
-.tabbar{height:64px;background:rgba(42,16,64,.96);backdrop-filter:blur(16px);border-top:1px solid var(--w10);display:flex;align-items:center;justify-content:space-around;padding-bottom:6px;flex-shrink:0}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--w50);font-size:10px;padding:4px 12px;border-radius:10px;transition:.2s}
-.tab.on{color:#fff}
-.tab svg{width:22px;height:22px}
-.tab-dot{width:4px;height:4px;border-radius:50%;background:transparent}
-.tab.on .tab-dot{background:var(--gold)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{animation:fadeUp .4s ease both}
-.verif-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.verif-done{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35);color:var(--g3)}
-.verif-pending{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);color:var(--gold2)}
-.verif-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.cs-overlay{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column}
-.cs-blur-bg{position:absolute;inset:0;backdrop-filter:blur(8px);background:rgba(13,5,26,.7)}
-.otp-row{display:flex;gap:8px;justify-content:center}
-.otp-box{width:48px;height:56px;border-radius:12px;background:rgba(255,255,255,.07);border:1.5px solid rgba(201,168,46,.25);color:white;font-size:22px;font-weight:700;text-align:center;font-family:'Cinzel',serif;transition:.2s}
-.otp-box:focus{border-color:var(--gold);background:rgba(255,255,255,.12);outline:none}
-.pcard{border-radius:20px;overflow:hidden;position:relative;background:var(--dp3);border:1px solid var(--w10);margin-bottom:12px}
-.pcard-img{width:100%;height:200px;object-fit:cover;background:linear-gradient(135deg,var(--dp3),var(--dp))}
-.pcard-img-placeholder{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,var(--dp3),var(--dp))}
-.pcard-body{padding:14px 16px}
-.pcard-name{font-family:'Cinzel',serif;font-size:16px;color:white;font-weight:700;margin-bottom:2px}
-.pcard-meta{font-size:12px;color:var(--w50);margin-bottom:10px}
-.pcard-actions{display:flex;gap:8px}
-.launch-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:20px;padding:4px 12px;font-size:10px;font-weight:800;color:var(--dp);letter-spacing:.04em;text-transform:uppercase}
-.count-wrap{display:flex;gap:8px;justify-content:center}
-.count-box{background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:8px 12px;text-align:center;min-width:52px}
-.count-num{font-family:'Cinzel',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1}
-.count-lbl{font-size:9px;color:var(--w50);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
-.feature-pill{background:rgba(255,255,255,.06);border:0.5px solid var(--w20);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--w80)}
-.timeline-row{display:flex;align-items:center}
-.t-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.t-dot.done{background:var(--g3)}
-.t-dot.now{background:var(--gold2);box-shadow:0 0 0 3px rgba(245,200,66,.2)}
-.t-dot.soon{background:rgba(255,255,255,.2)}
-.t-line{flex:1;height:1px;background:var(--w10)}
-.t-label{font-size:10px;line-height:1.3;text-align:center;width:52px;flex-shrink:0}
-/* ── ID UPLOAD ── */
-.id-type-btn{background:rgba(255,255,255,.06);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:12px 8px;text-align:center;font-size:12px;font-weight:600;color:var(--w70);cursor:pointer;transition:.2s}
-.id-type-btn.selected{background:rgba(212,160,23,.12);border-color:var(--gold);color:var(--gold2)}
-.upload-zone{background:rgba(255,255,255,.04);border:1.5px dashed rgba(212,160,23,.3);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:.2s}
-.upload-zone:hover,.upload-zone.filled{border-color:var(--gold);background:rgba(212,160,23,.06)}
+:root {
+  --black: #0D0118; --dark1: #130220; --dark2: #1C0530; --dark3: #280840;
+  --royal: #3B0764; --royal-mid: #5B1A8A; --royal-light: #7C3AAD;
+  --gold: #D4A017; --gold-bright: #F5C842; --gold-pale: #FDF3D0;
+  --white: #FFFFFF; --white70: rgba(255,255,255,0.7); --white40: rgba(255,255,255,0.4);
+  --white15: rgba(255,255,255,0.15); --white08: rgba(255,255,255,0.08);
+  --red: #e74c3c; --green: #27ae60;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Nunito', sans-serif; background: var(--black); color: var(--white); overflow-x: hidden; min-height: 100vh; }
+input, select, textarea, button { font-family: 'Nunito', sans-serif; }
+input::placeholder, textarea::placeholder { color: var(--white40); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--white15); border-radius: 4px; }
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.glow { position: absolute; border-radius: 50%; filter: blur(120px); animation: glowPulse 8s ease-in-out infinite alternate; }
+.g1 { width: 400px; height: 400px; background: var(--royal); opacity: 0.3; top: -100px; right: -80px; }
+.g2 { width: 300px; height: 300px; background: var(--gold); opacity: 0.1; bottom: -80px; left: -60px; }
+@keyframes glowPulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+.spinner { width: 24px; height: 24px; border: 2.5px solid var(--white15); border-top-color: var(--gold-bright); border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto; }
+.spinner-sm { width: 18px; height: 18px; }
+.field { width: 100%; padding: 13px 14px; border: 1px solid var(--white15); border-radius: 10px; font-size: 14px; color: var(--white); background: var(--white08); outline: none; transition: border-color 0.2s; }
+.field:focus { border-color: var(--royal-light); box-shadow: 0 0 0 3px rgba(124,58,173,0.2); }
+select.field { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D4A017' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+select.field option { background: var(--dark2); color: var(--white); }
+.field-label { font-size: 12px; font-weight: 600; color: var(--white70); display: block; margin-bottom: 5px; }
+.field-group { margin-bottom: 14px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-bright)); color: var(--black); }
+.btn-dark { background: var(--white08); color: var(--white); border: 1px solid var(--white15); }
+.btn-green { background: var(--green); color: var(--white); }
+.btn-red { background: var(--red); color: var(--white); }
+.btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 8px; width: auto; }
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; animation: fadeIn 0.3s ease; }
+.app-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--dark1); border-bottom: 1px solid var(--white08); position: sticky; top: 0; z-index: 50; }
+.app-header h1 { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold-bright); margin: 0; }
+.tab-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark1); border-top: 1px solid var(--white08); padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 100; }
+.tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 0; color: var(--white40); transition: color 0.2s; position: relative; }
+.tab-btn.active { color: var(--gold-bright); }
+.tab-btn .tab-icon { font-size: 20px; }
+.tab-btn .tab-label { font-size: 10px; font-weight: 600; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.profile-card { background: var(--white08); border-radius: 16px; overflow: hidden; border: 1px solid var(--white08); cursor: pointer; transition: transform 0.2s; }
+.profile-card:hover { transform: translateY(-3px); }
+.profile-card-photo { height: 180px; background: var(--dark3); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
+.profile-card-info { padding: 14px; }
+.profile-card-info h3 { font-family: 'Cinzel', serif; font-size: 14px; color: var(--white); margin: 0; }
+.profile-card-info p { font-size: 11px; color: var(--white40); margin: 3px 0 0; }
+.content-area { padding: 20px; padding-bottom: 80px; }
+.interest-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--white08); border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--white08); }
+.interest-avatar { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; background: var(--dark3); background-size: cover; background-position: center; }
+.interest-info { flex: 1; min-width: 0; }
+.interest-info h3 { font-family: 'Cinzel', serif; font-size: 14px; color: var(--white); margin: 0; }
+.interest-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.chat-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--dark1); border-bottom: 1px solid var(--white08); }
+.chat-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--dark3); flex-shrink: 0; background-size: cover; background-position: center; }
+.chat-messages { flex: 1; overflow: auto; padding: 16px; }
+.chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 14px; margin-bottom: 8px; }
+.chat-bubble-mine { background: var(--royal); border-bottom-right-radius: 4px; margin-left: auto; }
+.chat-bubble-theirs { background: var(--white08); border-bottom-left-radius: 4px; }
+.chat-bubble p { font-size: 14px; color: var(--white); line-height: 1.5; word-break: break-word; }
+.chat-bubble .time { font-size: 9px; color: var(--white40); text-align: right; margin-top: 4px; }
+.chat-input-bar { display: flex; gap: 10px; padding: 12px 16px; background: var(--dark1); border-top: 1px solid var(--white08); }
+.chat-input { flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--white15); background: var(--white08); color: var(--white); font-size: 14px; outline: none; }
+.chat-send { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; background: var(--gold); color: var(--black); font-size: 18px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal-content { background: var(--dark1); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; max-height: 90vh; overflow: auto; animation: slideUp 0.3s ease; }
+.pill-tabs { display: flex; gap: 6px; background: var(--white08); border-radius: 10px; padding: 4px; }
+.pill-tab { flex: 1; padding: 10px; background: transparent; color: var(--white40); border: none; cursor: pointer; font-weight: 700; font-size: 12px; border-radius: 8px; transition: all 0.2s; }
+.pill-tab.active { background: var(--gold); color: var(--black); }
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.photo-slot { aspect-ratio: 1; border-radius: 14px; overflow: hidden; cursor: pointer; background: var(--white08); border: 2px dashed var(--white15); display: flex; align-items: center; justify-content: center; flex-direction: column; background-size: cover; background-position: center; }
+.filter-bar { background: var(--white08); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.stat-box { background: var(--white08); border-radius: 10px; padding: 10px 12px; }
+.stat-box .label { font-size: 10px; color: var(--white40); text-transform: uppercase; letter-spacing: 1px; }
+.stat-box .value { font-size: 13px; color: var(--white); font-weight: 600; margin-top: 2px; }
+.admin-card { background: var(--white08); border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--white08); }
+.admin-card-header { display: flex; align-items: center; gap: 12px; }
+.admin-avatar { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; background: var(--dark3); background-size: cover; background-position: center; }
+.steps { display: flex; gap: 6px; justify-content: center; margin: 12px 0; }
+.step-dot { width: 40px; height: 4px; border-radius: 2px; background: var(--white15); transition: background 0.3s; }
+.step-dot.active { background: var(--gold-bright); }
+/* Safety & Referral Banners */
+.safety-banner { background: linear-gradient(145deg, #993556, #72243E); border: 1px solid rgba(244,192,209,.35); border-radius: 16px; padding: 14px 16px; margin-bottom: 16px; }
+.referral-strip { background: linear-gradient(145deg, #3B0764, #5B1A8A); border: 1px solid rgba(212,160,23,.4); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; cursor: pointer; }
+@media (max-width: 400px) {
+  .field-row { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-<div id="app">
 
-<!-- ═══════ SPLASH ═══════ -->
-<div id="screen-splash" class="screen bg-dp active" style="align-items:center;justify-content:center;text-align:center;padding:40px">
-  <img src="/logo.png" style="width:90px;height:90px;border-radius:22px;margin-bottom:20px;box-shadow:0 8px 30px rgba(212,160,23,.25)" onerror="this.style.display='none'"/>
-  <h1 class="serif" style="font-size:28px;color:white;margin-bottom:6px">Begin Forever</h1>
-  <p style="font-size:13px;color:var(--w50);margin-bottom:40px">India's most trusted matrimony</p>
-  <div class="spinner" id="splash-spinner"></div>
+<div class="ambient"><div class="glow g1"></div><div class="glow g2"></div></div>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" class="screen active" style="display:flex;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="font-size:24px;margin-bottom:16px;">✦ 🌟 ✦</div>
+  <div class="spinner"></div>
+  <p style="font-family:'Cinzel',serif;color:var(--gold);margin-top:16px;font-size:14px;">Begin Forever</p>
 </div>
 
-<!-- ═══════ TOUR 1 ═══════ -->
-<div id="screen-tour1" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:40px">
-  <div style="font-size:64px;margin-bottom:24px">🪪</div>
-  <h2 class="serif" style="font-size:26px;color:white;margin-bottom:12px">100% ID Verified</h2>
-  <p style="color:var(--w50);font-size:15px;line-height:1.7;max-width:300px;margin:0 auto 40px">Every single profile is verified with a government-issued ID. Zero fake accounts.</p>
-  <button class="btn btn-gold" onclick="showScreen('tour2')" style="max-width:260px">Next →</button>
-  <button class="btn btn-ghost" onclick="showScreen('login')" style="max-width:260px;margin-top:10px">Skip</button>
-</div>
-
-<!-- ═══════ TOUR 2 ═══════ -->
-<div id="screen-tour2" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:40px">
-  <div style="font-size:64px;margin-bottom:24px">🙏</div>
-  <h2 class="serif" style="font-size:26px;color:white;margin-bottom:12px">All Faiths Welcome</h2>
-  <p style="color:var(--w50);font-size:15px;line-height:1.7;max-width:300px;margin:0 auto 40px">Hindu, Muslim, Christian, Sikh, Jain, Buddhist — real intentions, rooted in faith.</p>
-  <button class="btn btn-gold" onclick="showScreen('tour3')" style="max-width:260px">Next →</button>
-</div>
-
-<!-- ═══════ TOUR 3 ═══════ -->
-<div id="screen-tour3" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:40px">
-  <div style="font-size:64px;margin-bottom:24px">💍</div>
-  <h2 class="serif" style="font-size:26px;color:white;margin-bottom:12px">Real Intentions Only</h2>
-  <p style="color:var(--w50);font-size:15px;line-height:1.7;max-width:300px;margin:0 auto 40px">We're 300 founding members strong. Genuine matrimony — nothing less.</p>
-  <button class="btn btn-gold" onclick="showScreen('signup')" style="max-width:260px">Create My Profile ✦</button>
-  <button class="btn btn-outline" onclick="showScreen('login')" style="max-width:260px;margin-top:10px">Already registered? Login</button>
-</div>
-
-<!-- ═══════ LOGIN ═══════ -->
-<div id="screen-login" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div class="scroll" style="padding:32px 24px">
-    <div style="text-align:center;margin-bottom:32px">
-      <img src="/logo.png" style="width:60px;height:60px;border-radius:16px;margin-bottom:14px" onerror="this.style.display='none'"/>
-      <h2 class="serif" style="font-size:24px;color:white;margin-bottom:6px">Welcome Back</h2>
-      <p style="font-size:13px;color:var(--w50)">Sign in to your account</p>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Email Address</label>
-      <input id="login-email" type="email" class="inp inp-dark" placeholder="your@email.com"/>
-    </div>
-    <div style="margin-bottom:8px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Password</label>
-      <input id="login-pass" type="password" class="inp inp-dark" placeholder="Your password"/>
-    </div>
-    <p id="login-err" style="font-size:12px;color:var(--err);margin-bottom:12px;display:none"></p>
-    <button class="btn btn-gold" onclick="doLogin()" id="login-btn" style="margin-bottom:14px">Sign In</button>
-    <p style="text-align:center;font-size:13px;color:var(--w50);margin-bottom:20px">
-      <span style="color:var(--gold2);cursor:pointer" onclick="showScreen('forgot')">Forgot password?</span>
-    </p>
-    <div style="border-top:1px solid var(--w10);padding-top:20px;text-align:center">
-      <p style="font-size:13px;color:var(--w50)">New to Begin Forever?</p>
-      <button class="btn btn-outline" onclick="showScreen('signup')" style="margin-top:10px">Create My Profile ✦</button>
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="screen" style="display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:28px;margin-bottom:8px;">✦ 🌟 ✦</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:28px;color:var(--white);">Begin Forever</h1>
+    <p style="color:var(--gold);font-family:'EB Garamond',serif;font-style:italic;font-size:14px;margin-top:8px;">India's most trusted matrimony platform</p>
+  </div>
+  <div style="background:var(--dark2);border-radius:20px;padding:32px 24px;width:100%;max-width:380px;border:1px solid var(--white08);">
+    <h2 id="authTitle" style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-bright);text-align:center;margin-bottom:24px;">Welcome Back</h2>
+    <div class="field-group"><label class="field-label">Email *</label><input type="email" class="field" id="authEmail" placeholder="your@email.com"/></div>
+    <div class="field-group" id="authPasswordGroup"><label class="field-label">Password *</label><input type="password" class="field" id="authPassword" placeholder="••••••••"/></div>
+    <div class="field-group" id="authConfirmGroup" style="display:none;"><label class="field-label">Confirm Password *</label><input type="password" class="field" id="authConfirm" placeholder="••••••••"/></div>
+    <p id="authError" style="color:var(--red);font-size:12px;text-align:center;margin:8px 0;display:none;"></p>
+    <p id="authSuccess" style="color:var(--green);font-size:12px;text-align:center;margin:8px 0;display:none;"></p>
+    <div style="margin-top:16px;"><button class="btn btn-gold" id="authSubmitBtn" onclick="handleAuth()">Sign In</button></div>
+    <div style="text-align:center;margin-top:16px;">
+      <button id="authForgotBtn" onclick="setAuthMode('forgot')" style="background:none;border:none;color:var(--white40);font-size:12px;cursor:pointer;">Forgot password?</button>
+      <p style="color:var(--white40);font-size:13px;margin-top:12px;" id="authToggleText">New here? <button onclick="setAuthMode('signup')" style="background:none;border:none;color:var(--gold-bright);font-size:13px;cursor:pointer;font-weight:700;">Create Account</button></p>
+      <button id="authBackBtn" onclick="setAuthMode('login')" style="display:none;background:none;border:none;color:var(--gold-bright);font-size:13px;cursor:pointer;margin-top:12px;">← Back to Sign In</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════ SIGNUP — STEP 1: EMAIL + PASSWORD ═══════ -->
-<div id="screen-signup" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-    <button onclick="showScreen('login')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
-    <div>
-      <p class="eyb-sm">Step 1 of 5</p>
-      <h2 class="serif" style="font-size:20px;color:white">Create Account</h2>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:4px">
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--gold)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-    </div>
-  </div>
-  <div class="scroll" style="padding:16px 20px 32px">
-    <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:rgba(255,255,255,.7);line-height:1.5">
-      ✦ You'll verify your email, phone, and government ID to keep Begin Forever 100% genuine.
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Full Name</label>
-      <input id="su-name" type="text" class="inp inp-dark" placeholder="Your full name"/>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Email Address</label>
-      <input id="su-email" type="email" class="inp inp-dark" placeholder="your@email.com"/>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Password</label>
-      <input id="su-pass" type="password" class="inp inp-dark" placeholder="At least 8 characters"/>
-    </div>
-    <div style="margin-bottom:20px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Phone Number</label>
-      <input id="su-phone" type="tel" class="inp inp-dark" placeholder="+91 XXXXX XXXXX"/>
-      <p style="font-size:11px;color:var(--w50);margin-top:5px">We'll send an OTP to verify this number via SMS</p>
-    </div>
-    <p id="su-err" style="font-size:12px;color:var(--err);margin-bottom:12px;display:none"></p>
-    <button class="btn btn-gold" onclick="doSignup()" id="su-btn">Continue — Verify Email →</button>
-    <p style="text-align:center;font-size:12px;color:var(--w50);margin-top:16px;line-height:1.6">By continuing you agree to our <span style="color:var(--gold2)">Terms of Service</span> and <span style="color:var(--gold2)">Privacy Policy</span></p>
-  </div>
-</div>
-
-<!-- ═══════ EMAIL VERIFY — STEP 2 ═══════ -->
-<div id="screen-email-verify" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-    <button onclick="showScreen('signup')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
-    <div>
-      <p class="eyb-sm">Step 2 of 5</p>
-      <h2 class="serif" style="font-size:20px;color:white">Verify Email</h2>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:4px">
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--gold)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-    </div>
-  </div>
-  <div class="scroll" style="padding:24px 20px 32px;text-align:center">
-    <div style="font-size:52px;margin-bottom:16px">📧</div>
-    <h3 class="serif" style="font-size:20px;color:white;margin-bottom:8px">Check Your Inbox</h3>
-    <p style="font-size:14px;color:var(--w50);line-height:1.7;margin-bottom:6px">We've sent a verification link to:</p>
-    <p style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);margin-bottom:24px" id="ev-email-display">your@email.com</p>
-    <div style="background:rgba(255,255,255,.04);border:1px solid var(--w10);border-radius:16px;padding:20px;margin-bottom:24px;text-align:left">
-      <p style="font-size:13px;color:white;font-weight:700;margin-bottom:10px">What to do:</p>
-      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-        <div style="width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold2);font-weight:700;flex-shrink:0">1</div>
-        <p style="font-size:13px;color:var(--w80);line-height:1.5">Open the email from Begin Forever in your inbox (check spam too)</p>
+<!-- PROFILE SETUP SCREEN -->
+<div id="setupScreen" class="screen" style="padding:24px;padding-bottom:100px;">
+  <div style="max-width:440px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <h1 id="setupTitle" style="font-family:'Cinzel',serif;font-size:22px;color:var(--gold-bright);">Personal Details</h1>
+      <div class="steps" id="setupSteps">
+        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
-        <div style="width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold2);font-weight:700;flex-shrink:0">2</div>
-        <p style="font-size:13px;color:var(--w80);line-height:1.5">Click the <strong style="color:white">Verify my email</strong> link inside</p>
-      </div>
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold2);font-weight:700;flex-shrink:0">3</div>
-        <p style="font-size:13px;color:var(--w80);line-height:1.5">Return here and tap <strong style="color:white">I've verified my email</strong></p>
-      </div>
+      <p id="setupStepLabel" style="font-size:12px;color:var(--white40);">Step 1 of 5</p>
     </div>
-    <button class="btn btn-gold" onclick="checkEmailVerified()" id="ev-check-btn" style="margin-bottom:12px">I've Verified My Email ✓</button>
-    <button onclick="resendVerifyEmail()" style="background:none;border:none;color:var(--gold2);font-size:13px;cursor:pointer;padding:8px" id="ev-resend-btn">Resend verification email</button>
-    <p id="ev-msg" style="font-size:12px;color:var(--err);margin-top:12px;display:none"></p>
-  </div>
-</div>
-
-<!-- ═══════ PHONE VERIFY — STEP 3 ═══════ -->
-<div id="screen-phone-verify" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-    <button onclick="showScreen('email-verify')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
-    <div>
-      <p class="eyb-sm">Step 3 of 5</p>
-      <h2 class="serif" style="font-size:20px;color:white">Verify Phone</h2>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:4px">
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--gold)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-    </div>
-  </div>
-  <div class="scroll" style="padding:24px 20px 32px">
-    <div style="text-align:center;margin-bottom:24px">
-      <div style="font-size:48px;margin-bottom:14px">📱</div>
-      <h3 class="serif" style="font-size:20px;color:white;margin-bottom:8px">Enter OTP</h3>
-      <p style="font-size:13px;color:var(--w50);line-height:1.6">We've sent a 6-digit code to</p>
-      <p style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);margin-top:4px" id="pv-phone-display">+91 XXXXX XXXXX</p>
-    </div>
-    <div id="pv-input-section">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Phone Number</label>
-      <input id="pv-phone" type="tel" class="inp inp-dark" placeholder="+91 XXXXX XXXXX" style="margin-bottom:14px"/>
-      <button class="btn btn-gold" onclick="sendPhoneOTP()" id="pv-send-btn">Send OTP via SMS</button>
-    </div>
-    <div id="pv-otp-section" style="display:none">
-      <div class="otp-row" style="margin-bottom:20px">
-        <input type="tel" maxlength="1" class="otp-box" id="otp0" oninput="otpMove(this,0)"/>
-        <input type="tel" maxlength="1" class="otp-box" id="otp1" oninput="otpMove(this,1)"/>
-        <input type="tel" maxlength="1" class="otp-box" id="otp2" oninput="otpMove(this,2)"/>
-        <input type="tel" maxlength="1" class="otp-box" id="otp3" oninput="otpMove(this,3)"/>
-        <input type="tel" maxlength="1" class="otp-box" id="otp4" oninput="otpMove(this,4)"/>
-        <input type="tel" maxlength="1" class="otp-box" id="otp5" oninput="otpMove(this,5)"/>
-      </div>
-      <button class="btn btn-gold" onclick="verifyPhoneOTP()" id="pv-verify-btn">Verify Phone Number ✓</button>
-      <p style="text-align:center;margin-top:14px">
-        <span id="pv-resend-btn" onclick="resendOTP()" style="color:var(--gold2);font-size:13px;cursor:pointer">Resend OTP</span>
-        <span id="pv-timer" style="font-size:13px;color:var(--w50);display:none">Resend in <span id="pv-timer-count">30</span>s</span>
-      </p>
-    </div>
-    <p id="pv-err" style="font-size:12px;color:var(--err);margin-top:12px;text-align:center;display:none"></p>
-  </div>
-</div>
-
-<!-- ═══════ ID UPLOAD — STEP 4 ═══════ -->
-<div id="screen-id-upload" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-    <button onclick="showScreen('phone-verify')" style="background:none;border:none;color:var(--w50);font-size:18px;cursor:pointer">←</button>
-    <div>
-      <p class="eyb-sm">Step 4 of 5</p>
-      <h2 class="serif" style="font-size:20px;color:white">Verify Your ID</h2>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:4px">
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--gold)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--w10)"></div>
-    </div>
-  </div>
-  <div class="scroll" style="padding:16px 20px 32px">
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="width:60px;height:60px;border-radius:50%;background:rgba(212,160,23,.1);border:1.5px solid rgba(212,160,23,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 10h2M16 14h2M6 10h4v4H6z"/></svg>
-      </div>
-      <p style="font-size:13px;color:var(--w50);line-height:1.6;max-width:280px;margin:0 auto">This keeps Begin Forever 100% genuine. Your ID is stored securely — only used for verification, never shared.</p>
-    </div>
-    <p style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold2);font-weight:700;margin-bottom:10px">Select ID Type</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px" id="id-type-grid">
-      <div class="id-type-btn selected" onclick="selectIDType(this,'aadhaar')">🪪 Aadhaar Card</div>
-      <div class="id-type-btn" onclick="selectIDType(this,'passport')">📘 Passport</div>
-      <div class="id-type-btn" onclick="selectIDType(this,'pan')">💳 PAN Card</div>
-      <div class="id-type-btn" onclick="selectIDType(this,'driving')">🚗 Driving Licence</div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-      <div class="upload-zone" id="upload-front" onclick="document.getElementById('id-front-input').click()">
-        <input type="file" id="id-front-input" accept="image/*,application/pdf" style="display:none" onchange="handleIDFile(this,'front')"/>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(212,160,23,.5)" stroke-width="1.4" style="margin:0 auto 6px;display:block"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p style="font-size:13px;color:var(--w70);margin-bottom:2px" id="front-label">Front Side</p>
-        <p style="font-size:10px;color:var(--w50)">Tap to upload · JPG, PNG or PDF</p>
-      </div>
-      <div class="upload-zone" id="upload-back" onclick="document.getElementById('id-back-input').click()">
-        <input type="file" id="id-back-input" accept="image/*,application/pdf" style="display:none" onchange="handleIDFile(this,'back')"/>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(212,160,23,.5)" stroke-width="1.4" style="margin:0 auto 6px;display:block"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p style="font-size:13px;color:var(--w70);margin-bottom:2px" id="back-label">Back Side</p>
-        <p style="font-size:10px;color:var(--w50)">Tap to upload · JPG, PNG or PDF</p>
-      </div>
-    </div>
-    <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:10px 14px;font-size:11px;color:rgba(74,222,128,.8);margin-bottom:16px;line-height:1.6">
-      🔒 Encrypted &amp; stored securely in India. Never shared. Admin-reviewed only for verification.
-    </div>
-    <p id="id-upload-err" style="font-size:12px;color:var(--err);display:none;margin-bottom:12px;text-align:center"></p>
-    <button class="btn btn-gold" id="id-upload-btn" onclick="submitIDUpload()">Submit for Verification ✓</button>
-    <button class="btn btn-ghost" style="margin-top:10px;font-size:13px" onclick="showScreen('setup1')">Skip — upload later from My Profile</button>
-  </div>
-</div>
-
-<!-- ═══════ SETUP 1: PROFILE BASICS — STEP 5 ═══════ -->
-<div id="screen-setup1" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:16px 20px 8px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-    <div>
-      <p class="eyb-sm">Step 5 of 5 — Profile Setup</p>
-      <h2 class="serif" style="font-size:20px;color:white">About You</h2>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:4px">
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--g3)"></div>
-      <div style="width:16px;height:4px;border-radius:2px;background:var(--gold)"></div>
-    </div>
-  </div>
-  <div class="scroll" style="padding:16px 20px 32px">
-    <div class="verif-row">
-      <span class="verif-badge verif-done">✓ Email verified</span>
-      <span class="verif-badge verif-done">✓ Phone verified</span>
-      <span class="verif-badge verif-done">✓ ID submitted</span>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Age</label>
-      <input id="s1-age" type="number" class="inp inp-dark" placeholder="Your age (18–70)" min="18" max="70"/>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Gender</label>
-      <select id="s1-gender" class="inp inp-dark">
-        <option value="" disabled selected>Select gender</option>
-        <option>Male</option><option>Female</option>
-      </select>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Religion</label>
-      <select id="s1-religion" class="inp inp-dark" onchange="toggleSetupDenom()">
-        <option value="" disabled selected>Select religion</option>
-        <option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option>
-      </select>
-    </div>
-    <div id="s1-denom-wrap" style="display:none;margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">Denomination</label>
-      <input id="s1-denom" type="text" class="inp inp-dark" placeholder="e.g. Catholic, Sunni, Vaishnavite…"/>
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">City</label>
-      <input id="s1-city" type="text" class="inp inp-dark" placeholder="Your city"/>
-    </div>
-    <div style="margin-bottom:20px">
-      <label style="font-size:12px;color:var(--w50);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em">State</label>
-      <select id="s1-state" class="inp inp-dark">
-        <option value="" disabled selected>Select state</option>
-        <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Uttar Pradesh</option><option>West Bengal</option><option>Other</option>
-      </select>
-    </div>
-    <p id="s1-err" style="font-size:12px;color:var(--err);margin-bottom:12px;display:none"></p>
-    <button class="btn btn-gold" onclick="saveSetup1()">Save &amp; Continue →</button>
-  </div>
-</div>
-
-<!-- ═══════ PENDING ═══════ -->
-<div id="screen-pending" class="screen bg-dp" style="align-items:center;justify-content:center;text-align:center;padding:32px">
-  <div style="font-size:52px;margin-bottom:16px">⏳</div>
-  <h2 class="serif" style="font-size:24px;color:white;margin-bottom:12px">Profile Under Review</h2>
-  <p style="font-size:14px;color:var(--w50);line-height:1.7;max-width:300px;margin:0 auto 24px">Our team is reviewing your profile and ID. You'll receive an email once approved — usually within 24 hours.</p>
-  <div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:16px;padding:20px;margin-bottom:24px;text-align:left;max-width:300px">
-    <p style="font-size:13px;color:white;font-weight:700;margin-bottom:8px">While you wait:</p>
-    <p style="font-size:12px;color:var(--w50);line-height:1.6">• Complete your profile photo<br/>• Share your referral link and earn free days<br/>• Preview the app below</p>
-  </div>
-  <button class="btn btn-gold" style="max-width:260px" onclick="showScreen('discover')">Preview App →</button>
-</div>
-
-<!-- ═══════ DISCOVER ═══════ -->
-<div id="screen-discover" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:0 20px 8px;display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0">
-    <div>
-      <p class="eyb-sm">For you · <span id="disc-count">0</span> matches</p>
-      <h2 class="serif" style="font-size:22px;color:#fff;margin-top:2px">Discover</h2>
-    </div>
-    <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,46,.1);border:1px solid rgba(201,168,46,.2);display:flex;align-items:center;justify-content:center;cursor:pointer">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M3 6h18M6 12h12M9 18h6"/></svg>
-    </div>
-  </div>
-  <div style="display:flex;gap:8px;overflow-x:auto;padding:0 20px 10px;flex-shrink:0">
-    <div class="chip chip-dark on" onclick="setFaithFilter(this,'all')">All faiths</div>
-    <div class="chip chip-dark" onclick="setFaithFilter(this,'christian')">Christian</div>
-    <div class="chip chip-dark" onclick="setFaithFilter(this,'hindu')">Hindu</div>
-    <div class="chip chip-dark" onclick="setFaithFilter(this,'muslim')">Muslim</div>
-    <div class="chip chip-dark" onclick="setFaithFilter(this,'sikh')">Sikh</div>
-  </div>
-  <div class="scroll" style="padding:0 20px 12px;position:relative">
-    <div id="disc-cards"><div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div></div>
-  </div>
-  <!-- Women Safety Banner on Discover overlay -->
-  <div id="discover-cs" class="cs-overlay">
-    <div class="cs-blur-bg"></div>
-    <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto">
-      <span class="launch-badge" style="margin-bottom:14px">Early Access Opening Soon</span>
-      <h3 class="serif" style="font-size:22px;color:white;margin-bottom:8px;line-height:1.3">Your matches are waiting</h3>
-      <p style="font-size:13px;color:var(--w50);line-height:1.6;margin-bottom:20px;max-width:280px">Discover opens with early access. Your verified profile is ready — you'll be notified the moment we open.</p>
-      <!-- Women Safety Banner -->
-      <div style="background:linear-gradient(145deg,#993556,#72243E);border:1px solid rgba(244,192,209,.3);border-radius:16px;padding:16px 18px;max-width:300px;width:100%;text-align:left;margin-bottom:16px">
-        <p style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(244,192,209,.9);font-weight:700;margin-bottom:5px">For Women · Your Safety First</p>
-        <p style="font-family:'Cinzel',serif;font-size:13px;color:white;font-weight:700;margin-bottom:10px;line-height:1.35">Built to protect you at every step</p>
-        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:rgba(255,255,255,.85)"><span style="color:#F4C0D1;flex-shrink:0">✓</span>Every man's ID is verified before he can message you</div>
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:rgba(255,255,255,.85)"><span style="color:#F4C0D1;flex-shrink:0">✓</span>You control who sees your profile &amp; number</div>
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:11px;color:rgba(255,255,255,.85)"><span style="color:#F4C0D1;flex-shrink:0">✓</span>Block &amp; report — instant, no questions asked</div>
+    <div style="background:var(--dark2);border-radius:20px;padding:24px;border:1px solid var(--white08);">
+      <!-- Step 1: Personal Details -->
+      <div id="setupStep1">
+        <div class="field-group"><label class="field-label">Full Name *</label><input class="field" id="setupName" placeholder="Your full name"/></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Age *</label><input type="number" class="field" id="setupAge" placeholder="Age" min="18" max="70"/></div>
+          <div class="field-group"><label class="field-label">Gender *</label><select class="field" id="setupGender"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
         </div>
-        <a href="https://beginforever.in" style="display:block;text-align:center;padding:9px;background:white;color:#72243E;font-weight:800;font-size:12px;border-radius:50px;text-decoration:none">Learn about our safety promise →</a>
+        <div class="field-group"><label class="field-label">Religion *</label><select class="field" id="setupReligion" onchange="toggleSetupDenom()"><option value="">Select...</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option><option>Other</option></select></div>
+        <div class="field-group" id="setupDenomWrap" style="display:none;"><label class="field-label">Denomination</label><select class="field" id="setupDenom"><option value="">Select...</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Seventh-day Adventist</option><option>Church of God</option><option>Assemblies of God</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Presbyterian</option><option>Anglican</option><option>Non-Denominational</option><option>Other</option></select></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">State *</label><select class="field" id="setupState" onchange="populateSetupCities()"><option value="">Select state...</option><option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Other / Outside India</option></select></div>
+          <div class="field-group"><label class="field-label">City *</label><select class="field" id="setupCity"><option value="">Select city...</option></select></div>
+        </div>
+        <div class="field-group"><label class="field-label">Phone *</label><input class="field" id="setupPhone" placeholder="+91 XXXXX XXXXX"/></div>
+        <div class="field-group"><label class="field-label">Registering for</label><select class="field" id="setupRegFor" onchange="toggleCandidate()"><option value="Myself">Myself</option><option>My Son</option><option>My Daughter</option><option>My Brother</option><option>My Sister</option><option>Other Relative</option></select></div>
+        <div class="field-group" id="setupCandidateWrap" style="display:none;"><label class="field-label">Candidate's Name *</label><input class="field" id="setupCandidate" placeholder="Candidate's full name"/></div>
       </div>
-      <button class="btn btn-outline" style="max-width:260px" onclick="shareReferral()">Refer &amp; earn free days 🎁</button>
-    </div>
-  </div>
-  <div class="tabbar">
-    <div class="tab on" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
-  </div>
-</div>
-
-<!-- ═══════ INTERESTS ═══════ -->
-<div id="screen-interests" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:0 20px 12px;flex-shrink:0">
-    <p class="eyb-sm">Incoming &amp; sent</p>
-    <h2 class="serif" style="font-size:22px;color:#fff;margin-top:2px">Interests</h2>
-  </div>
-  <div class="scroll" style="padding:0 20px 12px">
-    <div id="interests-list"><div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div></div>
-  </div>
-  <div id="interests-cs" class="cs-overlay">
-    <div class="cs-blur-bg"></div>
-    <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:24px">
-      <div style="text-align:center;margin-bottom:20px">
-        <span class="launch-badge">Early Access Opening Soon</span>
-        <h3 class="serif" style="font-size:20px;color:white;margin-top:12px;margin-bottom:8px">Send &amp; Receive Interests</h3>
-        <p style="font-size:13px;color:var(--w50);line-height:1.6;max-width:280px;margin:0 auto">This feature unlocks with early access. You're almost there.</p>
+      <!-- Step 2: About -->
+      <div id="setupStep2" style="display:none;">
+        <div class="field-group"><label class="field-label">Bio / About</label><textarea class="field" id="setupBio" placeholder="Tell us about yourself, your faith journey, and what you're looking for..." style="min-height:100px;resize:vertical;"></textarea></div>
+        <div class="field-group"><label class="field-label">Education</label><input class="field" id="setupEdu" placeholder="e.g. MBA, B.Tech"/></div>
+        <div class="field-group"><label class="field-label">Occupation</label><input class="field" id="setupOcc" placeholder="e.g. Software Engineer"/></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Height (cm)</label><input type="number" class="field" id="setupHeight" placeholder="170"/></div>
+          <div class="field-group"><label class="field-label">Mother Tongue</label><input class="field" id="setupTongue" placeholder="e.g. Tamil"/></div>
+        </div>
+        <div class="field-group"><label class="field-label">Marital Status</label><select class="field" id="setupMarital"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select></div>
       </div>
-      <div style="background:rgba(255,255,255,.04);border:1px solid var(--w10);border-radius:16px;padding:16px 12px;margin-bottom:16px">
-        <p style="font-size:10px;color:rgba(212,160,23,.8);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:12px">Your journey</p>
-        <div style="display:flex;align-items:center">
-          <div style="display:flex;flex-direction:column;align-items:center;width:52px">
-            <div class="t-dot done" style="margin-bottom:4px"></div>
-            <p class="t-label" style="color:var(--g3);font-size:9px">Profile<br>created</p>
-          </div>
-          <div class="t-line" style="margin-bottom:12px"></div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:52px">
-            <div class="t-dot done" style="margin-bottom:4px"></div>
-            <p class="t-label" style="color:var(--g3);font-size:9px">Email<br>verified</p>
-          </div>
-          <div class="t-line" style="margin-bottom:12px"></div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:52px">
-            <div class="t-dot done" style="margin-bottom:4px"></div>
-            <p class="t-label" style="color:var(--g3);font-size:9px">ID<br>verified</p>
-          </div>
-          <div class="t-line" style="margin-bottom:12px"></div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:52px">
-            <div class="t-dot now" style="margin-bottom:4px"></div>
-            <p class="t-label" style="color:var(--gold2);font-size:9px">Early<br>access</p>
-          </div>
-          <div class="t-line" style="margin-bottom:12px"></div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:52px">
-            <div class="t-dot soon" style="margin-bottom:4px"></div>
-            <p class="t-label" style="color:var(--w50);font-size:9px">Send<br>interests</p>
-          </div>
+      <!-- Step 3: Photos -->
+      <div id="setupStep3" style="display:none;">
+        <p style="font-size:13px;color:var(--white70);margin-bottom:12px;">Upload up to 3 photos. <strong style="color:var(--gold-bright);">Primary photo is required.</strong></p>
+        <div style="background:var(--white08);border:1px solid var(--gold);border-radius:10px;padding:12px;margin-bottom:16px;"><p style="font-size:12px;color:var(--gold);margin:0;">🔒 <strong>Photo Privacy:</strong> Your photos are private until approved. Only verified members can see them.</p></div>
+        <div class="photo-grid">
+          <div class="photo-slot" id="photoSlot0" onclick="document.getElementById('photoInput0').click();"><span style="font-size:28px;opacity:0.4;">📷</span><span style="font-size:10px;color:var(--gold-bright);margin-top:4px;font-weight:700;">Primary *</span><input type="file" accept="image/*" id="photoInput0" style="display:none;" onchange="handlePhotoSelect(0, this)"/></div>
+          <div class="photo-slot" id="photoSlot1" onclick="document.getElementById('photoInput1').click();"><span style="font-size:28px;opacity:0.4;">📷</span><span style="font-size:10px;color:var(--white40);margin-top:4px;">Photo 2</span><input type="file" accept="image/*" id="photoInput1" style="display:none;" onchange="handlePhotoSelect(1, this)"/></div>
+          <div class="photo-slot" id="photoSlot2" onclick="document.getElementById('photoInput2').click();"><span style="font-size:28px;opacity:0.4;">📷</span><span style="font-size:10px;color:var(--white40);margin-top:4px;">Photo 3</span><input type="file" accept="image/*" id="photoInput2" style="display:none;" onchange="handlePhotoSelect(2, this)"/></div>
         </div>
       </div>
-      <div style="background:linear-gradient(135deg,rgba(153,53,86,.25),rgba(212,160,23,.1));border:1px solid rgba(212,160,23,.3);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px" onclick="shareReferral()">
-        <div style="width:32px;height:32px;border-radius:50%;background:rgba(212,160,23,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <!-- Step 4: Government ID Verification -->
+      <div id="setupStep4" style="display:none;">
+        <div style="background:var(--white08);border:1px solid var(--gold);border-radius:10px;padding:16px;margin-bottom:20px;">
+          <p style="font-size:13px;color:var(--gold-bright);margin:0 0 8px;"><strong>🪪 Why we verify?</strong></p>
+          <p style="font-size:12px;color:var(--white70);margin:0;line-height:1.6;">Begin Forever is a 100% ID-verified platform. Every member must submit a valid Government ID to ensure safety and authenticity. Your ID is stored securely and is <strong>never shared</strong> with other members.</p>
         </div>
-        <div style="flex:1">
-          <p style="font-size:12px;font-weight:700;color:var(--gold2);margin-bottom:2px">Refer friends — earn free days</p>
-          <p style="font-size:11px;color:var(--w50)">3 friends = +7 days · 5 friends = +14 days</p>
-        </div>
-        <span style="color:var(--w50);font-size:16px">›</span>
-      </div>
-    </div>
-  </div>
-  <div class="tabbar">
-    <div class="tab" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
-    <div class="tab on" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
-  </div>
-</div>
-
-<!-- ═══════ MESSAGES ═══════ -->
-<div id="screen-messages" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div style="padding:0 20px 12px;flex-shrink:0">
-    <p class="eyb-sm">Your conversations</p>
-    <h2 class="serif" style="font-size:22px;color:#fff;margin-top:2px">Messages</h2>
-  </div>
-  <div class="scroll" style="padding:0 20px 12px">
-    <div id="msg-list"><div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div></div>
-  </div>
-  <!-- Messages overlay with Referral Banner -->
-  <div id="messages-cs" class="cs-overlay">
-    <div class="cs-blur-bg"></div>
-    <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto">
-      <div style="width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(212,160,23,.4);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
-        <div style="width:40px;height:40px;border-radius:50%;background:rgba(212,160,23,.1);display:flex;align-items:center;justify-content:center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-      </div>
-      <h3 class="serif" style="font-size:22px;color:white;margin-bottom:8px;line-height:1.3">Messages unlock<br>with early access</h3>
-      <p style="font-size:13px;color:var(--w50);line-height:1.6;margin-bottom:14px;max-width:260px">You're a founding member. When early access opens, you get 1 week free premium — full messaging included.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px">
-        <span class="feature-pill">Unlimited messages</span>
-        <span class="feature-pill">Read receipts</span>
-        <span class="feature-pill">Voice introductions</span>
-        <span class="feature-pill">Video profile</span>
-      </div>
-      <!-- Referral Banner -->
-      <div style="background:linear-gradient(145deg,#3B0764,#5B1A8A);border:1px solid rgba(212,160,23,.4);border-radius:16px;padding:16px 18px;max-width:300px;width:100%;text-align:left;margin-bottom:4px;cursor:pointer" onclick="shareReferral()">
-        <p style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(212,160,23,.9);font-weight:700;margin-bottom:5px">Earn More Free Days</p>
-        <p style="font-family:'Cinzel',serif;font-size:13px;color:white;font-weight:700;margin-bottom:10px;line-height:1.35">Refer friends, unlock <span style="color:#F5C842">premium faster</span></p>
-        <div style="display:flex;gap:8px;margin-bottom:12px">
-          <div style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:8px;text-align:center">
-            <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:900;color:#F5C842;line-height:1">3</div>
-            <div style="font-size:9px;color:rgba(255,255,255,.5);margin:2px 0">friends join</div>
-            <div style="font-size:10px;font-weight:700;color:#4ade80">+7 days free</div>
+        <div class="field-group"><label class="field-label">Government ID Type *</label><select class="field" id="setupIdType"><option value="">Select ID type...</option><option value="Aadhaar Card">Aadhaar Card</option><option value="PAN Card">PAN Card</option><option value="Voter ID">Voter ID</option><option value="Driving Licence">Driving Licence</option><option value="Passport">Passport</option></select></div>
+        <div class="field-group">
+          <label class="field-label">Upload Government ID *</label>
+          <div id="idProofSlot" onclick="document.getElementById('idProofInput').click();" style="border:2px dashed var(--white15);border-radius:14px;padding:30px 20px;text-align:center;cursor:pointer;background:var(--white08);">
+            <span style="font-size:36px;display:block;margin-bottom:8px;opacity:0.4;">🪪</span>
+            <span style="font-size:13px;color:var(--white40);">Tap to upload your Government ID</span>
+            <span style="font-size:11px;color:var(--white40);display:block;margin-top:4px;">JPG, PNG, PDF — Max 5MB</span>
+            <input type="file" accept="image/*,.pdf" id="idProofInput" style="display:none;" onchange="handleIdProofSelect(this)"/>
           </div>
-          <div style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:8px;text-align:center">
-            <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:900;color:#F5C842;line-height:1">5</div>
-            <div style="font-size:9px;color:rgba(255,255,255,.5);margin:2px 0">friends join</div>
-            <div style="font-size:10px;font-weight:700;color:#4ade80">+14 days free</div>
-          </div>
+          <p id="idProofFileName" style="font-size:12px;color:var(--gold-bright);margin-top:8px;display:none;"></p>
         </div>
-        <button class="btn btn-gold" style="padding:10px;font-size:12px" onclick="shareReferral()">Share My Referral Link 🎁</button>
+        <div style="background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.3);border-radius:10px;padding:12px;margin-top:12px;">
+          <p style="font-size:11px;color:var(--green);margin:0;line-height:1.6;">✅ Encrypted and stored securely<br/>✅ Only our admin team can view it for verification<br/>✅ Never shown to other members<br/>✅ You can request deletion anytime</p>
+        </div>
+      </div>
+      <!-- Step 5: Preferences -->
+      <div id="setupStep5" style="display:none;">
+        <p style="font-size:13px;color:var(--white70);margin-bottom:16px;">Help us find your best matches. These can be updated anytime.</p>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="setupPrefMin" value="18"/></div>
+          <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="setupPrefMax" value="70"/></div>
+        </div>
+        <div class="field-group"><label class="field-label">Preferred Denomination</label><select class="field" id="setupPrefDenom"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Other</option></select></div>
+        <div class="field-group"><label class="field-label">Preferred City</label><input class="field" id="setupPrefCity" placeholder="Any"/></div>
+      </div>
+      <p id="setupError" style="color:var(--red);font-size:12px;text-align:center;margin:12px 0;display:none;"></p>
+      <div style="display:flex;gap:12px;margin-top:20px;">
+        <button class="btn btn-dark" id="setupBackBtn" onclick="setupBack()" style="display:none;">← Back</button>
+        <button class="btn btn-gold" id="setupNextBtn" onclick="setupNext()">Next →</button>
       </div>
     </div>
   </div>
-  <div class="tabbar">
-    <div class="tab" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
-    <div class="tab on" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
-  </div>
 </div>
 
-<!-- ═══════ MY PROFILE ═══════ -->
-<div id="screen-myprofile" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div class="scroll" style="padding:0 20px 20px">
-    <div style="text-align:center;padding:20px 0 16px">
-      <div id="mp-avatar" style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--dp3),var(--gold3));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:2px solid rgba(212,160,23,.4)">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(212,160,23,.6)" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+<!-- PENDING SCREEN -->
+<div id="pendingScreen" class="screen" style="display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
+  <div style="font-size:48px;margin-bottom:16px;">⏳</div>
+  <h2 style="font-family:'Cinzel',serif;font-size:22px;color:var(--gold-bright);">Profile Under Review</h2>
+  <p id="pendingMsg" style="color:var(--white70);font-size:14px;margin-top:8px;max-width:340px;line-height:1.6;"></p>
+  <p style="font-family:'EB Garamond',serif;font-style:italic;color:var(--gold);font-size:14px;margin-top:20px;">"Wait for the Lord; be strong, and let your heart take courage." — Psalm 27:14</p>
+  <div style="margin-top:32px;width:200px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
+</div>
+
+<!-- REJECTED SCREEN -->
+<div id="rejectedScreen" class="screen" style="display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
+  <div style="font-size:48px;margin-bottom:16px;">😔</div>
+  <h2 style="font-family:'Cinzel',serif;font-size:22px;color:var(--red);">Profile Not Approved</h2>
+  <p id="rejectedMsg" style="color:var(--white70);margin-top:8px;max-width:340px;line-height:1.6;"></p>
+  <p style="color:var(--white40);margin-top:12px;font-size:13px;">📧 info@beginforever.in</p>
+  <div style="margin-top:24px;width:200px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="screen">
+  <div class="app-header">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:14px;">✦</span><h1>Begin Forever</h1></div>
+    <span id="headerName" style="font-size:11px;color:var(--white40);"></span>
+  </div>
+
+  <!-- Browse Tab -->
+  <div id="tabBrowse" class="content-area">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);">Discover</h2>
+      <button class="btn btn-dark btn-sm" onclick="toggleFilters()">🔍 Filter</button>
+    </div>
+    <!-- Women Safety Banner -->
+    <div class="safety-banner" id="safetyBanner" style="display:none;">
+      <p style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(244,192,209,.9);font-weight:700;margin-bottom:4px;">✦ For Women · Your Safety First</p>
+      <p style="font-family:'Cinzel',serif;font-size:13px;color:white;font-weight:700;margin-bottom:8px;line-height:1.35;">Built to protect you at every step</p>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,.85);"><span style="color:#F4C0D1;flex-shrink:0;">✓</span>Every man's ID is verified before approval</div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,.85);"><span style="color:#F4C0D1;flex-shrink:0;">✓</span>You control who sees your profile &amp; number</div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,.85);"><span style="color:#F4C0D1;flex-shrink:0;">✓</span>Block &amp; report — instant, no questions asked</div>
       </div>
-      <h2 class="serif" style="font-size:20px;color:white;margin-bottom:4px" id="mp-name">Your Name</h2>
-      <p style="font-size:12px;color:var(--w50);margin-bottom:10px" id="mp-meta">— · —</p>
-      <div id="mp-verif-row" class="verif-row" style="justify-content:center"></div>
-      <div id="mp-founding" style="display:none;background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:1px solid rgba(212,160,23,.35);border-radius:10px;padding:8px 14px;font-size:11px;color:var(--gold2);margin-top:6px">
-        ✦ Founding Member · 1 week free premium at launch
+    </div>
+    <div id="filterBar" class="filter-bar" style="display:none;">
+      <div class="field-group"><label class="field-label">Religion</label><select class="field" id="filterReligion" onchange="loadBrowseProfiles()"><option value="">All Faiths</option><option>Christian</option><option>Hindu</option><option>Muslim</option><option>Sikh</option><option>Jain</option><option>Buddhist</option></select></div>
+      <div class="field-group"><label class="field-label">City</label><input class="field" id="filterCity" placeholder="Search city..." oninput="loadBrowseProfiles()"/></div>
+      <button class="btn btn-dark btn-sm" onclick="clearFilters()">Clear Filters</button>
+    </div>
+    <div id="browseLoading" style="text-align:center;padding:60px 0;"><div class="spinner"></div></div>
+    <div id="browseEmpty" style="text-align:center;padding:60px 0;display:none;"><p style="font-size:40px;margin-bottom:12px;">🕊️</p><p style="color:var(--white40);font-size:14px;">No profiles found yet. Check back soon!</p></div>
+    <div id="browseGrid" class="profile-grid"></div>
+  </div>
+
+  <!-- Interests Tab -->
+  <div id="tabInterests" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);margin-bottom:16px;">Interests</h2>
+    <div class="pill-tabs" style="margin-bottom:20px;">
+      <button class="pill-tab active" onclick="setInterestTab('received')" id="intTabReceived">Received</button>
+      <button class="pill-tab" onclick="setInterestTab('sent')" id="intTabSent">Sent</button>
+      <button class="pill-tab" onclick="setInterestTab('connections')" id="intTabConnections">Connected</button>
+    </div>
+    <div id="interestsLoading" style="text-align:center;padding:60px 0;"><div class="spinner"></div></div>
+    <div id="interestsEmpty" style="text-align:center;padding:60px 0;display:none;"><p style="font-size:40px;margin-bottom:12px;">💫</p><p id="interestsEmptyText" style="color:var(--white40);font-size:14px;"></p></div>
+    <div id="interestsList"></div>
+  </div>
+
+  <!-- Messages Tab -->
+  <div id="tabMessages" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);margin-bottom:16px;">Messages</h2>
+    <!-- Referral Banner -->
+    <div class="referral-strip" onclick="shareReferral()">
+      <p style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(212,160,23,.9);font-weight:700;margin-bottom:4px;">✦ Earn Free Premium</p>
+      <p style="font-family:'Cinzel',serif;font-size:13px;color:white;font-weight:700;margin-bottom:8px;">Refer friends, unlock <span style="color:#F5C842;">premium faster</span></p>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:8px;text-align:center;"><div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#F5C842;line-height:1;">3</div><div style="font-size:9px;color:rgba(255,255,255,.5);margin:2px 0;">friends join</div><div style="font-size:10px;font-weight:700;color:#4ade80;">+7 days free</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:8px;text-align:center;"><div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#F5C842;line-height:1;">5</div><div style="font-size:9px;color:rgba(255,255,255,.5);margin:2px 0;">friends join</div><div style="font-size:10px;font-weight:700;color:#4ade80;">+10 days free</div></div>
       </div>
+      <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.6);">Tap to share your referral link 🎁</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
-      <div class="card-dark" style="text-align:center"><p class="serif" style="font-size:20px;color:#fff;font-weight:700" id="mp-interests-count">0</p><p style="font-size:9px;letter-spacing:.1em;color:var(--w50);text-transform:uppercase;margin-top:3px">Interests</p></div>
-      <div class="card-dark" style="text-align:center"><p class="serif" style="font-size:20px;color:#fff;font-weight:700" id="mp-views-count">0</p><p style="font-size:9px;letter-spacing:.1em;color:var(--w50);text-transform:uppercase;margin-top:3px">Profile Views</p></div>
-      <div class="card-dark" style="text-align:center"><p class="serif" style="font-size:20px;color:var(--gold2);font-weight:700" id="mp-days-count">7</p><p style="font-size:9px;letter-spacing:.1em;color:var(--w50);text-transform:uppercase;margin-top:3px">Free Days</p></div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-outline" onclick="showScreen('edit-profile')" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.6"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
-        <span style="color:white;font-size:14px">Edit Profile</span>
-      </button>
-      <button class="btn btn-outline" onclick="showScreen('id-upload')" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="1.6"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 10h2M16 14h2M6 10h4v4H6z"/></svg>
-        <span style="color:white;font-size:14px">Upload / Update ID</span>
-      </button>
-      <button class="btn btn-ghost" onclick="shareReferral()" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.6"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-        <span style="color:white;font-size:14px">Refer Friends · Earn Free Days</span>
-      </button>
-      <button class="btn btn-ghost" onclick="doLogout()" style="text-align:left;display:flex;align-items:center;gap:10px;padding:14px 16px">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span style="color:rgba(255,255,255,.5);font-size:14px">Sign Out</span>
-      </button>
-    </div>
+    <div id="messagesLoading" style="text-align:center;padding:60px 0;"><div class="spinner"></div></div>
+    <div id="messagesEmpty" style="text-align:center;padding:40px 0;display:none;"><p style="font-size:40px;margin-bottom:12px;">💬</p><p style="color:var(--white40);font-size:14px;">No conversations yet. Connect with someone to start chatting!</p></div>
+    <div id="messagesList"></div>
   </div>
-  <div class="tabbar">
-    <div class="tab" onclick="showScreen('discover')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('interests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg><span>Interests</span><div class="tab-dot"></div></div>
-    <div class="tab" onclick="showScreen('messages')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v10H7l-3 3V6z"/></svg><span>Messages</span><div class="tab-dot"></div></div>
-    <div class="tab on" onclick="showScreen('myprofile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Me</span><div class="tab-dot"></div></div>
-  </div>
-</div>
 
-<!-- ═══════ FORGOT PASSWORD ═══════ -->
-<div id="screen-forgot" class="screen bg-dp">
-  <div class="sb sb-light"><span>9:41</span><span>●●●</span></div>
-  <div class="scroll" style="padding:32px 24px">
-    <button onclick="showScreen('login')" style="background:none;border:none;color:var(--gold2);font-size:13px;cursor:pointer;margin-bottom:20px">← Back to Login</button>
-    <h2 class="serif" style="font-size:22px;color:white;margin-bottom:8px">Reset Password</h2>
-    <p style="font-size:14px;color:var(--w50);margin-bottom:24px;line-height:1.6">Enter your email and we'll send you a reset link.</p>
-    <input id="forgot-email" type="email" class="inp inp-dark" placeholder="your@email.com" style="margin-bottom:14px"/>
-    <p id="forgot-msg" style="font-size:12px;margin-bottom:14px;display:none"></p>
-    <button class="btn btn-gold" onclick="doForgot()">Send Reset Link</button>
+  <!-- Profile Tab -->
+  <div id="tabProfile" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);margin-bottom:20px;">My Profile</h2>
+    <div id="myProfileContent"></div>
+    <div style="margin-top:20px;"><button class="btn btn-dark" onclick="signOut()">Sign Out</button></div>
+  </div>
+
+  <!-- Admin Tab -->
+  <div id="tabAdmin" class="content-area" style="display:none;">
+    <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);margin-bottom:4px;">Admin Dashboard</h2>
+    <p style="font-size:12px;color:var(--white40);margin-bottom:16px;">Manage member profiles</p>
+    <div class="pill-tabs" style="margin-bottom:20px;">
+      <button class="pill-tab active" onclick="setAdminTab('pending')" id="admTabPending">Pending</button>
+      <button class="pill-tab" onclick="setAdminTab('approved')" id="admTabApproved">Approved</button>
+      <button class="pill-tab" onclick="setAdminTab('rejected')" id="admTabRejected">Rejected</button>
+    </div>
+    <div id="adminLoading" style="text-align:center;padding:40px 0;"><div class="spinner"></div></div>
+    <div id="adminEmpty" style="text-align:center;padding:40px 0;display:none;"><p style="color:var(--white40);">No profiles</p></div>
+    <div id="adminList"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" onclick="switchTab('browse')" id="navBrowse"><span class="tab-icon">🔍</span><span class="tab-label">Discover</span></button>
+    <button class="tab-btn" onclick="switchTab('interests')" id="navInterests"><span class="tab-icon">💝</span><span class="tab-label">Interests</span></button>
+    <button class="tab-btn" onclick="switchTab('messages')" id="navMessages"><span class="tab-icon">💬</span><span class="tab-label">Messages</span></button>
+    <button class="tab-btn" onclick="switchTab('profile')" id="navProfile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
   </div>
 </div>
 
-</div><!-- /#app -->
+<!-- CHAT SCREEN -->
+<div id="chatScreen" style="display:none;position:fixed;inset:0;z-index:200;background:var(--black);flex-direction:column;">
+  <div class="chat-header">
+    <button onclick="closeChat()" style="background:none;border:none;color:var(--gold-bright);font-size:18px;cursor:pointer;">←</button>
+    <div class="chat-avatar" id="chatAvatar"></div>
+    <div><h3 id="chatName" style="font-family:'Cinzel',serif;font-size:14px;color:var(--white);margin:0;"></h3><p id="chatCity" style="font-size:11px;color:var(--white40);margin:0;"></p></div>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-bar">
+    <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- PROFILE DETAIL MODAL -->
+<div class="modal-overlay" id="profileModal" onclick="closeProfileModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="profileModalPhoto" style="height:280px;background:var(--dark3);position:relative;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;">
+      <span style="font-size:80px;opacity:0.2;" id="profileModalNoPhoto">👤</span>
+      <button onclick="closeProfileModal()" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.5);border:none;color:var(--white);font-size:20px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div style="padding:24px 20px;">
+      <h2 id="profileModalName" style="font-family:'Cinzel',serif;font-size:22px;color:var(--white);margin:0;"></h2>
+      <p id="profileModalSub" style="color:var(--gold);font-size:13px;margin-top:4px;"></p>
+      <div id="profileModalBio" style="margin-top:16px;display:none;"><h4 style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">About</h4><p id="profileModalBioText" style="font-size:14px;color:var(--white70);line-height:1.6;"></p></div>
+      <div id="profileModalStats" class="stat-grid"></div>
+      <div id="profileModalAction" style="margin-top:20px;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-const SB_URL='https://neftjxvovxocqabxjvme.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const SUPABASE_URL = "https://neftjxvovxocqabxjvme.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const PLATFORM_LIVE=false;
-let currentUser=null;
-let currentProfile=null;
-let phoneSession=null;
-let pendingPhone=null;
-let faithFilter='all';
-let otpTimer=null;
-let idUploadType='aadhaar';
-let idFrontFile=null;
-let idBackFile=null;
+let currentUser = null, myProfile = null, currentTab = 'browse', authMode = 'login';
+let setupStep = 1, selectedPhotos = [null,null,null], selectedIdProof = null;
+let currentInterestTab = 'received', currentAdminTab = 'pending';
+let chatPartnerId = null, allInterests = [], chatInterval = null;
 
-function showScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const s=document.getElementById('screen-'+name);
-  if(s)s.classList.add('active');
-  if(name==='discover')loadDiscover();
-  if(name==='interests')loadInterests();
-  if(name==='messages')loadMessages();
-  if(name==='myprofile')loadMyProfile();
-}
-
-function applyLaunchState(){
-  ['discover-cs','interests-cs','messages-cs'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.style.display=PLATFORM_LIVE?'none':'flex';
-  });
-}
-
-async function init(){
-  applyLaunchState();
-  const{data:{session}}=await sb.auth.getSession();
-  if(session){
-    currentUser=session.user;
-    await loadProfile();
-    routeAfterAuth();
-  } else {
-    const seen=localStorage.getItem('bf_tour_seen');
-    showScreen(seen?'login':'tour1');
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = ['authScreen','pendingScreen','rejectedScreen','loadingScreen'].includes(id) ? 'flex' : 'block';
+    el.classList.add('active');
   }
 }
 
-async function loadProfile(){
-  if(!currentUser)return;
-  const{data}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
-  currentProfile=data;
+function setAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authSuccess').style.display = 'none';
+  const map = {
+    login: { title:'Welcome Back', pass:true, conf:false, btn:'Sign In', forgot:true, toggle:true, back:false },
+    signup: { title:'Create Account', pass:true, conf:true, btn:'Create Account', forgot:false, toggle:false, back:true },
+    forgot: { title:'Reset Password', pass:false, conf:false, btn:'Send Reset Link', forgot:false, toggle:false, back:true }
+  };
+  const m = map[mode];
+  document.getElementById('authTitle').textContent = m.title;
+  document.getElementById('authPasswordGroup').style.display = m.pass ? '' : 'none';
+  document.getElementById('authConfirmGroup').style.display = m.conf ? '' : 'none';
+  document.getElementById('authSubmitBtn').textContent = m.btn;
+  document.getElementById('authForgotBtn').style.display = m.forgot ? '' : 'none';
+  document.getElementById('authToggleText').style.display = m.toggle ? '' : 'none';
+  document.getElementById('authBackBtn').style.display = m.back ? '' : 'none';
 }
 
-function routeAfterAuth(){
-  if(!currentProfile){
-    if(currentUser.phone_confirmed_at||currentUser.user_metadata?.phone_verified){
-      showScreen('id-upload');
-    } else if(currentUser.email_confirmed_at){
-      document.getElementById('pv-phone').value=currentUser.user_metadata?.phone_pending||'';
-      document.getElementById('pv-phone-display').textContent=currentUser.user_metadata?.phone_pending||'';
-      showScreen('phone-verify');
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const confirm = document.getElementById('authConfirm').value;
+  const errEl = document.getElementById('authError'), sucEl = document.getElementById('authSuccess');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'Please enter your email'; errEl.style.display = ''; return; }
+  const btn = document.getElementById('authSubmitBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm" style="margin:0 auto;"></div>';
+  try {
+    if (authMode === 'signup') {
+      if (password.length < 6) throw new Error('Password must be at least 6 characters');
+      if (password !== confirm) throw new Error("Passwords don't match");
+      const { error } = await sb.auth.signUp({ email, password });
+      if (error) throw error;
+      sucEl.textContent = 'Check your email for a confirmation link!';
+      sucEl.style.display = '';
+    } else if (authMode === 'login') {
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
     } else {
-      document.getElementById('ev-email-display').textContent=currentUser.email;
-      showScreen('email-verify');
+      const { error } = await sb.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+      sucEl.textContent = 'Password reset link sent!';
+      sucEl.style.display = '';
     }
-    return;
-  }
-  if(currentProfile.status==='pending'||currentProfile.status==='rejected'){
-    showScreen('pending');
-  } else {
-    showScreen('discover');
-  }
+  } catch (err) { errEl.textContent = err.message; errEl.style.display = ''; }
+  btn.disabled = false;
+  btn.textContent = authMode === 'login' ? 'Sign In' : authMode === 'signup' ? 'Create Account' : 'Send Reset Link';
 }
 
-async function doSignup(){
-  const name=document.getElementById('su-name').value.trim();
-  const email=document.getElementById('su-email').value.trim();
-  const pass=document.getElementById('su-pass').value;
-  const phone=document.getElementById('su-phone').value.trim();
-  const err=document.getElementById('su-err');
-  err.style.display='none';
-  if(!name||!email||!pass||!phone){err.textContent='All fields are required.';err.style.display='block';return;}
-  if(pass.length<8){err.textContent='Password must be at least 8 characters.';err.style.display='block';return;}
-  const btn=document.getElementById('su-btn');
-  btn.disabled=true;btn.textContent='Creating account\u2026';
-  const{data,error}=await sb.auth.signUp({
-    email,password:pass,
-    options:{data:{full_name:name,phone_pending:phone},emailRedirectTo:window.location.origin}
-  });
-  btn.disabled=false;btn.textContent='Continue \u2014 Verify Email \u2192';
-  if(error){err.textContent=error.message;err.style.display='block';return;}
-  currentUser=data.user;
-  pendingPhone=phone;
-  document.getElementById('ev-email-display').textContent=email;
-  showScreen('email-verify');
-}
-
-async function checkEmailVerified(){
-  const btn=document.getElementById('ev-check-btn');
-  const msg=document.getElementById('ev-msg');
-  btn.disabled=true;btn.textContent='Checking\u2026';
-  await sb.auth.refreshSession();
-  const{data:{user}}=await sb.auth.getUser();
-  btn.disabled=false;btn.textContent='I\'ve Verified My Email \u2713';
-  if(!user||!user.email_confirmed_at){
-    msg.textContent='Email not verified yet. Please click the link in your inbox.';
-    msg.style.color='var(--err)';msg.style.display='block';
-    return;
-  }
-  currentUser=user;
-  msg.style.display='none';
-  const phone=pendingPhone||user.user_metadata?.phone_pending||'';
-  document.getElementById('pv-phone').value=phone;
-  document.getElementById('pv-phone-display').textContent=phone||'Enter your number below';
-  if(phone){document.getElementById('pv-input-section').style.display='none';document.getElementById('pv-phone-display').textContent=phone;}
-  showScreen('phone-verify');
-}
-
-async function resendVerifyEmail(){
-  const{data:{user}}=await sb.auth.getUser();
-  if(!user)return;
-  const{error}=await sb.auth.resend({type:'signup',email:user.email});
-  const btn=document.getElementById('ev-resend-btn');
-  btn.textContent=error?'Failed \u2014 try again':'Email sent!';
-  setTimeout(()=>{btn.textContent='Resend verification email';},3000);
-}
-
-async function sendPhoneOTP(){
-  const phone=document.getElementById('pv-phone').value.trim();
-  const err=document.getElementById('pv-err');
-  err.style.display='none';
-  if(!phone){err.textContent='Please enter your phone number.';err.style.display='block';return;}
-  const btn=document.getElementById('pv-send-btn');
-  btn.disabled=true;btn.textContent='Sending OTP\u2026';
-  const{data,error}=await sb.auth.signInWithOtp({phone:phone.replace(/\s/g,'')});
-  btn.disabled=false;btn.textContent='Send OTP via SMS';
-  if(error){err.textContent=error.message;err.style.display='block';return;}
-  pendingPhone=phone;
-  phoneSession=data;
-  document.getElementById('pv-phone-display').textContent=phone;
-  document.getElementById('pv-input-section').style.display='none';
-  document.getElementById('pv-otp-section').style.display='block';
-  document.getElementById('otp0').focus();
-  startOTPTimer();
-}
-
-async function verifyPhoneOTP(){
-  const otp=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
-  const err=document.getElementById('pv-err');
-  err.style.display='none';
-  if(otp.length<6){err.textContent='Please enter the full 6-digit code.';err.style.display='block';return;}
-  const btn=document.getElementById('pv-verify-btn');
-  btn.disabled=true;btn.textContent='Verifying\u2026';
-  const phone=(pendingPhone||'').replace(/\s/g,'');
-  const{data,error}=await sb.auth.verifyOtp({phone,token:otp,type:'sms'});
-  btn.disabled=false;btn.textContent='Verify Phone Number \u2713';
-  if(error){err.textContent=error.message;err.style.display='block';return;}
-  await sb.auth.updateUser({data:{phone_verified:true,phone_number:phone}});
-  currentUser=data.user||currentUser;
-  showScreen('id-upload');
-}
-
-async function resendOTP(){
-  clearOTPTimer();
-  document.getElementById('pv-resend-btn').style.display='none';
-  document.getElementById('pv-timer').style.display='inline';
-  await sendPhoneOTPDirect();
-  startOTPTimer();
-}
-
-async function sendPhoneOTPDirect(){
-  const phone=(pendingPhone||'').replace(/\s/g,'');
-  if(phone)await sb.auth.signInWithOtp({phone});
-}
-
-function startOTPTimer(){
-  let s=30;
-  document.getElementById('pv-resend-btn').style.display='none';
-  document.getElementById('pv-timer').style.display='inline';
-  document.getElementById('pv-timer-count').textContent=s;
-  clearOTPTimer();
-  otpTimer=setInterval(()=>{
-    s--;document.getElementById('pv-timer-count').textContent=s;
-    if(s<=0){clearOTPTimer();document.getElementById('pv-resend-btn').style.display='inline';document.getElementById('pv-timer').style.display='none';}
-  },1000);
-}
-function clearOTPTimer(){if(otpTimer){clearInterval(otpTimer);otpTimer=null;}}
-
-function otpMove(el,idx){
-  if(el.value.length===1&&idx<5)document.getElementById('otp'+(idx+1)).focus();
-  if(el.value.length===0&&idx>0)document.getElementById('otp'+(idx-1)).focus();
-}
-
-// ── ID UPLOAD ──
-function selectIDType(el,type){
-  idUploadType=type;
-  document.querySelectorAll('.id-type-btn').forEach(b=>b.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-function handleIDFile(input,side){
-  const file=input.files[0];
-  if(!file)return;
-  if(side==='front'){
-    idFrontFile=file;
-    document.getElementById('upload-front').classList.add('filled');
-    document.getElementById('front-label').textContent='\u2713 Front: '+file.name;
-  } else {
-    idBackFile=file;
-    document.getElementById('upload-back').classList.add('filled');
-    document.getElementById('back-label').textContent='\u2713 Back: '+file.name;
-  }
-}
-
-async function submitIDUpload(){
-  const err=document.getElementById('id-upload-err');
-  if(!idFrontFile){err.textContent='Please upload the front side of your ID.';err.style.display='block';return;}
-  if(!idBackFile){err.textContent='Please upload the back side of your ID.';err.style.display='block';return;}
-  err.style.display='none';
-  const btn=document.getElementById('id-upload-btn');
-  btn.disabled=true;btn.textContent='Uploading\u2026';
-  try{
-    const uid=currentUser?.id||'unknown';
-    const frontPath='id-docs/'+uid+'/front_'+idUploadType+'_'+Date.now();
-    const backPath='id-docs/'+uid+'/back_'+idUploadType+'_'+Date.now();
-    const[fr,br]=await Promise.all([
-      sb.storage.from('id-documents').upload(frontPath,idFrontFile,{upsert:true}),
-      sb.storage.from('id-documents').upload(backPath,idBackFile,{upsert:true})
-    ]);
-    if(fr.error||br.error)throw new Error((fr.error||br.error).message);
-    await sb.from('profiles').upsert({id:uid,id_type:idUploadType,id_front_path:frontPath,id_back_path:backPath,id_status:'pending'},{onConflict:'id'});
-    btn.disabled=false;btn.textContent='Submit for Verification \u2713';
-    showScreen('setup1');
-  }catch(e){
-    btn.disabled=false;btn.textContent='Submit for Verification \u2713';
-    err.textContent='Upload failed: '+e.message;err.style.display='block';
-  }
-}
-
-async function saveSetup1(){
-  const age=parseInt(document.getElementById('s1-age').value);
-  const gender=document.getElementById('s1-gender').value;
-  const religion=document.getElementById('s1-religion').value;
-  const denom=document.getElementById('s1-denom').value.trim();
-  const city=document.getElementById('s1-city').value.trim();
-  const state=document.getElementById('s1-state').value;
-  const err=document.getElementById('s1-err');
-  err.style.display='none';
-  if(!age||age<18||age>70){err.textContent='Please enter a valid age (18\u201370).';err.style.display='block';return;}
-  if(!gender||!religion||!city||!state){err.textContent='All fields are required.';err.style.display='block';return;}
-  const{data:{user}}=await sb.auth.getUser();
-  const uMeta=user.user_metadata||{};
-  const{error}=await sb.from('profiles').upsert({
-    id:user.id,full_name:uMeta.full_name||'',email:user.email,
-    phone:uMeta.phone_number||pendingPhone||'',
-    age,gender,religion,denomination:denom,city,state,
-    status:'pending',is_founding_member:true
-  });
-  if(error){err.textContent=error.message;err.style.display='block';return;}
-  await loadProfile();
-  showScreen('pending');
-}
-
-async function doLogin(){
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-err');
-  err.style.display='none';
-  if(!email||!pass){err.textContent='Please enter email and password.';err.style.display='block';return;}
-  const btn=document.getElementById('login-btn');
-  btn.disabled=true;btn.textContent='Signing in\u2026';
-  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  btn.disabled=false;btn.textContent='Sign In';
-  if(error){err.textContent=error.message;err.style.display='block';return;}
-  currentUser=data.user;
-  await loadProfile();
-  routeAfterAuth();
-}
-
-async function doLogout(){
+async function signOut() {
   await sb.auth.signOut();
-  currentUser=null;currentProfile=null;
-  localStorage.removeItem('bf_tour_seen');
-  showScreen('login');
+  currentUser = null; myProfile = null;
+  showScreen('authScreen');
 }
 
-async function doForgot(){
-  const email=document.getElementById('forgot-email').value.trim();
-  const msg=document.getElementById('forgot-msg');
-  if(!email){msg.textContent='Please enter your email.';msg.style.color='var(--err)';msg.style.display='block';return;}
-  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
-  msg.textContent=error?error.message:'Reset link sent! Check your inbox.';
-  msg.style.color=error?'var(--err)':'var(--g3)';msg.style.display='block';
+// SETUP
+function toggleSetupDenom() {
+  const r = document.getElementById('setupReligion').value;
+  document.getElementById('setupDenomWrap').style.display = (r === 'Christian' || r === 'Muslim' || r === 'Sikh') ? '' : 'none';
+}
+function toggleCandidate() {
+  const v = document.getElementById('setupRegFor').value;
+  document.getElementById('setupCandidateWrap').style.display = v !== 'Myself' ? '' : 'none';
 }
 
-function toggleSetupDenom(){
-  const r=document.getElementById('s1-religion').value;
-  const wrap=document.getElementById('s1-denom-wrap');
-  wrap.style.display=(r==='Christian'||r==='Muslim'||r==='Hindu'||r==='Sikh')?'block':'none';
+const cityData = {'Andhra Pradesh':['Visakhapatnam','Vijayawada','Guntur','Tirupati','Other'],'Assam':['Guwahati','Silchar','Other'],'Bihar':['Patna','Gaya','Other'],'Chhattisgarh':['Raipur','Other'],'Delhi':['New Delhi','South Delhi','North Delhi','East Delhi','West Delhi','Other'],'Goa':['Panaji','Margao','Other'],'Gujarat':['Ahmedabad','Surat','Vadodara','Rajkot','Other'],'Haryana':['Gurugram','Faridabad','Other'],'Himachal Pradesh':['Shimla','Dharamshala','Other'],'Jharkhand':['Ranchi','Jamshedpur','Other'],'Karnataka':['Bengaluru','Mysuru','Mangalore','Other'],'Kerala':['Kochi','Thiruvananthapuram','Kozhikode','Thrissur','Kottayam','Other'],'Madhya Pradesh':['Bhopal','Indore','Other'],'Maharashtra':['Mumbai','Pune','Nagpur','Nashik','Thane','Other'],'Manipur':['Imphal','Other'],'Meghalaya':['Shillong','Other'],'Mizoram':['Aizawl','Other'],'Nagaland':['Kohima','Dimapur','Other'],'Odisha':['Bhubaneswar','Cuttack','Other'],'Punjab':['Ludhiana','Amritsar','Chandigarh','Other'],'Rajasthan':['Jaipur','Jodhpur','Other'],'Tamil Nadu':['Chennai','Coimbatore','Madurai','Other'],'Telangana':['Hyderabad','Other'],'Tripura':['Agartala','Other'],'Uttar Pradesh':['Lucknow','Noida','Agra','Varanasi','Other'],'Uttarakhand':['Dehradun','Haridwar','Other'],'West Bengal':['Kolkata','Howrah','Siliguri','Other'],'Other / Outside India':['Other']};
+
+function populateSetupCities() {
+  const state = document.getElementById('setupState').value;
+  const city = document.getElementById('setupCity');
+  city.innerHTML = '<option value="">Select city...</option>';
+  (cityData[state] || []).forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; city.appendChild(o); });
 }
 
-async function loadMyProfile(){
-  if(!currentProfile)return;
-  document.getElementById('mp-name').textContent=currentProfile.full_name||'Your Name';
-  document.getElementById('mp-meta').textContent=(currentProfile.religion||'\u2014')+' \u00b7 '+(currentProfile.city||'\u2014');
-  const row=document.getElementById('mp-verif-row');
-  const u=currentUser||{};
-  let badges='';
-  if(u.email_confirmed_at)badges+='<span class="verif-badge verif-done">\u2713 Email verified</span>';
-  if(u.user_metadata?.phone_verified||u.phone_confirmed_at)badges+='<span class="verif-badge verif-done">\u2713 Phone verified</span>';
-  if(currentProfile.id_status==='approved')badges+='<span class="verif-badge verif-done">\u2713 ID verified</span>';
-  else if(currentProfile.id_status==='pending')badges+='<span class="verif-badge verif-pending">\u23f3 ID under review</span>';
-  else badges+='<span class="verif-badge verif-pending">\u26a0 ID not uploaded</span>';
-  if(!u.email_confirmed_at)badges+='<span class="verif-badge verif-pending">\u26a0 Email unverified</span>';
-  row.innerHTML=badges;
-  if(currentProfile.is_founding_member)document.getElementById('mp-founding').style.display='block';
-  const{count:i}=await sb.from('interests').select('*',{count:'exact',head:true}).eq('receiver_id',currentUser.id);
-  document.getElementById('mp-interests-count').textContent=i||0;
-  const{count:v}=await sb.from('profile_views').select('*',{count:'exact',head:true}).eq('viewed_id',currentUser.id);
-  document.getElementById('mp-views-count').textContent=v||0;
+function handlePhotoSelect(index, input) {
+  const file = input.files[0]; if (!file) return;
+  selectedPhotos[index] = file;
+  const slot = document.getElementById('photoSlot' + index);
+  slot.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+  slot.style.borderColor = 'var(--gold)';
+  slot.innerHTML = `<input type="file" accept="image/*" id="photoInput${index}" style="display:none;" onchange="handlePhotoSelect(${index}, this)"/>`;
 }
 
-function setFaithFilter(el,val){
-  faithFilter=val;
-  document.querySelectorAll('#screen-discover .chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
-  loadDiscover();
+function handleIdProofSelect(input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('File size must be less than 5MB'); return; }
+  selectedIdProof = file;
+  const slot = document.getElementById('idProofSlot');
+  slot.style.borderColor = 'var(--gold)';
+  slot.style.background = 'rgba(212,160,23,0.1)';
+  slot.innerHTML = `<span style="font-size:36px;display:block;margin-bottom:8px;">✅</span><span style="font-size:13px;color:var(--gold-bright);font-weight:700;">ID uploaded successfully</span><span style="font-size:11px;color:var(--white40);display:block;margin-top:4px;">Tap to change</span><input type="file" accept="image/*,.pdf" id="idProofInput" style="display:none;" onchange="handleIdProofSelect(this)"/>`;
+  document.getElementById('idProofFileName').textContent = '📄 ' + file.name;
+  document.getElementById('idProofFileName').style.display = '';
 }
 
-async function loadDiscover(){
-  if(!currentUser||!PLATFORM_LIVE)return;
-  const container=document.getElementById('disc-cards');
-  container.innerHTML='<div style="text-align:center;padding:40px 20px"><div class="spinner"></div></div>';
-  let q=sb.from('profiles').select('id,full_name,age,city,religion,photo_url').eq('status','approved').neq('id',currentUser.id);
-  if(faithFilter!=='all')q=q.ilike('religion',faithFilter);
-  const{data}=await q.limit(20);
-  document.getElementById('disc-count').textContent=(data||[]).length;
-  if(!data||!data.length){container.innerHTML='<div style="text-align:center;padding:40px 20px"><p style="color:var(--w50);font-size:14px">No profiles yet \u2014 you\'ll be the first! \ud83c\udf1f</p></div>';return;}
-  container.innerHTML=data.map(p=>'<div class="pcard"><div class="pcard-img-placeholder">'+(p.religion==='Christian'?'\u271d\ufe0f':p.religion==='Muslim'?'\u262a\ufe0f':p.religion==='Hindu'?'\ud83d\udd49\ufe0f':p.religion==='Sikh'?'\u262c':p.religion==='Jain'?'\ud83d\udd4a\ufe0f':'\u2728')+'</div><div class="pcard-body"><p class="pcard-name">'+(p.full_name||'Member')+'</p><p class="pcard-meta">'+(p.age||'\u2014')+' \u00b7 '+(p.religion||'\u2014')+' \u00b7 '+(p.city||'\u2014')+'</p><div class="pcard-actions"><button class="btn btn-gold" style="flex:1;padding:10px;font-size:13px" onclick="sendInterest(\''+p.id+'\')">Send Interest \u2746</button><button class="btn btn-ghost" style="width:44px;padding:10px;font-size:13px">\ud83d\udc41</button></div></div></div>').join('');
+function updateSetupUI() {
+  const titles = ['Personal Details','About You','Your Photos','Government ID Verification','Preferences'];
+  document.getElementById('setupTitle').textContent = titles[setupStep - 1];
+  document.getElementById('setupStepLabel').textContent = `Step ${setupStep} of 5`;
+  document.querySelectorAll('.step-dot').forEach((d, i) => d.classList.toggle('active', i < setupStep));
+  for (let i = 1; i <= 5; i++) document.getElementById('setupStep' + i).style.display = i === setupStep ? '' : 'none';
+  document.getElementById('setupBackBtn').style.display = setupStep > 1 ? '' : 'none';
+  document.getElementById('setupNextBtn').textContent = setupStep < 5 ? 'Next →' : 'Submit for Review ✦';
+  document.getElementById('setupError').style.display = 'none';
+}
+function setupBack() { if (setupStep > 1) { setupStep--; updateSetupUI(); } }
+
+async function setupNext() {
+  const errEl = document.getElementById('setupError'); errEl.style.display = 'none';
+  if (setupStep === 1) {
+    if (!document.getElementById('setupName').value.trim() || !document.getElementById('setupAge').value || !document.getElementById('setupGender').value || !document.getElementById('setupReligion').value || !document.getElementById('setupState').value || !document.getElementById('setupCity').value || !document.getElementById('setupPhone').value.trim()) {
+      errEl.textContent = 'Please fill in all required fields'; errEl.style.display = ''; return;
+    }
+    setupStep++; updateSetupUI(); return;
+  }
+  if (setupStep === 2) { setupStep++; updateSetupUI(); return; }
+  if (setupStep === 3) {
+    if (!selectedPhotos[0]) { errEl.textContent = 'Primary profile photo is required'; errEl.style.display = ''; return; }
+    setupStep++; updateSetupUI(); return;
+  }
+  if (setupStep === 4) {
+    if (!document.getElementById('setupIdType').value) { errEl.textContent = 'Please select your Government ID type'; errEl.style.display = ''; return; }
+    if (!selectedIdProof) { errEl.textContent = 'Please upload your Government ID'; errEl.style.display = ''; return; }
+    setupStep++; updateSetupUI(); return;
+  }
+  // Step 5 — submit
+  const btn = document.getElementById('setupNextBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm" style="margin:0 auto;"></div>';
+  try {
+    const photoUrls = ['','',''];
+    for (let i = 0; i < 3; i++) {
+      if (selectedPhotos[i]) {
+        const ext = selectedPhotos[i].name.split('.').pop();
+        const path = `${currentUser.id}/photo_${i}_${Date.now()}.${ext}`;
+        const { error } = await sb.storage.from('profile-photos').upload(path, selectedPhotos[i], { upsert: true });
+        if (error) throw error;
+        const { data } = sb.storage.from('profile-photos').getPublicUrl(path);
+        photoUrls[i] = data.publicUrl;
+      }
+    }
+    let idProofUrl = '';
+    if (selectedIdProof) {
+      const ext = selectedIdProof.name.split('.').pop();
+      const idPath = `${currentUser.id}/id_proof_${Date.now()}.${ext}`;
+      try {
+        const { error: idErr } = await sb.storage.from('id-proofs').upload(idPath, selectedIdProof, { upsert: true });
+        if (!idErr) { const { data: idData } = sb.storage.from('id-proofs').getPublicUrl(idPath); idProofUrl = idData.publicUrl; }
+        else { await sb.storage.from('profile-photos').upload(idPath, selectedIdProof, { upsert: true }); const { data } = sb.storage.from('profile-photos').getPublicUrl(idPath); idProofUrl = data.publicUrl; }
+      } catch(x) {}
+    }
+    const profileData = {
+      id: currentUser.id, email: currentUser.email,
+      full_name: document.getElementById('setupName').value.trim(),
+      age: parseInt(document.getElementById('setupAge').value),
+      gender: document.getElementById('setupGender').value,
+      religion: document.getElementById('setupReligion').value,
+      denomination: document.getElementById('setupDenom').value || null,
+      city: document.getElementById('setupCity').value, state: document.getElementById('setupState').value,
+      phone: document.getElementById('setupPhone').value.trim(),
+      registered_by: document.getElementById('setupRegFor').value,
+      candidate_name: document.getElementById('setupCandidate').value.trim(),
+      bio: document.getElementById('setupBio').value.trim(),
+      education: document.getElementById('setupEdu').value.trim(),
+      occupation: document.getElementById('setupOcc').value.trim(),
+      height_cm: document.getElementById('setupHeight').value ? parseInt(document.getElementById('setupHeight').value) : null,
+      mother_tongue: document.getElementById('setupTongue').value.trim(),
+      marital_status: document.getElementById('setupMarital').value,
+      photo_url: photoUrls[0], photo_2_url: photoUrls[1], photo_3_url: photoUrls[2],
+      id_proof_type: document.getElementById('setupIdType').value, id_proof_url: idProofUrl,
+      pref_age_min: parseInt(document.getElementById('setupPrefMin').value) || 18,
+      pref_age_max: parseInt(document.getElementById('setupPrefMax').value) || 70,
+      pref_denomination: document.getElementById('setupPrefDenom').value,
+      pref_city: document.getElementById('setupPrefCity').value.trim() || 'Any',
+      status: 'pending',
+    };
+    const { error } = await sb.from('profiles').upsert(profileData);
+    if (error) throw error;
+    await loadUserProfile();
+  } catch (err) { errEl.textContent = err.message; errEl.style.display = ''; btn.disabled = false; btn.textContent = 'Submit for Review ✦'; }
 }
 
-async function sendInterest(toId){
-  if(!currentUser)return;
-  const{error}=await sb.from('interests').upsert({from_user_id:currentUser.id,to_user_id:toId,status:'pending'},{onConflict:'from_user_id,to_user_id'});
-  if(!error){const btn=event.target;btn.textContent='Sent \u2713';btn.disabled=true;}
+// TAB NAVIGATION
+function switchTab(tab) {
+  currentTab = tab;
+  ['browse','interests','messages','profile','admin'].forEach(t => {
+    const el = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) el.style.display = t === tab ? '' : 'none';
+    const nav = document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (nav) nav.classList.toggle('active', t === tab);
+  });
+  if (tab === 'browse') loadBrowseProfiles();
+  if (tab === 'interests') loadInterests();
+  if (tab === 'messages') loadConversations();
+  if (tab === 'profile') renderMyProfile();
+  if (tab === 'admin') loadAdminProfiles();
 }
 
-async function loadInterests(){
-  if(!currentUser||!PLATFORM_LIVE)return;
-  const{data}=await sb.from('interests').select('*,from_user:from_user_id(full_name,age,city,religion)').eq('to_user_id',currentUser.id).eq('status','pending');
-  const c=document.getElementById('interests-list');
-  if(!data||!data.length){c.innerHTML='<div style="text-align:center;padding:40px 20px"><p style="color:var(--w50);font-size:14px">No interests yet.</p></div>';return;}
-  c.innerHTML=data.map(i=>'<div class="card-dark" style="margin-bottom:10px;display:flex;align-items:center;gap:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--dp3);display:flex;align-items:center;justify-content:center;font-size:20px">\ud83d\udc8d</div><div style="flex:1"><p style="color:white;font-size:14px;font-weight:700">'+(i.from_user?.full_name||'Member')+'</p><p style="color:var(--w50);font-size:12px">'+(i.from_user?.age||'\u2014')+' \u00b7 '+(i.from_user?.religion||'\u2014')+' \u00b7 '+(i.from_user?.city||'\u2014')+'</p></div><button class="btn btn-gold" style="width:70px;padding:8px;font-size:11px" onclick="acceptInterest(\''+i.id+'\',this)">Accept</button></div>').join('');
+// BROWSE
+async function loadBrowseProfiles() {
+  document.getElementById('browseLoading').style.display = '';
+  document.getElementById('browseEmpty').style.display = 'none';
+  document.getElementById('browseGrid').innerHTML = '';
+  // Show safety banner for female users
+  const banner = document.getElementById('safetyBanner');
+  if (myProfile && myProfile.gender === 'Female') banner.style.display = '';
+  else banner.style.display = 'none';
+
+  let query = sb.from('profiles').select('*').eq('status', 'approved').neq('id', myProfile.id);
+  if (myProfile.gender === 'Male') query = query.eq('gender', 'Female');
+  else if (myProfile.gender === 'Female') query = query.eq('gender', 'Male');
+  const religion = document.getElementById('filterReligion')?.value;
+  const city = document.getElementById('filterCity')?.value;
+  if (religion) query = query.eq('religion', religion);
+  if (city) query = query.ilike('city', `%${city}%`);
+  const { data } = await query.order('created_at', { ascending: false }).limit(50);
+  document.getElementById('browseLoading').style.display = 'none';
+  if (!data || data.length === 0) { document.getElementById('browseEmpty').style.display = ''; return; }
+  const grid = document.getElementById('browseGrid');
+  data.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'profile-card'; card.onclick = () => openProfileModal(p);
+    card.innerHTML = `<div class="profile-card-photo" style="${p.photo_url ? `background-image:url(${p.photo_url})` : ''}">${!p.photo_url ? '<span style="font-size:48px;opacity:0.3;">👤</span>' : ''}</div><div class="profile-card-info"><h3>${p.full_name}, ${p.age}</h3><p>${p.religion}${p.denomination ? ' · ' + p.denomination : ''} · ${p.city}</p>${p.occupation ? `<p>${p.occupation}</p>` : ''}</div>`;
+    grid.appendChild(card);
+  });
+}
+function toggleFilters() { const bar = document.getElementById('filterBar'); bar.style.display = bar.style.display === 'none' ? '' : 'none'; }
+function clearFilters() { document.getElementById('filterReligion').value = ''; document.getElementById('filterCity').value = ''; loadBrowseProfiles(); }
+
+// PROFILE MODAL
+function openProfileModal(profile) {
+  const modal = document.getElementById('profileModal');
+  const photoDiv = document.getElementById('profileModalPhoto');
+  if (profile.photo_url) { photoDiv.style.backgroundImage = `url(${profile.photo_url})`; document.getElementById('profileModalNoPhoto').style.display = 'none'; }
+  else { photoDiv.style.backgroundImage = ''; document.getElementById('profileModalNoPhoto').style.display = ''; }
+  document.getElementById('profileModalName').textContent = `${profile.full_name}, ${profile.age}`;
+  document.getElementById('profileModalSub').textContent = `${profile.religion}${profile.denomination ? ' · ' + profile.denomination : ''} · ${profile.city}`;
+  if (profile.bio) { document.getElementById('profileModalBio').style.display = ''; document.getElementById('profileModalBioText').textContent = profile.bio; }
+  else document.getElementById('profileModalBio').style.display = 'none';
+  const stats = document.getElementById('profileModalStats'); stats.innerHTML = '';
+  [{ label: 'Education', value: profile.education }, { label: 'Occupation', value: profile.occupation }, { label: 'Mother Tongue', value: profile.mother_tongue }, { label: 'Marital Status', value: profile.marital_status }, { label: 'Height', value: profile.height_cm ? profile.height_cm + ' cm' : null }, { label: 'State', value: profile.state }]
+    .filter(d => d.value).forEach(d => { stats.innerHTML += `<div class="stat-box"><p class="label">${d.label}</p><p class="value">${d.value}</p></div>`; });
+  const action = document.getElementById('profileModalAction');
+  const status = getInterestStatus(profile.id);
+  if (status === 'accepted') action.innerHTML = '<button class="btn btn-green" disabled>✅ Mutually Connected</button>';
+  else if (status === 'sent') action.innerHTML = '<button class="btn btn-dark" disabled>Interest Sent ✓</button>';
+  else if (status === 'received') action.innerHTML = `<button class="btn btn-gold" onclick="sendInterest('${profile.id}','accept')">Accept Interest ♥</button>`;
+  else action.innerHTML = `<button class="btn btn-gold" onclick="sendInterest('${profile.id}','send')">✦ Express Interest</button>`;
+  modal.classList.add('show');
+}
+function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
+function getInterestStatus(profileId) {
+  const sent = allInterests.find(i => i.from_user_id === myProfile.id && i.to_user_id === profileId);
+  const received = allInterests.find(i => i.to_user_id === myProfile.id && i.from_user_id === profileId);
+  if (sent?.status === 'accepted' || received?.status === 'accepted') return 'accepted';
+  if (sent) return 'sent'; if (received) return 'received'; return null;
+}
+async function sendInterest(targetId, action) {
+  if (action === 'send') await sb.from('interests').insert({ from_user_id: myProfile.id, to_user_id: targetId });
+  else await sb.from('interests').update({ status: 'accepted', responded_at: new Date().toISOString() }).eq('from_user_id', targetId).eq('to_user_id', myProfile.id);
+  await loadAllInterests(); closeProfileModal();
+}
+async function loadAllInterests() {
+  const { data } = await sb.from('interests').select('*').or(`from_user_id.eq.${myProfile.id},to_user_id.eq.${myProfile.id}`);
+  allInterests = data || [];
 }
 
-async function acceptInterest(id,btn){
-  const{error}=await sb.from('interests').update({status:'accepted',responded_at:new Date().toISOString()}).eq('id',id);
-  if(!error){btn.textContent='\u2713 Done';btn.disabled=true;}
+// INTERESTS
+function setInterestTab(tab) {
+  currentInterestTab = tab;
+  ['received','sent','connections'].forEach(t => { document.getElementById('intTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab); });
+  loadInterests();
+}
+async function loadInterests() {
+  document.getElementById('interestsLoading').style.display = '';
+  document.getElementById('interestsEmpty').style.display = '';
+  document.getElementById('interestsList').innerHTML = '';
+  let query;
+  if (currentInterestTab === 'received') query = sb.from('interests').select('*').eq('to_user_id', myProfile.id);
+  else if (currentInterestTab === 'sent') query = sb.from('interests').select('*').eq('from_user_id', myProfile.id);
+  else query = sb.from('interests').select('*').eq('status','accepted').or(`from_user_id.eq.${myProfile.id},to_user_id.eq.${myProfile.id}`);
+  const { data } = await query.order('created_at', { ascending: false });
+  document.getElementById('interestsLoading').style.display = 'none';
+  if (!data || data.length === 0) {
+    document.getElementById('interestsEmpty').style.display = '';
+    const texts = { received:'No interests received yet', sent:"You haven't sent any interests yet", connections:'No connections yet' };
+    document.getElementById('interestsEmptyText').textContent = texts[currentInterestTab]; return;
+  }
+  document.getElementById('interestsEmpty').style.display = 'none';
+  const userIds = new Set(); data.forEach(i => { userIds.add(i.from_user_id); userIds.add(i.to_user_id); }); userIds.delete(myProfile.id);
+  const { data: profiles } = await sb.from('profiles').select('*').in('id', [...userIds]);
+  const profileMap = {}; (profiles || []).forEach(p => profileMap[p.id] = p);
+  const list = document.getElementById('interestsList');
+  data.forEach(interest => {
+    const otherId = interest.from_user_id === myProfile.id ? interest.to_user_id : interest.from_user_id;
+    const p = profileMap[otherId]; if (!p) return;
+    const statusText = interest.status === 'pending' ? '⏳ Pending' : interest.status === 'accepted' ? '✅ Accepted' : '❌ Declined';
+    let actions = '';
+    if (currentInterestTab === 'received' && interest.status === 'pending') actions = `<button class="btn btn-green btn-sm" onclick="respondInterest('${interest.id}','accepted')">Accept</button><button class="btn btn-dark btn-sm" onclick="respondInterest('${interest.id}','declined')">Decline</button>`;
+    if (currentInterestTab === 'connections') actions = `<button class="btn btn-gold btn-sm" onclick="openChat('${p.id}')">💬 Chat</button>`;
+    list.innerHTML += `<div class="interest-item"><div class="interest-avatar" style="${p.photo_url ? `background-image:url(${p.photo_url})` : ''}" onclick="openProfileModal(${JSON.stringify(p).replace(/"/g,'&quot;')})"></div><div class="interest-info" onclick="openProfileModal(${JSON.stringify(p).replace(/"/g,'&quot;')})"><h3>${p.full_name}, ${p.age}</h3><p style="font-size:11px;color:var(--white40);margin:2px 0 0;">${p.religion} · ${p.city}</p><p style="font-size:10px;color:var(--white40);margin:2px 0 0;">${statusText}</p></div><div class="interest-actions">${actions}</div></div>`;
+  });
+}
+async function respondInterest(interestId, status) {
+  await sb.from('interests').update({ status, responded_at: new Date().toISOString() }).eq('id', interestId);
+  await loadAllInterests(); loadInterests();
 }
 
-async function loadMessages(){
-  if(!currentUser||!PLATFORM_LIVE)return;
-  const c=document.getElementById('msg-list');
-  c.innerHTML='<div style="text-align:center;padding:40px 20px"><p style="color:var(--w50);font-size:14px">No conversations yet.</p></div>';
+// MESSAGES
+async function loadConversations() {
+  document.getElementById('messagesLoading').style.display = '';
+  document.getElementById('messagesEmpty').style.display = 'none';
+  document.getElementById('messagesList').innerHTML = '';
+  const { data: connections } = await sb.from('interests').select('*').eq('status','accepted').or(`from_user_id.eq.${myProfile.id},to_user_id.eq.${myProfile.id}`);
+  if (!connections || connections.length === 0) { document.getElementById('messagesLoading').style.display = 'none'; document.getElementById('messagesEmpty').style.display = ''; return; }
+  const partnerIds = connections.map(c => c.from_user_id === myProfile.id ? c.to_user_id : c.from_user_id);
+  const { data: partners } = await sb.from('profiles').select('*').in('id', partnerIds);
+  const list = document.getElementById('messagesList');
+  for (const partner of (partners || [])) {
+    const { data: lastMsg } = await sb.from('messages').select('*').or(`and(sender_id.eq.${myProfile.id},receiver_id.eq.${partner.id}),and(sender_id.eq.${partner.id},receiver_id.eq.${myProfile.id})`).order('created_at',{ascending:false}).limit(1);
+    const { count } = await sb.from('messages').select('*',{count:'exact',head:true}).eq('sender_id',partner.id).eq('receiver_id',myProfile.id).eq('is_read',false);
+    const msg = lastMsg?.[0];
+    list.innerHTML += `<div class="interest-item" style="cursor:pointer;" onclick="openChat('${partner.id}')"><div class="interest-avatar" style="${partner.photo_url ? `background-image:url(${partner.photo_url})` : ''}"></div><div class="interest-info" style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="font-family:'Cinzel',serif;font-size:13px;color:var(--white);margin:0;">${partner.full_name}</h3>${msg ? `<span style="font-size:10px;color:var(--white40);">${new Date(msg.created_at).toLocaleDateString()}</span>` : ''}</div><p style="font-size:12px;color:${count > 0 ? 'var(--white)' : 'var(--white40)'};font-weight:${count > 0 ? 700 : 400};margin:4px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${msg ? msg.content : 'Start a conversation...'}</p></div>${count > 0 ? `<span style="background:var(--gold);color:var(--black);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">${count}</span>` : ''}</div>`;
+  }
+  document.getElementById('messagesLoading').style.display = 'none';
+  if (list.innerHTML === '') document.getElementById('messagesEmpty').style.display = '';
 }
 
-function shareReferral(){
-  const link='https://beginforever.in?ref='+(currentUser?.id?.slice(0,8)||'friend');
-  if(navigator.share){navigator.share({title:'Begin Forever',text:'Join India\'s most trusted matrimony!',url:link});}
-  else{navigator.clipboard?.writeText(link).then(()=>alert('Link copied!'));}
+// CHAT
+async function openChat(partnerId) {
+  chatPartnerId = partnerId;
+  const { data } = await sb.from('profiles').select('*').eq('id', partnerId).single();
+  document.getElementById('chatName').textContent = data.full_name;
+  document.getElementById('chatCity').textContent = data.city;
+  if (data.photo_url) document.getElementById('chatAvatar').style.backgroundImage = `url(${data.photo_url})`;
+  document.getElementById('chatScreen').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+  loadChatMessages();
+  chatInterval = setInterval(loadChatMessages, 3000);
+}
+function closeChat() {
+  if (chatInterval) clearInterval(chatInterval);
+  document.getElementById('chatScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  chatPartnerId = null;
+}
+async function loadChatMessages() {
+  if (!chatPartnerId) return;
+  const { data } = await sb.from('messages').select('*').or(`and(sender_id.eq.${myProfile.id},receiver_id.eq.${chatPartnerId}),and(sender_id.eq.${chatPartnerId},receiver_id.eq.${myProfile.id})`).order('created_at',{ascending:true});
+  const container = document.getElementById('chatMessages'); container.innerHTML = '';
+  if (!data || data.length === 0) { container.innerHTML = '<div style="text-align:center;padding:40px 0;"><p style="color:var(--white40);font-size:13px;">Say hello! Start a conversation.</p></div>'; }
+  else { data.forEach(m => { const mine = m.sender_id === myProfile.id; container.innerHTML += `<div style="display:flex;justify-content:${mine?'flex-end':'flex-start'};margin-bottom:8px;"><div class="chat-bubble ${mine?'chat-bubble-mine':'chat-bubble-theirs'}"><p>${m.content}</p><p class="time">${new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p></div></div>`; }); container.scrollTop = container.scrollHeight; }
+  await sb.from('messages').update({is_read:true}).eq('receiver_id',myProfile.id).eq('sender_id',chatPartnerId).eq('is_read',false);
+}
+async function sendMessage() {
+  const input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return;
+  input.value = '';
+  await sb.from('messages').insert({ sender_id: myProfile.id, receiver_id: chatPartnerId, content: msg });
+  loadChatMessages();
 }
 
-// ── BOOT ──
-localStorage.setItem('bf_tour_seen','1');
-init();
+// MY PROFILE
+function renderMyProfile() {
+  const el = document.getElementById('myProfileContent'), p = myProfile;
+  el.innerHTML = `<div style="text-align:center;margin-bottom:24px;"><div style="width:100px;height:100px;border-radius:50%;margin:0 auto;background:var(--dark3);border:3px solid var(--gold);${p.photo_url?`background-image:url(${p.photo_url});background-size:cover;background-position:center;`:'display:flex;align-items:center;justify-content:center;'}">${!p.photo_url?'<span style="font-size:36px;opacity:0.3;">👤</span>':''}</div><h3 style="font-family:'Cinzel',serif;font-size:20px;color:var(--white);margin-top:12px;">${p.full_name}, ${p.age}</h3><p style="color:var(--gold);font-size:13px;">${p.religion}${p.denomination?' · '+p.denomination:''} · ${p.city}</p><span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:${p.status==='approved'?'var(--green)':'var(--gold)'};color:${p.status==='approved'?'var(--white)':'var(--black)'};">${p.status==='approved'?'✅ Verified Member':'⏳ Pending Review'}</span></div><div style="background:var(--white08);border-radius:14px;padding:16px;">${[{label:'Bio',value:p.bio},{label:'Education',value:p.education},{label:'Occupation',value:p.occupation},{label:'Mother Tongue',value:p.mother_tongue},{label:'Marital Status',value:p.marital_status},{label:'Phone',value:p.phone},{label:'Email',value:p.email}].filter(d=>d.value).map(d=>`<div style="margin-bottom:12px;"><p style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">${d.label}</p><p style="font-size:13px;color:var(--white);margin-top:2px;">${d.value}</p></div>`).join('')}</div>`;
+}
+
+// ADMIN
+function setAdminTab(tab) {
+  currentAdminTab = tab;
+  ['pending','approved','rejected'].forEach(t => { document.getElementById('admTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab); });
+  loadAdminProfiles();
+}
+async function loadAdminProfiles() {
+  document.getElementById('adminLoading').style.display = '';
+  document.getElementById('adminEmpty').style.display = 'none';
+  document.getElementById('adminList').innerHTML = '';
+  const { data } = await sb.from('profiles').select('*').eq('status', currentAdminTab).order('created_at',{ascending:false});
+  document.getElementById('adminLoading').style.display = 'none';
+  if (!data || data.length === 0) { document.getElementById('adminEmpty').style.display = ''; return; }
+  const list = document.getElementById('adminList');
+  data.forEach(p => {
+    let actions = '';
+    if (currentAdminTab === 'pending') actions = `<div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-green btn-sm" style="flex:1;" onclick="adminAction('${p.id}','approved')">✅ Approve</button><button class="btn btn-red btn-sm" style="flex:1;" onclick="adminReject('${p.id}')">❌ Reject</button></div>`;
+    if (currentAdminTab === 'approved') actions = `<button class="btn btn-dark btn-sm" style="margin-top:10px;" onclick="adminAction('${p.id}','suspended')">Suspend</button>`;
+    const photos = [p.photo_url, p.photo_2_url, p.photo_3_url].filter(Boolean);
+    const idSection = p.id_proof_url ? `<div style="margin:10px 0;"><p style="font-size:11px;color:var(--gold-bright);margin-bottom:6px;">ID: ${p.id_proof_type||'Proof'}</p><a href="${p.id_proof_url}" target="_blank"><img src="${p.id_proof_url}" style="width:100%;max-width:240px;border-radius:8px;border:1.5px solid var(--gold);"/></a><br/><a href="${p.id_proof_url}" target="_blank" style="font-size:11px;color:var(--gold);">Open ID →</a></div>` : '<p style="font-size:11px;color:var(--red);margin:8px 0;">No ID uploaded</p>';
+    list.innerHTML += `<div class="admin-card"><div class="admin-card-header"><div class="admin-avatar" style="${p.photo_url?`background-image:url(${p.photo_url})`:''};"></div><div style="flex:1;"><h3 style="font-size:14px;color:var(--white);margin:0;">${p.full_name}, ${p.age}</h3><p style="font-size:11px;color:var(--white40);">${p.gender} · ${p.religion}${p.denomination?' · '+p.denomination:''}</p><p style="font-size:10px;color:var(--white40);">${p.email} · ${p.city}, ${p.state}</p></div></div>${p.bio?`<p style="font-size:12px;color:var(--white70);margin-top:10px;line-height:1.5;">${p.bio}</p>`:''}${photos.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;">${photos.map(u=>`<img src="${u}" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1.5px solid var(--gold);"/>`).join('')}</div>`:''}${idSection}${actions}</div>`;
+  });
+}
+async function adminAction(profileId, status) {
+  await sb.from('profiles').update({ status, approved_at: status==='approved'?new Date().toISOString():null, is_founding_member: status==='approved' }).eq('id', profileId);
+  loadAdminProfiles();
+}
+async function adminReject(profileId) {
+  const reason = prompt('Reason for rejection:'); if (reason === null) return;
+  await sb.from('profiles').update({ status:'rejected', rejection_reason: reason }).eq('id', profileId);
+  loadAdminProfiles();
+}
+
+// REFERRAL
+function shareReferral() {
+  const link = `https://beginforever.in?ref=${myProfile?.id?.slice(0,8)||'friend'}`;
+  if (navigator.share) navigator.share({ title:'Begin Forever', text:"Join India's most trusted matrimony!", url: link });
+  else navigator.clipboard?.writeText(link).then(() => alert('Referral link copied!'));
+}
+
+// INIT
+async function loadUserProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  myProfile = data;
+  if (!myProfile) { showScreen('setupScreen'); updateSetupUI(); return; }
+  if (myProfile.status === 'pending') { document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile is being reviewed by our team. You'll receive an email once approved — usually within 24 hours.`; showScreen('pendingScreen'); return; }
+  if (myProfile.status === 'rejected') { document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support for more information.'; showScreen('rejectedScreen'); return; }
+  document.getElementById('headerName').textContent = myProfile.full_name.split(' ')[0];
+  if (myProfile.is_admin) {
+    const tabBar = document.getElementById('tabBar');
+    if (!document.getElementById('navAdmin')) {
+      const adminBtn = document.createElement('button');
+      adminBtn.className = 'tab-btn'; adminBtn.id = 'navAdmin'; adminBtn.onclick = () => switchTab('admin');
+      adminBtn.innerHTML = '<span class="tab-icon">⚙️</span><span class="tab-label">Admin</span>';
+      tabBar.appendChild(adminBtn);
+    }
+  }
+  await loadAllInterests();
+  showScreen('mainApp');
+  switchTab('browse');
+}
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) { currentUser = session.user; await loadUserProfile(); }
+  else { currentUser = null; myProfile = null; showScreen('authScreen'); }
+});
+
+let sessionChecked = false;
+sb.auth.getSession().then(async ({ data: { session } }) => {
+  sessionChecked = true;
+  if (session?.user) { currentUser = session.user; await loadUserProfile(); }
+  else showScreen('authScreen');
+}).catch(() => { sessionChecked = true; showScreen('authScreen'); });
+
+setTimeout(() => { if (!sessionChecked) showScreen('authScreen'); }, 5000);
 </script>
 </body>
 </html>
