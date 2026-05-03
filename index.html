@@ -729,7 +729,7 @@ async function loadConversations() {
 // CHAT
 async function openChat(partnerId) {
   chatPartnerId = partnerId;
-  const { data } = await sb.from('profiles').select('*').eq('id', partnerId).single();
+  const { data } = await sb.from('profiles').select('*').eq('id', partnerId).maybeSingle();
   document.getElementById('chatName').textContent = data.full_name;
   document.getElementById('chatCity').textContent = data.city;
   if (data.photo_url) document.getElementById('chatAvatar').style.backgroundImage = `url(${data.photo_url})`;
@@ -808,14 +808,26 @@ function shareReferral() {
 // INIT
 async function loadUserProfile() {
   try {
-    const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-    myProfile = (!error && data) ? data : null;
+    const res = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+    myProfile = (res && res.data) ? res.data : null;
   } catch(e) { myProfile = null; }
-  
-  if (!myProfile) { showScreen('setupScreen'); updateSetupUI(); return; }
-  if (myProfile.status === 'pending') { document.getElementById('pendingMsg').textContent = `Thank you, ${myProfile.full_name.split(' ')[0]}! Your profile is being reviewed. You'll receive an email once approved — usually within 24 hours.`; showScreen('pendingScreen'); return; }
-  if (myProfile.status === 'rejected') { document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support.'; showScreen('rejectedScreen'); return; }
-  document.getElementById('headerName').textContent = myProfile.full_name.split(' ')[0];
+
+  if (!myProfile) {
+    showScreen('setupScreen');
+    updateSetupUI();
+    return;
+  }
+  if (myProfile.status === 'pending') {
+    document.getElementById('pendingMsg').textContent = `Thank you, ${(myProfile.full_name||'').split(' ')[0] || 'there'}! Your profile is being reviewed. You'll receive an email once approved — usually within 24 hours.`;
+    showScreen('pendingScreen');
+    return;
+  }
+  if (myProfile.status === 'rejected') {
+    document.getElementById('rejectedMsg').textContent = myProfile.rejection_reason || 'Your profile was not approved. Please contact support.';
+    showScreen('rejectedScreen');
+    return;
+  }
+  document.getElementById('headerName').textContent = (myProfile.full_name || '').split(' ')[0] || '';
   if (myProfile.is_admin) {
     const tabBar = document.getElementById('tabBar');
     if (!document.getElementById('navAdmin')) {
@@ -825,7 +837,7 @@ async function loadUserProfile() {
       tabBar.appendChild(adminBtn);
     }
   }
-  try { await loadAllInterests(); } catch(e) {}
+  try { await loadAllInterests(); } catch(e) { allInterests = []; }
   showScreen('mainApp');
   switchTab('browse');
 }
@@ -842,7 +854,7 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
   else showScreen('authScreen');
 }).catch(() => { sessionChecked = true; showScreen('authScreen'); });
 
-setTimeout(() => { if (!sessionChecked) showScreen('authScreen'); }, 5000);
+setTimeout(() => { if (!sessionChecked) { sessionChecked = true; showScreen('authScreen'); } }, 3000);
 </script>
 </body>
 </html>
