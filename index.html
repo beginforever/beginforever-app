@@ -842,19 +842,40 @@ async function loadUserProfile() {
   switchTab('browse');
 }
 
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) { currentUser = session.user; await loadUserProfile(); }
-  else { currentUser = null; myProfile = null; showScreen('authScreen'); }
+// Single auth handler - no race conditions
+let _loading = false;
+async function handleSession(session) {
+  if (_loading) return;
+  _loading = true;
+  try {
+    if (session?.user) {
+      currentUser = session.user;
+      await loadUserProfile();
+    } else {
+      currentUser = null; myProfile = null;
+      showScreen('authScreen');
+    }
+  } catch(e) {
+    showScreen('authScreen');
+  }
+  _loading = false;
+}
+
+// Boot: get current session once
+sb.auth.getSession().then(({ data: { session } }) => {
+  handleSession(session);
+}).catch(() => showScreen('authScreen'));
+
+// Listen for sign-in / sign-out only
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') { _loading = false; handleSession(session); }
+  if (event === 'SIGNED_OUT') { currentUser = null; myProfile = null; showScreen('authScreen'); }
 });
 
-let sessionChecked = false;
-sb.auth.getSession().then(async ({ data: { session } }) => {
-  sessionChecked = true;
-  if (session?.user) { currentUser = session.user; await loadUserProfile(); }
-  else showScreen('authScreen');
-}).catch(() => { sessionChecked = true; showScreen('authScreen'); });
-
-setTimeout(() => { if (!sessionChecked) { sessionChecked = true; showScreen('authScreen'); } }, 3000);
+setTimeout(() => {
+  const ls = document.getElementById('loadingScreen');
+  if (ls && ls.classList.contains('active')) showScreen('authScreen');
+}, 4000);
 </script>
 </body>
 </html>
