@@ -880,21 +880,20 @@ setInterval(updateCountdown,1000);updateCountdown();
 
 // HELPERS
 function showScr(id){
-  document.querySelectorAll('.screen').forEach(s=>{
+  document.querySelectorAll('.screen').forEach(function(s){
     s.style.display='none';
     s.classList.remove('active');
   });
-  const el=document.getElementById(id);
+  var el=document.getElementById(id);
   if(!el)return;
-  // mainApp uses block layout; auth/pending/rejected use flex
-  const blockScreens=['mainApp','setupScreen'];
-  el.style.display=blockScreens.includes(id)?'block':'flex';
-  el.style.flexDirection='column';
   el.classList.add('active');
+  if(id==='mainApp'){
+    el.style.display='block';
+  } else {
+    el.style.display='flex';
+  }
 }
-// keep old show() alias
 function show(id){showScr(id);}
-
 function togglePw(inputId,btn){
   const inp=document.getElementById(inputId);
   inp.type=inp.type==='password'?'text':'password';
