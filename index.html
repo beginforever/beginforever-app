@@ -152,9 +152,9 @@ select.field option { background: var(--dark2); color: var(--white); }
     <div style="text-align:center;margin-bottom:24px;">
       <h1 id="setupTitle" style="font-family:'Cinzel',serif;font-size:22px;color:var(--gold-bright);">Personal Details</h1>
       <div class="steps" id="setupSteps">
-        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
       </div>
-      <p id="setupStepLabel" style="font-size:12px;color:var(--white40);">Step 1 of 5</p>
+      <p id="setupStepLabel" style="font-size:12px;color:var(--white40);">Step 1 of 6</p>
     </div>
     <div style="background:var(--dark2);border-radius:20px;padding:24px;border:1px solid var(--white08);">
       <!-- Step 1: Personal Details -->
@@ -223,8 +223,33 @@ select.field option { background: var(--dark2); color: var(--white); }
           <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="setupPrefMin" value="18"/></div>
           <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="setupPrefMax" value="70"/></div>
         </div>
-        <div class="field-group"><label class="field-label">Preferred Denomination</label><select class="field" id="setupPrefDenom"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Baptist</option><option>CSI / CNI</option><option>Methodist</option><option>Orthodox</option><option>Mar Thoma</option><option>Brethren</option><option>Lutheran</option><option>Other</option></select></div>
         <div class="field-group"><label class="field-label">Preferred City</label><input class="field" id="setupPrefCity" placeholder="Any"/></div>
+      </div>
+      <!-- Step 6: Faith Privacy -->
+      <div id="setupStep6" style="display:none;">
+        <p style="font-size:13px;color:var(--white70);margin-bottom:16px;">Control which faiths you browse and who can send you interest. Tap to toggle — all selected by default.</p>
+        <!-- Browse section -->
+        <div class="field-group" style="margin-bottom:18px;">
+          <label class="field-label" style="margin-bottom:4px;">🔍 Faiths I'll browse</label>
+          <p style="font-size:11px;color:var(--white40);margin-bottom:10px;">Profiles from these faiths will appear in Discover.</p>
+          <div id="setupBrowseChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button type="button" onclick="setupBrowseSelectAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">All</button>
+            <button type="button" onclick="setupBrowseClearAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">None</button>
+          </div>
+          <div id="setupBrowseDenomWrap"></div>
+        </div>
+        <!-- Receive section -->
+        <div class="field-group" style="background:var(--white08);border-radius:12px;padding:14px;">
+          <label class="field-label" style="margin-bottom:4px;">💌 Faiths I'll receive interest from</label>
+          <p style="font-size:11px;color:var(--white40);margin-bottom:10px;">Only people from these faiths can send you interest.</p>
+          <div id="setupReceiveChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button type="button" onclick="setupReceiveSelectAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">All</button>
+            <button type="button" onclick="setupReceiveClearAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">None</button>
+          </div>
+          <div id="setupReceiveDenomWrap"></div>
+        </div>
       </div>
       <p id="setupError" style="color:var(--red);font-size:12px;text-align:center;margin:12px 0;display:none;"></p>
       <div style="display:flex;gap:12px;margin-top:20px;">
@@ -378,6 +403,59 @@ select.field option { background: var(--dark2); color: var(--white); }
   </div>
 </div>
 
+<!-- ADMIN REJECT MODAL -->
+<div class="modal-overlay" id="rejectModal" onclick="closeRejectModal()">
+  <div class="modal-content" onclick="event.stopPropagation()" style="padding:24px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-family:'Cinzel',serif;font-size:17px;color:var(--red);margin:0;">Reject Profile</h3>
+      <button onclick="closeRejectModal()" style="background:none;border:none;color:var(--white);font-size:22px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--white40);margin-bottom:12px;">Select a reason or write a custom one:</p>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+      <button onclick="setRejectReason('ID photo is unclear or unreadable — please resubmit with a clearer image.')" style="text-align:left;background:var(--white08);border:1px solid var(--white15);color:var(--white70);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;">ID photo unclear / unreadable</button>
+      <button onclick="setRejectReason('Profile photo does not clearly show your face. Please upload a clear, recent photo.')" style="text-align:left;background:var(--white08);border:1px solid var(--white15);color:var(--white70);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;">Profile photo not acceptable</button>
+      <button onclick="setRejectReason('The ID provided does not match the profile details. Please ensure your name and details match your Government ID.')" style="text-align:left;background:var(--white08);border:1px solid var(--white15);color:var(--white70);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;">ID details mismatch</button>
+      <button onclick="setRejectReason('Incomplete profile information. Please complete all required fields and reapply.')" style="text-align:left;background:var(--white08);border:1px solid var(--white15);color:var(--white70);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;">Incomplete profile</button>
+    </div>
+    <label class="field-label" style="margin-bottom:6px;">Or write a custom reason:</label>
+    <textarea id="rejectReasonText" class="field" style="min-height:80px;resize:vertical;margin-bottom:14px;" placeholder="Enter rejection reason..."></textarea>
+    <button class="btn btn-red" id="confirmRejectBtn" onclick="confirmReject()">Confirm Rejection</button>
+  </div>
+</div>
+
+<!-- FAITH PREFS EDIT MODAL -->
+<div class="modal-overlay" id="faithPrefsModal" onclick="closeFaithPrefsModal()">
+  <div class="modal-content" onclick="event.stopPropagation()" style="padding:24px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-bright);margin:0;">Faith Preferences</h3>
+      <button onclick="closeFaithPrefsModal()" style="background:none;border:none;color:var(--white);font-size:22px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <!-- Browse section -->
+    <div style="margin-bottom:20px;">
+      <label class="field-label" style="margin-bottom:4px;">🔍 Faiths I'll browse</label>
+      <p style="font-size:11px;color:var(--white40);margin-bottom:10px;">Profiles from these faiths appear in Discover.</p>
+      <div id="editFaithChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button type="button" onclick="editFaithSelectAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">All</button>
+        <button type="button" onclick="editFaithClearAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">None</button>
+      </div>
+      <div id="editDenomPrefsWrap"></div>
+    </div>
+    <!-- Receive section -->
+    <div style="background:var(--white08);border-radius:12px;padding:14px;margin-bottom:20px;">
+      <label class="field-label" style="margin-bottom:4px;">💌 Faiths I'll receive interest from</label>
+      <p style="font-size:11px;color:var(--white40);margin-bottom:10px;">Only these faiths can send you interest.</p>
+      <div id="editReceiveChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button type="button" onclick="editReceiveSelectAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">All</button>
+        <button type="button" onclick="editReceiveClearAll()" style="font-size:11px;background:none;border:1px solid var(--white15);color:var(--white40);padding:5px 12px;border-radius:6px;cursor:pointer;">None</button>
+      </div>
+      <div id="editReceiveDenomWrap"></div>
+    </div>
+    <button class="btn btn-gold" id="saveFaithPrefsBtn" onclick="saveFaithPrefsEdit()">Save Preferences</button>
+  </div>
+</div>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 const SUPABASE_URL = "https://neftjxvovxocqabxjvme.supabase.co";
@@ -388,6 +466,195 @@ let currentUser = null, myProfile = null, currentTab = 'browse', authMode = 'log
 let setupStep = 1, selectedPhotos = [null,null,null], selectedIdProof = null;
 let currentInterestTab = 'received', currentAdminTab = 'pending';
 let chatPartnerId = null, allInterests = [], chatInterval = null;
+
+// ── FAITH DATA
+const FAITHS_DATA = [
+  {key:'Christian', icon:'✝️',  color:'#9B59B6'},
+  {key:'Hindu',     icon:'🕉️', color:'#E07020'},
+  {key:'Muslim',    icon:'☪️',  color:'#2E8B57'},
+  {key:'Sikh',      icon:'☬',  color:'#C8960C'},
+  {key:'Jain',      icon:'🕊️', color:'#4A90D9'},
+  {key:'Buddhist',  icon:'☸️', color:'#D4700A'},
+  {key:'Other',     icon:'🌐', color:'#888888'}
+];
+const FAITH_DENOMS = {
+  Christian: ['Any','Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','Seventh-day Adventist','Church of God','Assemblies of God','Orthodox','Mar Thoma','Brethren','Lutheran','Presbyterian','Anglican','Non-Denominational','Other'],
+  Muslim:    ['Any','Sunni','Shia','Ahmadiyya','Ismaili','Sufi','Other'],
+  Hindu:     ['Any','Vaishnava','Shaiva','Shakta','Smartha','ISKCON','Arya Samaj','Other'],
+  Sikh:      ['Any','Amritdhari','Sahajdhari','Nanakpanthi','Other']
+};
+
+// Setup step 6 faith state
+let setupFaithBrowse   = FAITHS_DATA.map(f => f.key);
+let setupFaithReceive  = FAITHS_DATA.map(f => f.key);
+let setupDenomPrefs    = {};
+let setupReceiveDenoms = {};
+
+// Profile edit faith state
+let editFaithBrowse   = [];
+let editFaithReceive  = [];
+let editDenomPrefs    = {};
+let editReceiveDenoms = {};
+
+// Admin reject state
+let _rejectTargetId = null;
+
+function _buildFaithChips(containerId, selectedArr, onToggle) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  FAITHS_DATA.forEach(f => {
+    const on = selectedArr.includes(f.key);
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.style.cssText = `display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid ${on ? f.color : 'var(--white15)'};background:${on ? f.color+'22' : 'transparent'};color:${on ? f.color : 'var(--white40)'};`;
+    chip.innerHTML = `${f.icon} ${f.key}`;
+    chip.onclick = () => onToggle(f.key);
+    grid.appendChild(chip);
+  });
+}
+
+function _buildDenomPrefs(wrapId, selectedFaiths, denomPrefsObj) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const faithsWithDenoms = selectedFaiths.filter(f => FAITH_DENOMS[f]);
+  if (!faithsWithDenoms.length) return;
+  const hdr = document.createElement('label');
+  hdr.className = 'field-label';
+  hdr.style.cssText = 'display:block;margin-bottom:10px;margin-top:4px;';
+  hdr.textContent = '💒 Denomination Preferences';
+  wrap.appendChild(hdr);
+  faithsWithDenoms.forEach(faithKey => {
+    const denoms = FAITH_DENOMS[faithKey];
+    const current = denomPrefsObj[faithKey] || 'Any';
+    const row = document.createElement('div');
+    row.className = 'field-group';
+    const lbl = document.createElement('label');
+    lbl.className = 'field-label';
+    lbl.textContent = faithKey;
+    const sel = document.createElement('select');
+    sel.className = 'field';
+    denoms.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      if (d === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => { denomPrefsObj[faithKey] = sel.value; };
+    row.appendChild(lbl);
+    row.appendChild(sel);
+    wrap.appendChild(row);
+  });
+}
+
+// Setup step 6 — Browse chips
+function renderSetupBrowseChips() {
+  _buildFaithChips('setupBrowseChips', setupFaithBrowse, key => {
+    const idx = setupFaithBrowse.indexOf(key);
+    if (idx > -1) setupFaithBrowse.splice(idx, 1); else setupFaithBrowse.push(key);
+    renderSetupBrowseChips();
+    _buildDenomPrefs('setupBrowseDenomWrap', setupFaithBrowse, setupDenomPrefs);
+  });
+}
+function setupBrowseSelectAll() { setupFaithBrowse = FAITHS_DATA.map(f => f.key); renderSetupBrowseChips(); _buildDenomPrefs('setupBrowseDenomWrap', setupFaithBrowse, setupDenomPrefs); }
+function setupBrowseClearAll()  { setupFaithBrowse = []; renderSetupBrowseChips(); _buildDenomPrefs('setupBrowseDenomWrap', setupFaithBrowse, setupDenomPrefs); }
+
+// Setup step 6 — Receive chips
+function renderSetupReceiveChips() {
+  _buildFaithChips('setupReceiveChips', setupFaithReceive, key => {
+    const idx = setupFaithReceive.indexOf(key);
+    if (idx > -1) setupFaithReceive.splice(idx, 1); else setupFaithReceive.push(key);
+    renderSetupReceiveChips();
+    _buildDenomPrefs('setupReceiveDenomWrap', setupFaithReceive, setupReceiveDenoms);
+  });
+}
+function setupReceiveSelectAll() { setupFaithReceive = FAITHS_DATA.map(f => f.key); renderSetupReceiveChips(); _buildDenomPrefs('setupReceiveDenomWrap', setupFaithReceive, setupReceiveDenoms); }
+function setupReceiveClearAll()  { setupFaithReceive = []; renderSetupReceiveChips(); _buildDenomPrefs('setupReceiveDenomWrap', setupFaithReceive, setupReceiveDenoms); }
+
+// Admin reject modal
+function openRejectModal(profileId) {
+  _rejectTargetId = profileId;
+  document.getElementById('rejectReasonText').value = '';
+  document.getElementById('rejectModal').classList.add('show');
+}
+function closeRejectModal() { document.getElementById('rejectModal').classList.remove('show'); _rejectTargetId = null; }
+function setRejectReason(text) { document.getElementById('rejectReasonText').value = text; }
+async function confirmReject() {
+  const reason = document.getElementById('rejectReasonText').value.trim();
+  if (!reason) { alert('Please enter a rejection reason.'); return; }
+  const btn = document.getElementById('confirmRejectBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm" style="margin:0 auto;"></div>';
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', _rejectTargetId).maybeSingle();
+  await sb.from('profiles').update({ status: 'rejected', rejection_reason: reason }).eq('id', _rejectTargetId);
+  if (profile) {
+    try {
+      await fetch(`${SUPABASE_URL}/functions/v1/smart-function`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ type: 'rejected', rejection_reason: reason, ...profile })
+      });
+    } catch(e) {}
+  }
+  btn.disabled = false; btn.textContent = 'Confirm Rejection';
+  closeRejectModal();
+  loadAdminProfiles();
+}
+
+// Profile edit faith chip functions
+function renderEditFaithChips() {
+  _buildFaithChips('editFaithChips', editFaithBrowse, key => {
+    const idx = editFaithBrowse.indexOf(key);
+    if (idx > -1) editFaithBrowse.splice(idx, 1); else editFaithBrowse.push(key);
+    renderEditFaithChips();
+    _buildDenomPrefs('editDenomPrefsWrap', editFaithBrowse, editDenomPrefs);
+  });
+}
+function editFaithSelectAll() { editFaithBrowse = FAITHS_DATA.map(f => f.key); renderEditFaithChips(); _buildDenomPrefs('editDenomPrefsWrap', editFaithBrowse, editDenomPrefs); }
+function editFaithClearAll()  { editFaithBrowse = []; renderEditFaithChips(); _buildDenomPrefs('editDenomPrefsWrap', editFaithBrowse, editDenomPrefs); }
+
+function openFaithPrefsEdit() {
+  try { editFaithBrowse  = myProfile.faith_browse   ? JSON.parse(myProfile.faith_browse)   : FAITHS_DATA.map(f => f.key); } catch(e) { editFaithBrowse  = FAITHS_DATA.map(f => f.key); }
+  try { editFaithReceive = myProfile.faith_receive  ? JSON.parse(myProfile.faith_receive)  : FAITHS_DATA.map(f => f.key); } catch(e) { editFaithReceive = FAITHS_DATA.map(f => f.key); }
+  try { const pd = myProfile.pref_denomination; editDenomPrefs    = (pd && pd.startsWith('{')) ? JSON.parse(pd) : {}; } catch(e) { editDenomPrefs    = {}; }
+  try { const rd = myProfile.faith_receive_denoms;  editReceiveDenoms = (rd && rd.startsWith('{')) ? JSON.parse(rd) : {}; } catch(e) { editReceiveDenoms = {}; }
+  renderEditFaithChips();
+  _buildDenomPrefs('editDenomPrefsWrap',    editFaithBrowse,  editDenomPrefs);
+  renderEditReceiveChips();
+  _buildDenomPrefs('editReceiveDenomWrap',  editFaithReceive, editReceiveDenoms);
+  document.getElementById('faithPrefsModal').classList.add('show');
+}
+function closeFaithPrefsModal() { document.getElementById('faithPrefsModal').classList.remove('show'); }
+
+// Profile edit — Receive chips
+function renderEditReceiveChips() {
+  _buildFaithChips('editReceiveChips', editFaithReceive, key => {
+    const idx = editFaithReceive.indexOf(key);
+    if (idx > -1) editFaithReceive.splice(idx, 1); else editFaithReceive.push(key);
+    renderEditReceiveChips();
+    _buildDenomPrefs('editReceiveDenomWrap', editFaithReceive, editReceiveDenoms);
+  });
+}
+function editReceiveSelectAll() { editFaithReceive = FAITHS_DATA.map(f => f.key); renderEditReceiveChips(); _buildDenomPrefs('editReceiveDenomWrap', editFaithReceive, editReceiveDenoms); }
+function editReceiveClearAll()  { editFaithReceive = []; renderEditReceiveChips(); _buildDenomPrefs('editReceiveDenomWrap', editFaithReceive, editReceiveDenoms); }
+
+async function saveFaithPrefsEdit() {
+  const btn = document.getElementById('saveFaithPrefsBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm" style="margin:0 auto;"></div>';
+  try {
+    await sb.from('profiles').update({
+      faith_browse:    JSON.stringify(editFaithBrowse),
+      faith_receive:   JSON.stringify(editFaithReceive),
+      pref_denomination: JSON.stringify(editDenomPrefs)
+    }).eq('id', myProfile.id);
+    myProfile.faith_browse      = JSON.stringify(editFaithBrowse);
+    myProfile.faith_receive     = JSON.stringify(editFaithReceive);
+    myProfile.pref_denomination = JSON.stringify(editDenomPrefs);
+    closeFaithPrefsModal();
+    renderMyProfile();
+  } catch(e) { alert('Error saving — please try again.'); }
+  btn.disabled = false; btn.textContent = 'Save Preferences';
+}
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
@@ -495,14 +762,18 @@ function handleIdProofSelect(input) {
 }
 
 function updateSetupUI() {
-  const titles = ['Personal Details','About You','Your Photos','Government ID Verification','Preferences'];
+  const titles = ['Personal Details','About You','Your Photos','Government ID Verification','Preferences','Faith Privacy'];
   document.getElementById('setupTitle').textContent = titles[setupStep - 1];
-  document.getElementById('setupStepLabel').textContent = `Step ${setupStep} of 5`;
+  document.getElementById('setupStepLabel').textContent = `Step ${setupStep} of 6`;
   document.querySelectorAll('.step-dot').forEach((d, i) => d.classList.toggle('active', i < setupStep));
-  for (let i = 1; i <= 5; i++) document.getElementById('setupStep' + i).style.display = i === setupStep ? '' : 'none';
+  for (let i = 1; i <= 6; i++) document.getElementById('setupStep' + i).style.display = i === setupStep ? '' : 'none';
   document.getElementById('setupBackBtn').style.display = setupStep > 1 ? '' : 'none';
-  document.getElementById('setupNextBtn').textContent = setupStep < 5 ? 'Next →' : 'Submit for Review ✦';
+  document.getElementById('setupNextBtn').textContent = setupStep < 6 ? 'Next →' : 'Submit for Review ✦';
   document.getElementById('setupError').style.display = 'none';
+  if (setupStep === 6) {
+    renderSetupBrowseChips();  _buildDenomPrefs('setupBrowseDenomWrap',  setupFaithBrowse,  setupDenomPrefs);
+    renderSetupReceiveChips(); _buildDenomPrefs('setupReceiveDenomWrap', setupFaithReceive, setupReceiveDenoms);
+  }
 }
 function setupBack() { if (setupStep > 1) { setupStep--; updateSetupUI(); } }
 
@@ -524,7 +795,10 @@ async function setupNext() {
     if (!selectedIdProof) { errEl.textContent = 'Please upload your Government ID'; errEl.style.display = ''; return; }
     setupStep++; updateSetupUI(); return;
   }
-  // Step 5 — submit
+  if (setupStep === 5) { setupStep++; updateSetupUI(); return; }
+  // Step 6 — validate faith & submit
+  if (setupFaithBrowse.length === 0) { errEl.textContent = 'Please select at least one faith to browse'; errEl.style.display = ''; return; }
+  if (setupFaithReceive.length === 0) { errEl.textContent = 'Please select at least one faith to receive interest from'; errEl.style.display = ''; return; }
   const btn = document.getElementById('setupNextBtn');
   btn.disabled = true; btn.innerHTML = '<div class="spinner spinner-sm" style="margin:0 auto;"></div>';
   try {
@@ -570,8 +844,10 @@ async function setupNext() {
       id_proof_type: document.getElementById('setupIdType').value, id_proof_url: idProofUrl,
       pref_age_min: parseInt(document.getElementById('setupPrefMin').value) || 18,
       pref_age_max: parseInt(document.getElementById('setupPrefMax').value) || 70,
-      pref_denomination: document.getElementById('setupPrefDenom').value,
+      pref_denomination: JSON.stringify(setupDenomPrefs),
       pref_city: document.getElementById('setupPrefCity').value.trim() || 'Any',
+      faith_browse:    JSON.stringify(setupFaithBrowse),
+      faith_receive:   JSON.stringify(setupFaithReceive),
       status: 'pending',
     };
     const { error } = await sb.from('profiles').upsert(profileData);
@@ -611,7 +887,14 @@ async function loadBrowseProfiles() {
   else if (myProfile.gender === 'Female') query = query.eq('gender', 'Male');
   const religion = document.getElementById('filterReligion')?.value;
   const city = document.getElementById('filterCity')?.value;
-  if (religion) query = query.eq('religion', religion);
+  if (religion) {
+    query = query.eq('religion', religion);
+  } else if (myProfile.faith_browse) {
+    try {
+      const fb = JSON.parse(myProfile.faith_browse);
+      if (fb.length > 0 && fb.length < FAITHS_DATA.length) query = query.in('religion', fb);
+    } catch(e) {}
+  }
   if (city) query = query.ilike('city', `%${city}%`);
   const { data } = await query.order('created_at', { ascending: false }).limit(50);
   document.getElementById('browseLoading').style.display = 'none';
@@ -762,7 +1045,20 @@ async function sendMessage() {
 // MY PROFILE
 function renderMyProfile() {
   const el = document.getElementById('myProfileContent'), p = myProfile;
-  el.innerHTML = `<div style="text-align:center;margin-bottom:24px;"><div style="width:100px;height:100px;border-radius:50%;margin:0 auto;background:var(--dark3);border:3px solid var(--gold);${p.photo_url?`background-image:url(${p.photo_url});background-size:cover;background-position:center;`:'display:flex;align-items:center;justify-content:center;'}">${!p.photo_url?'<span style="font-size:36px;opacity:0.3;">👤</span>':''}</div><h3 style="font-family:'Cinzel',serif;font-size:20px;color:var(--white);margin-top:12px;">${p.full_name}, ${p.age}</h3><p style="color:var(--gold);font-size:13px;">${p.religion}${p.denomination?' · '+p.denomination:''} · ${p.city}</p><span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:${p.status==='approved'?'var(--green)':'var(--gold)'};color:${p.status==='approved'?'var(--white)':'var(--black)'};">${p.status==='approved'?'✅ Verified Member':'⏳ Pending Review'}</span></div><div style="background:var(--white08);border-radius:14px;padding:16px;">${[{label:'Bio',value:p.bio},{label:'Education',value:p.education},{label:'Occupation',value:p.occupation},{label:'Mother Tongue',value:p.mother_tongue},{label:'Marital Status',value:p.marital_status},{label:'Phone',value:p.phone},{label:'Email',value:p.email}].filter(d=>d.value).map(d=>`<div style="margin-bottom:12px;"><p style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">${d.label}</p><p style="font-size:13px;color:var(--white);margin-top:2px;">${d.value}</p></div>`).join('')}</div>`;
+  // Build faith prefs section (Browse + Receive)
+  let faithPrefsHtml = '';
+  try {
+    const fb = p.faith_browse  ? JSON.parse(p.faith_browse)  : FAITHS_DATA.map(f => f.key);
+    const fr = p.faith_receive ? JSON.parse(p.faith_receive) : FAITHS_DATA.map(f => f.key);
+    const dp = (p.pref_denomination && p.pref_denomination.startsWith('{')) ? JSON.parse(p.pref_denomination) : {};
+    const makeChips = (arr) => arr.map(key => {
+      const fd = FAITHS_DATA.find(f => f.key === key); if (!fd) return '';
+      const denomStr = dp[key] && dp[key] !== 'Any' ? ` · <span style="font-size:10px;opacity:.75;">${dp[key]}</span>` : '';
+      return `<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid ${fd.color};background:${fd.color}22;color:${fd.color};">${fd.icon} ${key}${denomStr}</span>`;
+    }).join('');
+    faithPrefsHtml = `<div style="background:var(--white08);border-radius:14px;padding:16px;margin-top:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><h4 style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold-bright);margin:0;">Faith Preferences</h4><button onclick="openFaithPrefsEdit()" style="background:none;border:1px solid var(--white15);color:var(--white40);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;">Edit</button></div><p style="font-size:10px;color:var(--white40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browsing</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">${makeChips(fb) || '<p style="color:var(--white40);font-size:12px;margin:0;">All faiths</p>'}</div><p style="font-size:10px;color:var(--white40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receiving interest from</p><div style="display:flex;flex-wrap:wrap;gap:6px;">${makeChips(fr) || '<p style="color:var(--white40);font-size:12px;margin:0;">All faiths</p>'}</div></div>`;
+  } catch(e) {}
+  el.innerHTML = `<div style="text-align:center;margin-bottom:24px;"><div style="width:100px;height:100px;border-radius:50%;margin:0 auto;background:var(--dark3);border:3px solid var(--gold);${p.photo_url?`background-image:url(${p.photo_url});background-size:cover;background-position:center;`:'display:flex;align-items:center;justify-content:center;'}">${!p.photo_url?'<span style="font-size:36px;opacity:0.3;">👤</span>':''}</div><h3 style="font-family:'Cinzel',serif;font-size:20px;color:var(--white);margin-top:12px;">${p.full_name}, ${p.age}</h3><p style="color:var(--gold);font-size:13px;">${p.religion}${p.denomination?' · '+p.denomination:''} · ${p.city}</p><span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:${p.status==='approved'?'var(--green)':'var(--gold)'};color:${p.status==='approved'?'var(--white)':'var(--black)'};">${p.status==='approved'?'✅ Verified Member':'⏳ Pending Review'}</span></div><div style="background:var(--white08);border-radius:14px;padding:16px;">${[{label:'Bio',value:p.bio},{label:'Education',value:p.education},{label:'Occupation',value:p.occupation},{label:'Mother Tongue',value:p.mother_tongue},{label:'Marital Status',value:p.marital_status},{label:'Phone',value:p.phone},{label:'Email',value:p.email}].filter(d=>d.value).map(d=>`<div style="margin-bottom:12px;"><p style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">${d.label}</p><p style="font-size:13px;color:var(--white);margin-top:2px;">${d.value}</p></div>`).join('')}</div>${faithPrefsHtml}`;
 }
 
 // ADMIN
@@ -789,13 +1085,21 @@ async function loadAdminProfiles() {
   });
 }
 async function adminAction(profileId, status) {
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', profileId).maybeSingle();
   await sb.from('profiles').update({ status, approved_at: status==='approved'?new Date().toISOString():null, is_founding_member: status==='approved' }).eq('id', profileId);
+  if (profile) {
+    try {
+      await fetch(`${SUPABASE_URL}/functions/v1/smart-function`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ type: status, ...profile })
+      });
+    } catch(e) {}
+  }
   loadAdminProfiles();
 }
 async function adminReject(profileId) {
-  const reason = prompt('Reason for rejection:'); if (reason === null) return;
-  await sb.from('profiles').update({ status:'rejected', rejection_reason: reason }).eq('id', profileId);
-  loadAdminProfiles();
+  openRejectModal(profileId);
 }
 
 // REFERRAL
