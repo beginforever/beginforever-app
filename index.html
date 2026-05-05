@@ -1094,7 +1094,7 @@ async function loadP(){
   if(P.status === 'pending') {
     showScr('pendingScreen');
     const pm = document.getElementById('pendingMsg');
-    if(pm) pm.textContent = 'Thank you, ' + (P.full_name||'').split(' ')[0] + '! Your profile is being reviewed. We'll email you once approved — usually within 24 hours.';
+    if(pm) pm.textContent = 'Thank you, ' + (P.full_name||'').split(' ')[0] + '! Your profile is being reviewed. We will email you once approved — usually within 24 hours.';
     return;
   }
 
