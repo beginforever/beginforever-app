@@ -1210,7 +1210,6 @@ function renderFaithGrid(cid, arr) { renderFaithCards(cid, arr); }
 function mkFaithToggle(arr, cid) { return function(k){ var i=arr.indexOf(k);if(i>-1)arr.splice(i,1);else arr.push(k);renderFaithCards(cid,arr);}; }
 
 // Step 6 init
-var setupBrowse = FAITHS.map(function(f){return f.key;});
 var setupReceive = FAITHS.map(function(f){return f.key;});
 
 function initSetupFaithGrids() {
