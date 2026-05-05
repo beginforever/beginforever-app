@@ -469,29 +469,27 @@ select.field option { background: var(--dark2); color: var(--white); }
 <!-- HAMBURGER MENU DRAWER -->
 <div id="menuDrawer" style="max-height:0;overflow:hidden;transition:max-height .35s ease;background:#130220;position:sticky;top:57px;z-index:49;border-bottom:0.5px solid rgba(255,255,255,.06);">
   <div style="padding:12px 0 8px;">
-    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Platform</p></div>
-    <a href="https://beginforever.in/#" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🏠 Home</a>
-    <a href="https://beginforever.in/#how" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">✨ How It Works</a>
-    <a href="https://beginforever.in/#features" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">⭐ Features</a>
-    <a href="https://beginforever.in/pricing.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">💎 Pricing</a>
-    <a href="https://beginforever.app/" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">📝 Create Profile</a>
+
+    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Account</p></div>
+    <a onclick="goTab('profile');toggleMenu();" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">👤 My Profile</a>
+    <a onclick="goTab('home');toggleMenu();" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">🏠 Home</a>
 
     <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
-    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Community</p></div>
-    <a href="https://beginforever.in/coming-soon.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">👥 Singles Meet</a>
-    <a href="https://beginforever.in/coming-soon.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🏙️ City Groups</a>
-    <a href="https://beginforever.in/coming-soon.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🙏 Faith Events</a>
+    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Support</p></div>
+    <a href="https://wa.me/919700025345" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">💬 WhatsApp Support</a>
+    <a href="mailto:info@beginforever.in" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
 
     <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
     <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Legal</p></div>
-    <a href="https://beginforever.in/privacy.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🔒 Privacy Policy</a>
-    <a href="https://beginforever.in/terms.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">📄 Terms of Service</a>
-    <a href="https://beginforever.in/safety.html" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🛡️ Safety Guidelines</a>
+    <a href="https://beginforever.in/privacy.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🔒 Privacy Policy</a>
+    <a href="https://beginforever.in/terms.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">📄 Terms of Service</a>
+    <a href="https://beginforever.in/safety.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🛡️ Safety Guidelines</a>
 
     <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
     <div style="padding:12px 20px 16px;">
       <button onclick="doSignOut();toggleMenu();" style="width:100%;padding:11px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);border-radius:10px;color:#ff6b6b;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">Sign Out</button>
     </div>
+
   </div>
 </div>
     <!-- ═══ HOME TAB ═══ -->
