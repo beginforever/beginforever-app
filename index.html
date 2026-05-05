@@ -1559,34 +1559,24 @@ function submitReview(){const txt=document.getElementById('revText');if(txt&&!tx
 
 // AUTH BOOT
 // BOOT — immediate session check, no spinning
-(async function(){
-  try{
-    const { data:{ session } } = await withTimeout(sb.auth.getSession(), 5000, 'session timeout');
-    if(session && session.user){
-      U = session.user;
-      await loadP();
+var _bootFallback = setTimeout(function(){
+  showScr('loginScreen');
+}, 4000);
+
+sb.auth.onAuthStateChange(function(ev, sess){
+  if(ev === 'INITIAL_SESSION' || ev === 'SIGNED_IN'){
+    clearTimeout(_bootFallback);
+    if(sess && sess.user){
+      U = sess.user;
+      loadP();
     } else {
       showScr('loginScreen');
     }
-  } catch(e){
+  } else if(ev === 'SIGNED_OUT'){
+    U = null; P = null;
     showScr('loginScreen');
   }
-})();
-
-// Listen for subsequent sign-in / sign-out events
-sb.auth.onAuthStateChange(async(ev,sess)=>{
-  if(ev==='SIGNED_IN'){
-    if(sess&&sess.user){ U=sess.user; await loadP(); }
-  } else if(ev==='SIGNED_OUT'){
-    U=null; P=null; showScr('loginScreen');
-  }
 });
-
-// Hard fallback — if still on loading after 2s, show login
-setTimeout(()=>{
-  const ls=document.getElementById('loadingScreen');
-  if(ls&&ls.classList.contains('active')) showScr('loginScreen');
-}, 2000);
 </script>
 
 <!-- REJECT MODAL -->
