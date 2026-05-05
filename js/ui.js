@@ -174,3 +174,15 @@ function payRzp(plan, amt) {
   var rzp = new Razorpay(opts);
   rzp.open();
 }
+var _menuOpen = false;
+function toggleMenu(){
+  _menuOpen = !_menuOpen;
+  var d  = document.getElementById('menuDrawer');
+  var b1 = document.getElementById('mb1');
+  var b2 = document.getElementById('mb2');
+  var b3 = document.getElementById('mb3');
+  d.style.maxHeight  = _menuOpen ? '600px' : '0';
+  b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
+  b2.style.opacity   = _menuOpen ? '0' : '1';
+  b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
+}
