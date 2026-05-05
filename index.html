@@ -80,7 +80,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 #mainApp.active { display: block !important; }
 #loadingScreen.active { display: flex; align-items:center; justify-content:center; flex-direction:column; }
 #loginScreen.active, #registerScreen.active, #otpScreen.active, #forgotScreen.active,
-#pendingScreen.active, #rejectedScreen.active, #setupScreen.active { display: flex !important; flex-direction: column; }
+#pendingScreen.active, #rejectedScreen.active, #setupScreen.active { display: flex; flex-direction: column; }
 
 /* screen.active handled per-screen ID below */
 .app-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--dark1); border-bottom: 1px solid var(--white08); position: sticky; top: 0; z-index: 50; }
@@ -303,7 +303,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     <p class="auth-tagline">Where love begins to last.</p>
     <div class="auth-card">
       <h2 class="auth-card-title">Reset Password</h2>
-      <p style="font-size:13px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:18px;">Enter your email and we'll send you a reset link.</p>
+      <p style="font-size:13px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:18px;">Enter your email and We will send you a reset link.</p>
       <div class="af-fg"><label class="af-label">Email Address</label><input type="email" class="af-input" id="fgEmail" placeholder="your@email.com"/></div>
       <p id="fgErr" class="af-err"></p>
       <p id="fgOk" class="af-ok"></p>
