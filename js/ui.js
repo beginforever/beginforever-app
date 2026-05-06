@@ -83,7 +83,6 @@ function renderHome() {
   if (sc) sc.style.display = (P && P.gender === 'Female') ? '' : 'none';
 
   loadStats();
-  updatePricingCountdown();
 }
 
 async function loadStats() {
@@ -221,7 +220,6 @@ function updatePricingCountdown() {
   var fm = document.getElementById('pricingFounderMsg');
   if (fm && P && isFoundingMember()) fm.style.display = 'block';
 }
-setInterval(updatePricingCountdown, 30000);
 
 function payRzp(plan, amt) {
   // Calculate expiry based on plan
