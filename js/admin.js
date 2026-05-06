@@ -26,6 +26,11 @@ async function ldAdmin(st) {
         '</div>'
       : '<p style="font-size:11px;color:#ff6b6b;background:rgba(231,76,60,.1);padding:8px 12px;border-radius:8px;margin:8px 0;">⚠️ No ID uploaded</p>';
 
+    // Show referral info if this user was referred
+    var refHtml = p.referred_by
+      ? '<div style="margin:6px 0;background:rgba(212,160,23,.06);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--gold2);">🔗 Referred by user ID: '+p.referred_by.slice(0,8)+'...</div>'
+      : '';
+
     var details =
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0;font-size:11px;color:var(--w60);background:var(--w05);border-radius:10px;padding:10px;">'+
       '<span><strong style="color:var(--w80);">Email:</strong> '+p.email+'</span>'+
@@ -40,11 +45,11 @@ async function ldAdmin(st) {
 
     var act = st === 'pending'
       ? '<div style="display:flex;gap:8px;margin-top:12px;">'+
-          '<button class="btn btn-grn btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="adAct(\''+p.id+'\',\'approved\',\''+p.full_name+'\',\''+p.email+'\')">✅ Approve</button>'+
+          '<button class="btn btn-grn btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="adAct(\''+p.id+'\',\'approved\',\''+p.full_name+'\',\''+p.email+'\',\''+p.phone+'\')">✅ Approve</button>'+
           '<button class="btn btn-red btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="openRejectModal(\''+p.id+'\',\''+p.full_name+'\',\''+p.email+'\')">❌ Reject</button>'+
         '</div>'
       : st === 'approved'
-        ? '<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+p.id+'\',\'pending\',\''+p.full_name+'\',\''+p.email+'\')">↩ Move back to Pending</button>'
+        ? '<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+p.id+'\',\'pending\',\''+p.full_name+'\',\''+p.email+'\',\''+p.phone+'\')">↩ Move back to Pending</button>'
         : '';
 
     var statusColor = st==='pending'?'rgba(232,184,48,.15)':st==='approved'?'rgba(39,174,96,.15)':'rgba(231,76,60,.15)';
@@ -63,21 +68,30 @@ async function ldAdmin(st) {
           '</div>'+
           '<span style="font-size:10px;padding:4px 10px;border-radius:20px;font-weight:700;background:'+statusColor+';color:'+textColor+';">'+st.toUpperCase()+'</span>'+
         '</div>'+
-        details + photoHtml + idHtml + act +
+        details + refHtml + photoHtml + idHtml + act +
       '</div>';
   });
 }
 
-async function adAct(id, st, name, email) {
-  await sb.from('profiles').update({status:st, approved_at:st==='approved'?new Date().toISOString():null}).eq('id', id);
-  if (st === 'approved' && email) {
+async function adAct(id, st, name, email, phone) {
+  await sb.from('profiles').update({
+    status: st,
+    approved_at: st === 'approved' ? new Date().toISOString() : null
+  }).eq('id', id);
+
+  if (st === 'approved') {
+    // Send approval email + WhatsApp
     try {
       await fetch(SB_URL+'/functions/v1/smart-function', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({type:'approved', full_name:name, email:email})
+        body:JSON.stringify({type:'approved', full_name:name, email:email, phone:phone||''})
       });
     } catch(x) {}
+
+    // ── REFERRAL: mark referral as approved + trigger reward check ──
+    try { await markReferralApproved(id); } catch(x) {}
   }
+
   ldAdmin('pending');
 }
 

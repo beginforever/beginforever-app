@@ -191,7 +191,7 @@ async function goNext() {
       pref_city:document.getElementById('fPC').value.trim()||'Any',
       faith_browse:JSON.stringify(setupBrowse),
       faith_receive:JSON.stringify(setupReceive),
-      founding_number:foundingNum, is_founding_member:true,
+      founding_number:foundingNum, is_founding_member:true, referred_by:getReferrerId()||null,
       status:'pending'
     };
 
@@ -205,7 +205,7 @@ async function goNext() {
       });
     } catch(x) {}
 
-    P = pd; showScr('mainApp'); goTab('home');
+    P = pd; clearReferrerId(); showScr('mainApp'); goTab('home');
   } catch(ex) {
     e.textContent = ex.message || 'Error. Please try again.';
     e.style.display = 'block';
@@ -235,7 +235,7 @@ function renP() {
   if (P.bio) h += '<div style="margin-top:10px;"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">About</p><p style="font-size:13px;color:var(--w70);line-height:1.6;">'+P.bio+'</p></div>';
   var mi = document.getElementById('mInfo'); if (mi) mi.innerHTML = h;
   renderProfileFaithSummary();
-  loadStats();
+  loadStats(); renderReferralCard();
 }
 
 function renderProfileFaithSummary() {
