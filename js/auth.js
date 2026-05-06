@@ -170,8 +170,15 @@ async function checkEmailVerified() {
     errEl.style.display = 'block';
     return;
   }
-  // Email confirmed — proceed to phone OTP
+  // Email confirmed — send welcome email then proceed to phone OTP
   U = user;
+  try {
+    fetch(SUPABASE_URL + '/functions/v1/smart-function', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({type: 'registered', full_name: user.user_metadata?.full_name || '', email: user.email})
+    });
+  } catch(x) {}
   showScr('otpScreen');
   document.getElementById('otpPhoneEntry').style.display = '';
   document.getElementById('otpCodeEntry').style.display = 'none';
