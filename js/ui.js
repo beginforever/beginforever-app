@@ -83,6 +83,7 @@ function renderHome() {
   if (sc) sc.style.display = (P && P.gender === 'Female') ? '' : 'none';
 
   loadStats();
+  updatePricingCountdown();
 }
 
 async function loadStats() {
@@ -160,13 +161,89 @@ function submitReview() {
   if (txt) txt.value = '';
 }
 
+
+// ═══════════════════════════════════════════ SUBSCRIPTION & ACCESS
+
+var SOFT_LAUNCH_DATE = new Date('2025-06-15T00:00:00Z'); // ← update to your real launch date
+
+function isFoundingMember() {
+  if (!P) return false;
+  if (P.is_founding_member) return true;
+  if (P.created_at && new Date(P.created_at) < SOFT_LAUNCH_DATE) return true;
+  return false;
+}
+
+function checkSubscription(onAllowed) {
+  if (isFoundingMember()) { onAllowed(); return; }
+  sb.from('subscriptions')
+    .select('id')
+    .eq('user_id', U.id)
+    .eq('status', 'active')
+    .gt('expires_at', new Date().toISOString())
+    .limit(1)
+    .then(function(r) {
+      if (r.data && r.data.length > 0) { onAllowed(); }
+      else { showSubscribeModal(); }
+    }).catch(function() { onAllowed(); });
+}
+
+function showSubscribeModal() {
+  var m = document.getElementById('subscribeModal');
+  if (m) m.classList.add('active');
+}
+function closeSubscribeModal() {
+  var m = document.getElementById('subscribeModal');
+  if (m) m.classList.remove('active');
+}
+
+// Pricing teaser countdown (mirrors main countdown but targets pricing overlay)
+function updatePricingCountdown() {
+  if (!LAUNCH) return;
+  var diff = LAUNCH - new Date();
+  var el = document.getElementById('pricingCdWrap');
+  if (!el) return;
+  if (diff <= 0) {
+    // Launch passed — hide overlay, show plans
+    var overlay = el.closest('.pricing-teaser-wrap') && el.closest('.pricing-teaser-wrap').querySelector('.pricing-teaser-overlay');
+    if (overlay) overlay.style.display = 'none';
+    var blur = el.closest('.pricing-teaser-wrap') && el.closest('.pricing-teaser-wrap').querySelector('.pricing-blur');
+    if (blur) { blur.style.filter = 'none'; blur.style.opacity = '1'; blur.style.pointerEvents = ''; }
+    return;
+  }
+  var days = Math.floor(diff / 86400000);
+  var hrs  = Math.floor((diff % 86400000) / 3600000);
+  var mins = Math.floor((diff % 3600000) / 60000);
+  var pad = function(n){ return String(Math.max(0,n)).padStart(2,'0'); };
+  var d = document.getElementById('pcDays'); if(d) d.textContent = pad(days);
+  var h = document.getElementById('pcHrs');  if(h) h.textContent = pad(hrs);
+  var m = document.getElementById('pcMins'); if(m) m.textContent = pad(mins);
+  // Show founding member message
+  var fm = document.getElementById('pricingFounderMsg');
+  if (fm && P && isFoundingMember()) fm.style.display = 'block';
+}
+setInterval(updatePricingCountdown, 30000);
+
 function payRzp(plan, amt) {
+  // Calculate expiry based on plan
+  var days = 7; // default weekly
+  if (plan.indexOf('Monthly') !== -1) days = 30;
+  if (plan.indexOf('Quarterly') !== -1) days = 90;
+  var tier = plan.indexOf('Premium') !== -1 ? 'premium' : 'basic';
   var opts = {
     key:'rzp_live_SausbldU6Vqpy0', amount:amt, currency:'INR',
     name:'Begin Forever', description:plan+' Plan',
     handler:async function(resp){
-      try{ await sb.from('subscriptions').insert({user_id:U.id,plan_type:plan,amount_paid:amt,razorpay_payment_id:resp.razorpay_payment_id,status:'active',expires_at:new Date(Date.now()+30*24*60*60*1000).toISOString()}); }catch(x){}
-      alert('Payment successful! Your '+plan+' plan is now active.\nPayment ID: '+resp.razorpay_payment_id);
+      try {
+        await sb.from('subscriptions').insert({
+          user_id:U.id, plan_type:plan, plan_tier:tier,
+          amount_paid:amt, razorpay_payment_id:resp.razorpay_payment_id,
+          status:'active',
+          expires_at:new Date(Date.now()+days*24*60*60*1000).toISOString()
+        });
+      } catch(x){}
+      closeSubscribeModal();
+      alert('\u2726 Welcome to '+plan+'!\nYour plan is now active. Enjoy Begin Forever!');
+      await loadP();
     },
     prefill:{name:P?P.full_name:'', email:P?P.email:'', contact:P?P.phone:''},
     theme:{color:'#3B0764'}
