@@ -201,7 +201,7 @@ async function goNext() {
     try {
       await fetch(SB_URL+'/functions/v1/smart-function', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({type:'pending', full_name:pd.full_name, email:pd.email, city:pd.city, state:pd.state, religion:pd.religion, denomination:pd.denomination||pd.religion, gender:pd.gender, founding_number:foundingNum})
+        body:JSON.stringify({type:'pending', full_name:pd.full_name, email:pd.email, phone:pd.phone, city:pd.city, state:pd.state, religion:pd.religion, denomination:pd.denomination||pd.religion, gender:pd.gender, founding_number:foundingNum})
       });
     } catch(x) {}
 
