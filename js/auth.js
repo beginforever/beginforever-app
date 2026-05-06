@@ -40,10 +40,17 @@ async function doRegister() {
   if (res.error) { err.textContent = res.error.message; err.style.display = 'block'; return; }
   U = res.data.user;
   if (typeof fbq !== 'undefined') fbq('track','Lead');
-  // Show email to verify on screen
-  var evEl = document.getElementById('evEmail');
-  if (evEl) evEl.textContent = em;
-  showScr('emailVerifyScreen');
+  // Fire welcome email
+  try {
+    fetch(SUPABASE_URL + '/functions/v1/smart-function', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({type: 'registered', full_name: '', email: em})
+    });
+  } catch(x) {}
+  showScr('otpScreen');
+  document.getElementById('otpPhoneEntry').style.display = '';
+  document.getElementById('otpCodeEntry').style.display = 'none';
 }
 
 async function doForgot() {
@@ -152,52 +159,3 @@ async function resendOtp() {
     buildOtpBoxes(); startResendTimer(42);
   } catch(e) { alert('Failed to resend: ' + e.message); }
 }
-
-// ─── EMAIL VERIFICATION ─────────────────────────────────────────────────────
-async function checkEmailVerified() {
-  var errEl = document.getElementById('evErr');
-  errEl.style.display = 'none';
-  // Re-fetch session to check if email is confirmed
-  var r = await sb.auth.getUser();
-  if (r.error || !r.data || !r.data.user) {
-    errEl.textContent = 'Could not verify. Please try again.';
-    errEl.style.display = 'block';
-    return;
-  }
-  var user = r.data.user;
-  if (!user.email_confirmed_at) {
-    errEl.textContent = 'Email not yet verified. Please check your inbox and click the link, then tap the button again.';
-    errEl.style.display = 'block';
-    return;
-  }
-  // Email confirmed — send welcome email then proceed to phone OTP
-  U = user;
-  try {
-    fetch(SUPABASE_URL + '/functions/v1/smart-function', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({type: 'registered', full_name: user.user_metadata?.full_name || '', email: user.email})
-    });
-  } catch(x) {}
-  showScr('otpScreen');
-  document.getElementById('otpPhoneEntry').style.display = '';
-  document.getElementById('otpCodeEntry').style.display = 'none';
-}
-
-async function resendVerifyEmail() {
-  var errEl = document.getElementById('evErr');
-  errEl.style.display = 'none';
-  var btn = document.getElementById('evResendBtn');
-  btn.disabled = true; btn.textContent = 'Sending...';
-  try {
-    var r = await sb.auth.resend({type:'signup', email: U ? U.email : ''});
-    if (r.error) throw r.error;
-    btn.textContent = 'Sent! Check your inbox.';
-    setTimeout(function(){ btn.disabled = false; btn.textContent = 'Resend verification email'; }, 30000);
-  } catch(e) {
-    errEl.textContent = e.message || 'Failed to resend. Please try again.';
-    errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Resend verification email';
-  }
-}
-
