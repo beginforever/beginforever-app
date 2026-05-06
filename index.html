@@ -208,6 +208,12 @@ select.field option { background: var(--dark2); color: var(--white); }
 /* Congrats shimmer */
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 .congrats-shimmer{position:absolute;top:0;left:-100%;width:60%;height:100%;background:rgba(255,255,255,.03);transform:skewX(-20deg);animation:shimmer 4s ease-in-out infinite 2s;}
+
+#subscribeModal { display:none; position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px; }
+#subscribeModal.active { display:flex !important; }
+.pricing-teaser-wrap { position:relative; }
+.pricing-blur { filter:blur(5px);pointer-events:none;user-select:none;opacity:.7; }
+.pricing-teaser-overlay { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;text-align:center;padding:20px; }
 </style>
 </head>
 <body>
@@ -265,6 +271,30 @@ select.field option { background: var(--dark2); color: var(--white); }
       <p id="rErr" class="af-err"></p>
       <button class="af-btn af-btn-gold" id="rBtn" onclick="doRegister()">Create Account ✦</button>
       <div class="af-center"><span>Already a member? </span><button class="af-link" style="color:#F5C842;font-weight:700;" onclick="showScr('loginScreen')">Sign In</button></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- EMAIL VERIFY SCREEN -->
+<div id="emailVerifyScreen" class="screen" style="display:none;">
+  <div class="auth-page">
+    <div class="auth-logo-wrap"><img src="logo.png" alt="Begin Forever" onerror="this.style.display='none'"/></div>
+    <h1 class="auth-app-name">Begin Forever</h1>
+    <p class="auth-tagline">Where love begins to last.</p>
+    <div class="auth-card" style="text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">📧</div>
+      <h2 class="auth-card-title">Verify Your Email</h2>
+      <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px;line-height:1.7;">We sent a verification link to</p>
+      <p id="evEmail" style="font-size:15px;font-weight:700;color:var(--gold2);margin-bottom:16px;"></p>
+      <p style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.7;">Please check your inbox and click the link to confirm your email. Then come back and tap the button below.</p>
+      <button class="af-btn af-btn-gold" onclick="checkEmailVerified()">I've Verified My Email ✦</button>
+      <p id="evErr" class="af-err" style="margin-top:10px;"></p>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);">
+        <p style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:8px;">Didn't get the email?</p>
+        <button class="af-link" id="evResendBtn" onclick="resendVerifyEmail()">Resend verification email</button>
+      </div>
+      <div class="auth-verse">"Ask and it will be given to you." <strong>Matthew 7:7</strong></div>
     </div>
   </div>
 </div>
@@ -564,7 +594,7 @@ select.field option { background: var(--dark2); color: var(--white); }
             <span style="font-size:9px;font-weight:800;color:var(--gold2);text-transform:uppercase;letter-spacing:1.5px;">Milestone Achieved</span>
           </div>
           <h3 style="font-family:'Cinzel',serif;font-size:18px;color:#fff;font-weight:700;line-height:1.3;margin-bottom:8px;">300 founding hearts.<br/><span style="color:var(--gold2);">We did it.</span></h3>
-          <p style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:12px;">Three hundred verified, real people — ready for early access ahead of our <strong style="color:var(--gold2);">early access in 2 weeks.</strong> Your spot is confirmed.</p>
+          <p style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:12px;">You’re one of our 300 founding members. <strong style="color:var(--gold2);">Your 1 week free Premium is locked in</strong> — we’ll activate it the moment we launch.</p>
           <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:9px 11px;margin-bottom:12px;">
             <p style="font-size:10px;color:rgba(255,255,255,.35);line-height:1.6;font-style:italic;">⚖️ Spots allocated first-come, first-verified. Government ID approval confirms your place.</p>
           </div>
@@ -632,6 +662,50 @@ select.field option { background: var(--dark2); color: var(--white); }
         </div>
         <div style="background:rgba(212,160,23,.08);border-radius:8px;padding:7px 10px;font-size:11px;color:rgba(255,255,255,.7);text-align:center;">🎁 Your friend also gets 1 week free when they join</div>
       </div>
+
+
+    <!-- ═══ PRICING TEASER ═══ -->
+    <div style="padding:0 16px 16px;">
+      <div class="pricing-teaser-wrap" style="border-radius:20px;overflow:hidden;border:1px solid rgba(212,160,23,.2);">
+        <!-- Overlay -->
+        <div class="pricing-teaser-overlay">
+          <div style="background:rgba(10,2,20,.75);border:1.5px solid rgba(212,160,23,.4);border-radius:20px;padding:20px 24px;max-width:300px;width:100%;backdrop-filter:blur(4px);">
+            <div style="font-size:28px;margin-bottom:8px;">🔒</div>
+            <p style="font-family:'Cinzel',serif;color:white;font-size:16px;font-weight:700;margin-bottom:6px;">Plans Reveal at Launch</p>
+            <div id="pricingCdWrap" style="display:flex;justify-content:center;gap:8px;margin:10px 0;">
+              <div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:6px 10px;text-align:center;min-width:44px;">
+                <p id="pcDays" style="font-family:'Cinzel',serif;font-size:20px;color:#F5C842;font-weight:900;line-height:1;">--</p>
+                <p style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">days</p>
+              </div>
+              <div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:6px 10px;text-align:center;min-width:44px;">
+                <p id="pcHrs" style="font-family:'Cinzel',serif;font-size:20px;color:#F5C842;font-weight:900;line-height:1;">--</p>
+                <p style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">hrs</p>
+              </div>
+              <div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:6px 10px;text-align:center;min-width:44px;">
+                <p id="pcMins" style="font-family:'Cinzel',serif;font-size:20px;color:#F5C842;font-weight:900;line-height:1;">--</p>
+                <p style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">mins</p>
+              </div>
+            </div>
+            <p id="pricingFounderMsg" style="display:none;font-size:11px;color:#4ade80;margin-top:6px;">✦ You&#39;re a founding member — Premium free at launch!</p>
+          </div>
+        </div>
+        <!-- Blurred preview -->
+        <div class="pricing-blur" style="padding:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;text-align:center;">
+              <p style="font-family:'Cinzel',serif;font-size:14px;color:white;font-weight:700;margin-bottom:4px;">Basic</p>
+              <p style="font-size:18px;font-weight:900;color:#F5C842;margin-bottom:6px;">&#8377;399<span style="font-size:10px;color:rgba(255,255,255,.4);">/wk</span></p>
+              <p style="font-size:10px;color:rgba(255,255,255,.4);line-height:1.5;">Browse · Message<br/>5 interests/day</p>
+            </div>
+            <div style="background:linear-gradient(145deg,rgba(212,160,23,.15),rgba(212,160,23,.08));border:1.5px solid rgba(212,160,23,.4);border-radius:14px;padding:16px;text-align:center;">
+              <p style="font-family:'Cinzel',serif;font-size:14px;color:#F5C842;font-weight:700;margin-bottom:4px;">Premium</p>
+              <p style="font-size:18px;font-weight:900;color:#F5C842;margin-bottom:6px;">&#8377;699<span style="font-size:10px;color:rgba(255,255,255,.4);">/wk</span></p>
+              <p style="font-size:10px;color:rgba(255,255,255,.4);line-height:1.5;">Full access<br/>Unlimited interests</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     </div><!-- end content padding -->
   </div><!-- end tHome -->
@@ -909,6 +983,53 @@ select.field option { background: var(--dark2); color: var(--white); }
       <button class="btn btn-dark btn-sm" style="flex:1;" onclick="closeRejectModal()">Cancel</button>
       <button class="btn btn-red" id="rejectSubmitBtn" style="flex:2;" onclick="submitReject()">Confirm Rejection &amp; Send Email</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ═══ SUBSCRIBE MODAL ═══ -->
+<div id="subscribeModal">
+  <div style="background:linear-gradient(160deg,#1A0A2E,#2D0A5E);border:1.5px solid rgba(212,160,23,.4);border-radius:24px;padding:32px 24px;max-width:390px;width:100%;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6);">
+    <button onclick="closeSubscribeModal()" style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.5);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;font-family:'Nunito',sans-serif;">✕</button>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:32px;margin-bottom:8px;">✦</div>
+      <h2 style="font-family:'Cinzel',serif;color:white;font-size:18px;margin-bottom:6px;">Unlock Begin Forever</h2>
+      <p style="color:rgba(255,255,255,.55);font-size:12px;line-height:1.7;">Choose a plan to browse, connect and find your forever.</p>
+    </div>
+    <!-- BASIC -->
+    <p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Basic</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+      <button onclick="payRzp('Basic Weekly',39900)" style="padding:12px 6px;background:rgba(255,255,255,.06);border:1px solid rgba(212,160,23,.25);border-radius:12px;color:white;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;">
+        <p style="font-weight:700;font-size:12px;margin-bottom:2px;">Weekly</p>
+        <p style="font-size:13px;color:#D4A017;font-weight:800;">&#8377;399</p>
+      </button>
+      <button onclick="payRzp('Basic Monthly',79900)" style="padding:12px 6px;background:rgba(255,255,255,.06);border:1px solid rgba(212,160,23,.25);border-radius:12px;color:white;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;">
+        <p style="font-weight:700;font-size:12px;margin-bottom:2px;">Monthly</p>
+        <p style="font-size:13px;color:#D4A017;font-weight:800;">&#8377;799</p>
+      </button>
+      <button onclick="payRzp('Basic Quarterly',199900)" style="padding:12px 6px;background:rgba(255,255,255,.06);border:1px solid rgba(212,160,23,.25);border-radius:12px;color:white;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;">
+        <p style="font-weight:700;font-size:12px;margin-bottom:2px;">Quarterly</p>
+        <p style="font-size:13px;color:#D4A017;font-weight:800;">&#8377;1,999</p>
+      </button>
+    </div>
+    <!-- PREMIUM -->
+    <p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Premium</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;">
+      <button onclick="payRzp('Premium Weekly',69900)" style="padding:12px 6px;background:linear-gradient(145deg,rgba(212,160,23,.12),rgba(212,160,23,.06));border:1px solid rgba(212,160,23,.4);border-radius:12px;color:white;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;">
+        <p style="font-weight:700;font-size:12px;margin-bottom:2px;">Weekly</p>
+        <p style="font-size:13px;color:#F5C842;font-weight:800;">&#8377;699</p>
+      </button>
+      <button onclick="payRzp('Premium Monthly',179900)" style="padding:12px 6px;background:linear-gradient(145deg,rgba(212,160,23,.12),rgba(212,160,23,.06));border:1.5px solid rgba(212,160,23,.6);border-radius:12px;color:white;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;position:relative;">
+        <span style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-size:8px;font-weight:800;padding:2px 8px;border-radius:20px;white-space:nowrap;">POPULAR</span>
+        <p style="font-weight:700;font-size:12px;margin-bottom:2px;">Monthly</p>
+        <p style="font-size:13px;color:#F5C842;font-weight:800;">&#8377;1,799</p>
+      </button>
+      <button onclick="payRzp('Premium Quarterly',399900)" style="padding:12px 6px;background:linear-gradient(145deg,rgba(212,160,23,.12),rgba(212,160,23,.06));border:1px solid rgba(212,160,23,.4);border-radius:12px;color:white;font-family:'Nunito',sans-serif;cursor:pointer;text-align:center;">
+        <p style="font-weight:700;font-size:12px;margin-bottom:2px;">Quarterly</p>
+        <p style="font-size:13px;color:#F5C842;font-weight:800;">&#8377;3,999</p>
+      </button>
+    </div>
+    <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);">🔒 Secured by Razorpay · Cancel anytime</p>
   </div>
 </div>
 
