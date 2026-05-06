@@ -29,6 +29,7 @@ function updateCountdown() {
   set('cdDays', pad(days)); set('cdHours', pad(hrs));
   set('cdMins', pad(mins)); set('cdSecs', pad(secs));
   set('discoverDays', days); set('interestDays', days);
+  updatePricingCountdown();
 }
 setInterval(updateCountdown, 1000);
 updateCountdown();
