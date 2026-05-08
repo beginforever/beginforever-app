@@ -5,18 +5,26 @@ async function doLogin() {
   var pw    = document.getElementById('lPass').value;
   var errEl = document.getElementById('lErr');
   errEl.style.display = 'none';
-  if (!em || !pw) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
+  if (!em || !pw) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.style.display = 'block'; return;
+  }
   var btn = document.getElementById('lBtn');
-  var origHTML = btn.innerHTML;
-  btn.disabled = true; btn.innerHTML = 'Signing in...'; btn.style.opacity = '0.7';
+  var origText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Signing in…'; btn.style.opacity = '0.7';
   try {
-    var r = await sb.auth.signInWithPassword({email:em, password:pw});
-    btn.disabled = false; btn.innerHTML = origHTML; btn.style.opacity = '1';
-    if (r.error) { errEl.textContent = r.error.message; errEl.style.display = 'block'; return; }
+    var r = await sb.auth.signInWithPassword({email: em, password: pw});
+    btn.disabled = false; btn.textContent = origText; btn.style.opacity = '1';
+    if (r.error) {
+      errEl.textContent = r.error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password. Please try again.'
+        : r.error.message;
+      errEl.style.display = 'block'; return;
+    }
     U = r.data.user;
     await loadP();
   } catch(e) {
-    btn.disabled = false; btn.innerHTML = origHTML; btn.style.opacity = '1';
+    btn.disabled = false; btn.textContent = origText; btn.style.opacity = '1';
     errEl.textContent = e.message || 'Connection error. Please check your internet.';
     errEl.style.display = 'block';
   }
@@ -29,31 +37,49 @@ async function doRegister() {
   var terms = document.getElementById('rTerms').checked;
   var err   = document.getElementById('rErr');
   err.style.display = 'none';
-  if (!em)        { err.textContent = 'Please enter your email.'; err.style.display = 'block'; return; }
+
+  if (!em)           { err.textContent = 'Please enter your email.'; err.style.display = 'block'; return; }
   if (pw.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.style.display = 'block'; return; }
-  if (pw !== cf)  { err.textContent = 'Passwords do not match.'; err.style.display = 'block'; return; }
-  if (!terms)     { err.textContent = 'Please agree to the Terms & conditions.'; err.style.display = 'block'; return; }
+  if (pw !== cf)     { err.textContent = 'Passwords do not match.'; err.style.display = 'block'; return; }
+  if (!terms)        { err.textContent = 'Please agree to the Terms & conditions.'; err.style.display = 'block'; return; }
+
   var btn = document.getElementById('rBtn');
-  btn.disabled = true; btn.textContent = 'Creating account...';
-  var res = await sb.auth.signUp({email:em, password:pw});
-  btn.disabled = false; btn.textContent = 'Create Account ✦';
-  if (res.error) { err.textContent = res.error.message; err.style.display = 'block'; return; }
-  U = res.data.user;
-  if (typeof fbq !== 'undefined') fbq('track','Lead');
+  btn.disabled = true; btn.textContent = 'Creating account…';
 
-  // ── Welcome email ──
   try {
-    fetch(SB_URL + '/functions/v1/smart-function', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({type: 'registered', full_name: '', email: em})
-    });
-  } catch(x) {}
+    var res = await sb.auth.signUp({email: em, password: pw});
+    btn.disabled = false; btn.textContent = 'Create Account ✦';
 
-  // ── REFERRAL ──
-  if (U) { try { await saveReferral(U.id, em); } catch(x) {} }
+    if (res.error) {
+      err.textContent = res.error.message; err.style.display = 'block'; return;
+    }
 
-  await loadP();
+    U = res.data.user;
+
+    if (typeof fbq !== 'undefined') fbq('track', 'Lead');
+
+    // Welcome email
+    try {
+      fetch(SB_URL + '/functions/v1/smart-function', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({type: 'registered', full_name: '', email: em})
+      });
+    } catch(x) {}
+
+    // Save referral if any
+    if (U) { try { await saveReferral(U.id, em); } catch(x) {} }
+
+    // Go straight to profile setup
+    showScr('setupScreen');
+    step = 1;
+    updUI();
+
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Create Account ✦';
+    err.textContent = e.message || 'Something went wrong. Please try again.';
+    err.style.display = 'block';
+  }
 }
 
 async function doForgot() {
@@ -61,13 +87,19 @@ async function doForgot() {
   var err = document.getElementById('fgErr');
   var ok  = document.getElementById('fgOk');
   err.style.display = 'none'; ok.style.display = 'none';
+
   if (!em) { err.textContent = 'Please enter your email.'; err.style.display = 'block'; return; }
+
   var btn = document.getElementById('fgBtn');
-  btn.disabled = true; btn.textContent = 'Sending...';
-  var res = await sb.auth.resetPasswordForEmail(em);
+  btn.disabled = true; btn.textContent = 'Sending…';
+
+  var res = await sb.auth.resetPasswordForEmail(em, {
+    redirectTo: 'https://beginforever.app/reset-password.html'
+  });
   btn.disabled = false; btn.textContent = 'Send Reset Link';
+
   if (res.error) { err.textContent = res.error.message; err.style.display = 'block'; return; }
-  ok.textContent = 'Reset link sent! Check your inbox.'; ok.style.display = 'block';
+  ok.textContent = '✅ Reset link sent! Check your inbox.'; ok.style.display = 'block';
 }
 
 async function doSignOut() {
