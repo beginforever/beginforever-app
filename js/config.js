@@ -2,10 +2,13 @@
 const SB_URL = 'https://neftjxvovxocqabxjvme.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc';
 const sb = supabase.createClient(SB_URL, SB_KEY);
-const OTP_FN = SB_URL + '/functions/v1/send-otp';
 
-// 15 days from tomorrow
-const LAUNCH = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
+// ── LAUNCH DATE: 20 May 2026 00:00 IST (UTC+5:30) ──
+const LAUNCH = new Date('2026-05-19T18:30:00Z'); // 20 May 2026 00:00 IST
+
+function isPreLaunch() {
+  return new Date() < LAUNCH;
+}
 
 // Global state
 let U = null, P = null;
@@ -14,7 +17,7 @@ let idFile = null;
 let editPhotos = [null,null,null,null,null];
 let fpBrowse = [], fpReceive = [];
 let setupBrowse = [], setupReceive = [];
-let otpPhone = '', resendInterval = null, step = 1;
+let step = 1;
 
 // ═══════════════════════════════════════════ FAITHS
 const FAITHS = [

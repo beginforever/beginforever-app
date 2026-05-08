@@ -15,16 +15,10 @@ function show(id) { showScr(id); }
 function updateCountdown() {
   var diff = LAUNCH - new Date();
   var pad = function(n) { return String(Math.max(0, n)).padStart(2, '0'); };
-  if (diff <= 0) {
-    ['cdDays','cdHours','cdMins','cdSecs','discoverDays','interestDays'].forEach(function(id) {
-      var e = document.getElementById(id); if (e) e.textContent = '0';
-    });
-    return;
-  }
-  var days = Math.floor(diff / 86400000);
-  var hrs  = Math.floor((diff % 86400000) / 3600000);
-  var mins = Math.floor((diff % 3600000) / 60000);
-  var secs = Math.floor((diff % 60000) / 1000);
+  var days = Math.max(0, Math.floor(diff / 86400000));
+  var hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000));
+  var mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
+  var secs = Math.max(0, Math.floor((diff % 60000) / 1000));
   function set(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
   set('cdDays', pad(days)); set('cdHours', pad(hrs));
   set('cdMins', pad(mins)); set('cdSecs', pad(secs));
@@ -54,6 +48,69 @@ function goTab(t) {
   if (t === 'views')     ldViews();
   if (t === 'profile')   renP();
   if (t === 'admin')     ldAdmin('pending');
+}
+
+// ═══════════════════════════════════════════ PRE-LAUNCH LOCK
+// Returns true if this tab should be blocked until 20 May
+function isTabLocked(tab) {
+  if (!isPreLaunch()) return false;           // launch passed — unlock everything
+  if (P && P.is_admin) return false;          // admins always see everything
+  var lockedTabs = ['browse', 'interests', 'chat', 'chatWin', 'views'];
+  return lockedTabs.indexOf(tab) > -1;
+}
+
+function renderPreLaunchBanner(tabName) {
+  var diff = LAUNCH - new Date();
+  var days = Math.max(0, Math.floor(diff / 86400000));
+  var hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000));
+  var mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
+
+  var labels = {
+    browse:    { icon:'🔍', title:'Discover opens on 20 May',   sub:'Your profile is verified and ready. The moment we launch, your matches will appear here.' },
+    interests: { icon:'💝', title:'Interests open on 20 May',   sub:'Every interest you receive will appear here at launch. 300+ verified members are waiting.' },
+    chat:      { icon:'💬', title:'Chat opens on 20 May',       sub:'Connections, conversations, beginnings — all of it unlocks in just a few days.' },
+    views:     { icon:'👁️', title:'Who Viewed Me opens on 20 May', sub:'Once launch begins, you\'ll be able to see everyone who visited your profile.' },
+  };
+  var info = labels[tabName] || labels.browse;
+
+  return '<div style="padding:20px 16px 90px;">' +
+    '<div style="background:linear-gradient(160deg,#1C0530,#130220);border:1px solid rgba(212,160,23,.25);border-radius:18px;padding:24px 20px;position:relative;overflow:hidden;">' +
+      '<div style="position:absolute;top:-60px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.1),transparent 70%);pointer-events:none;"></div>' +
+      '<div style="position:relative;z-index:1;">' +
+        '<div style="font-size:38px;margin-bottom:10px;">'+info.icon+'</div>' +
+        '<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:800;color:var(--gold2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">' +
+          '<span style="width:5px;height:5px;border-radius:50%;background:var(--gold2);animation:blink 1.6s infinite;display:inline-block;"></span>Launching 20 May 2026' +
+        '</div>' +
+        '<h2 style="font-family:\'Cinzel\',serif;font-size:20px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:10px;">'+info.title+'</h2>' +
+        '<p style="font-family:\'Nunito\',sans-serif;font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:18px;">'+info.sub+'</p>' +
+        // Live countdown
+        '<div style="display:flex;gap:8px;margin-bottom:18px;">' +
+          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
+            '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(days).padStart(2,'0')+'</div>' +
+            '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Days</div>' +
+          '</div>' +
+          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
+            '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(hrs).padStart(2,'0')+'</div>' +
+            '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Hrs</div>' +
+          '</div>' +
+          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
+            '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(mins).padStart(2,'0')+'</div>' +
+            '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Mins</div>' +
+          '</div>' +
+        '</div>' +
+        // Verified badge
+        '<div style="background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
+          '<span style="font-size:20px;">✅</span>' +
+          '<div>' +
+            '<p style="font-size:12px;font-weight:700;color:#4ade80;margin:0;">Your profile is verified &amp; ready</p>' +
+            '<p style="font-size:11px;color:rgba(255,255,255,.4);margin:2px 0 0;">You\'ll be among the first visible to matches at launch</p>' +
+          '</div>' +
+        '</div>' +
+        '<button style="width:100%;padding:12px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:\'Cinzel\',serif;font-size:13px;font-weight:700;border:none;border-radius:10px;cursor:pointer;letter-spacing:.5px;" onclick="shareApp()">✦ Invite someone special</button>' +
+        '<p style="font-family:\'EB Garamond\',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:12px;">"A time to love." — Ecclesiastes 3:8</p>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
 }
 
 // ═══════════════════════════════════════════ HOME
@@ -99,6 +156,68 @@ async function loadStats() {
   } catch(x) {}
 }
 
+// ═══════════════════════════════════════════ LOCKED TAB STUBS
+async function ldBrowse() {
+  var el = document.getElementById('tBrowse');
+  if (!el) return;
+  if (isTabLocked('browse')) {
+    el.innerHTML = renderPreLaunchBanner('browse');
+    return;
+  }
+  el.innerHTML = '<div style="text-align:center;padding:30px 16px;"><p style="font-size:13px;color:var(--w40);">Browse is live!</p></div>';
+}
+
+async function ldInt(type) {
+  var el = document.getElementById('tInterests');
+  if (!el) return;
+  if (isTabLocked('interests')) {
+    el.innerHTML = renderPreLaunchBanner('interests');
+    return;
+  }
+}
+
+function showInt(t)          { ldInt(t); }
+async function actInt(id,st) { await sb.from('interests').update({status:st}).eq('id',id); ldInt('received'); }
+
+async function ldChats() {
+  var el = document.getElementById('tChat');
+  if (!el) return;
+  if (isTabLocked('chat')) {
+    el.innerHTML = renderPreLaunchBanner('chat');
+    return;
+  }
+}
+
+async function ldViews() {
+  var el = document.getElementById('tViews');
+  if (!el) return;
+  if (isTabLocked('views')) {
+    el.innerHTML = renderPreLaunchBanner('views');
+    return;
+  }
+  // Real views logic (post launch)
+  var r = await sb.from('profile_views').select('*,profiles!profile_views_viewer_id_fkey(*)').eq('viewed_id', U.id).order('viewed_at',{ascending:false});
+  var d = r.data || [];
+  el.innerHTML = '<div class="content-area">' +
+    '<h2 style="font-family:\'Cinzel\',serif;font-size:20px;color:var(--gold-bright);margin-bottom:16px;">Who Viewed Me</h2>' +
+    (d.length === 0 ? '<div style="text-align:center;padding:40px 20px;"><div style="font-size:40px">👁️</div><p style="color:var(--white40);font-size:14px;margin-top:12px;">No views yet.</p></div>' : '') +
+    '<div id="viewList"></div></div>';
+  var l = document.getElementById('viewList'); if (!l) return;
+  d.forEach(function(v){
+    var p = v.profiles; if (!p) return;
+    var f = faithByKey(p.religion||'Other');
+    l.innerHTML += '<div class="card" style="cursor:pointer" onclick="viewProfile(\''+p.id+'\')"><div style="display:flex;gap:10px;align-items:center">'+
+      '<div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+';">'+(p.photo_url?'':'<span style="font-size:18px;opacity:.3">👤</span>')+'</div>'+
+      '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600;color:#fff;">'+p.full_name+', '+p.age+'</h3>'+
+      '<p style="font-size:11px;color:'+f.color+';">'+f.icon+' '+(p.denomination||p.religion||'')+'</p></div>'+
+      '<p style="font-size:10px;color:var(--w50);">'+new Date(v.viewed_at).toLocaleDateString()+'</p></div></div>';
+  });
+}
+
+async function openChat(pid)      {}
+async function ldMsgs()           {}
+async function sendMsg()          {}
+
 // ═══════════════════════════════════════════ FAITH CARDS UI
 function renderFaithCards(containerId, arr) {
   var c = document.getElementById(containerId);
@@ -142,7 +261,7 @@ function shareApp() {
   var link = 'https://beginforever.in?ref=' + code;
   var msg  = "I just joined Begin Forever — India's first 100% ID-verified matrimony platform! Join: " + link;
   if (navigator.share) navigator.share({title:'Begin Forever', text:msg, url:link});
-  else if (navigator.clipboard) navigator.clipboard.writeText(link).then(function(){ alert('Referral link copied!'); });
+  else if (navigator.clipboard) navigator.clipboard.writeText(link).then(function(){ alert('Referral link copied! 🔗'); });
 }
 
 async function checkNotifs() {
@@ -161,15 +280,10 @@ function submitReview() {
   if (txt) txt.value = '';
 }
 
-
-// ═══════════════════════════════════════════ SUBSCRIPTION & ACCESS
-
-var SOFT_LAUNCH_DATE = new Date('2025-06-15T00:00:00Z'); // ← update to your real launch date
-
+// ═══════════════════════════════════════════ SUBSCRIPTION
 function isFoundingMember() {
   if (!P) return false;
   if (P.is_founding_member) return true;
-  if (P.created_at && new Date(P.created_at) < SOFT_LAUNCH_DATE) return true;
   return false;
 }
 
@@ -196,37 +310,29 @@ function closeSubscribeModal() {
   if (m) m.classList.remove('active');
 }
 
-// Pricing teaser countdown (mirrors main countdown but targets pricing overlay)
 function updatePricingCountdown() {
   if (!LAUNCH) return;
   var diff = LAUNCH - new Date();
-  var el = document.getElementById('pricingCdWrap');
-  if (!el) return;
   if (diff <= 0) {
-    // Launch passed — hide overlay, show plans
-    var overlay = el.closest('.pricing-teaser-wrap') && el.closest('.pricing-teaser-wrap').querySelector('.pricing-teaser-overlay');
+    var overlay = document.querySelector('.pricing-teaser-overlay');
     if (overlay) overlay.style.display = 'none';
-    var blur = el.closest('.pricing-teaser-wrap') && el.closest('.pricing-teaser-wrap').querySelector('.pricing-blur');
-    if (blur) { blur.style.filter = 'none'; blur.style.opacity = '1'; blur.style.pointerEvents = ''; }
+    var blur = document.querySelector('.pricing-blur');
+    if (blur) { blur.style.filter='none'; blur.style.opacity='1'; blur.style.pointerEvents=''; }
     return;
   }
-  var days = Math.floor(diff / 86400000);
-  var hrs  = Math.floor((diff % 86400000) / 3600000);
-  var mins = Math.floor((diff % 3600000) / 60000);
+  var days = Math.max(0, Math.floor(diff / 86400000));
+  var hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000));
+  var mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
   var pad = function(n){ return String(Math.max(0,n)).padStart(2,'0'); };
   var d = document.getElementById('pcDays'); if(d) d.textContent = pad(days);
   var h = document.getElementById('pcHrs');  if(h) h.textContent = pad(hrs);
-  var m = document.getElementById('pcMins'); if(m) m.textContent = pad(mins);
-  // Show founding member message
+  var m2= document.getElementById('pcMins'); if(m2) m2.textContent = pad(mins);
   var fm = document.getElementById('pricingFounderMsg');
   if (fm && P && isFoundingMember()) fm.style.display = 'block';
 }
 
 function payRzp(plan, amt) {
-  // Calculate expiry based on plan
-  var days = 7; // default weekly
-  if (plan.indexOf('Monthly') !== -1) days = 30;
-  if (plan.indexOf('Quarterly') !== -1) days = 90;
+  var days = plan.indexOf('Monthly')!== -1 ? 30 : plan.indexOf('Quarterly')!== -1 ? 90 : 7;
   var tier = plan.indexOf('Premium') !== -1 ? 'premium' : 'basic';
   var opts = {
     key:'rzp_live_SausbldU6Vqpy0', amount:amt, currency:'INR',
@@ -241,15 +347,15 @@ function payRzp(plan, amt) {
         });
       } catch(x){}
       closeSubscribeModal();
-      alert('\u2726 Welcome to '+plan+'!\nYour plan is now active. Enjoy Begin Forever!');
+      alert('✦ Welcome to '+plan+'!\nYour plan is now active.');
       await loadP();
     },
     prefill:{name:P?P.full_name:'', email:P?P.email:'', contact:P?P.phone:''},
     theme:{color:'#3B0764'}
   };
-  var rzp = new Razorpay(opts);
-  rzp.open();
+  new Razorpay(opts).open();
 }
+
 var _menuOpen = false;
 function toggleMenu(){
   _menuOpen = !_menuOpen;
@@ -257,8 +363,8 @@ function toggleMenu(){
   var b1 = document.getElementById('mb1');
   var b2 = document.getElementById('mb2');
   var b3 = document.getElementById('mb3');
-  d.style.maxHeight  = _menuOpen ? '600px' : '0';
-  b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
-  b2.style.opacity   = _menuOpen ? '0' : '1';
-  b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
+  if(d)  d.style.maxHeight  = _menuOpen ? '600px' : '0';
+  if(b1) b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
+  if(b2) b2.style.opacity   = _menuOpen ? '0' : '1';
+  if(b3) b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
 }

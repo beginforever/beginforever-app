@@ -37,7 +37,17 @@ async function loadP() {
   }
 
   if (P.status === 'rejected') {
+    renderRejectedScreen(P);
     showScr('rejectedScreen');
+    return;
+  }
+
+  if (P.status === 'resubmitting') {
+    // They started resubmit but closed app — resume wizard pre-filled
+    prefillSetupWizard(P);
+    showScr('setupScreen');
+    step = 1;
+    updUI();
     return;
   }
 
@@ -264,6 +274,14 @@ async function goNext() {
       status:'pending'
     };
 
+    // If resubmitting, don't overwrite founding_number or referred_by
+    var isResubmit = P && P.status === 'resubmitting';
+    if (isResubmit) {
+      delete pd.founding_number;
+      delete pd.is_founding_member;
+      delete pd.referred_by;
+    }
+
     var res = await sb.from('profiles').upsert(pd, {onConflict:'id'});
     if (res.error) throw res.error;
 
@@ -272,7 +290,7 @@ async function goNext() {
       await fetch(SB_URL+'/functions/v1/smart-function', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          type:'pending',
+          type: isResubmit ? 'resubmitted' : 'pending',
           full_name:pd.full_name, email:pd.email, phone:pd.phone,
           city:pd.city, state:pd.state,
           religion:pd.religion, denomination:pd.denomination||pd.religion,
@@ -489,3 +507,94 @@ async function ldChats()     {}
 async function openChat(pid) {}
 async function ldMsgs()      {}
 async function sendMsg()     {}
+
+// ═══════════════════════════════════════════ REJECTED SCREEN
+function renderRejectedScreen(profile) {
+  var reason = profile.rejection_reason || 'Your profile did not meet our verification requirements.';
+  var el = document.getElementById('rejectedContent');
+  if (!el) return;
+  el.innerHTML =
+    '<div style="font-size:48px;margin-bottom:16px;">😔</div>'+
+    '<h2 style="font-family:\'Cinzel\',serif;font-size:22px;color:#ff6b6b;margin-bottom:12px;">Profile Not Approved</h2>'+
+    '<div style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left;">'+
+      '<p style="font-size:10px;font-weight:700;color:#ff6b6b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">📋 Reason from our team</p>'+
+      '<p style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;">'+reason+'</p>'+
+    '</div>'+
+    '<div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:14px;padding:16px;margin-bottom:24px;text-align:left;">'+
+      '<p style="font-size:12px;font-weight:700;color:var(--gold2);margin-bottom:8px;">✦ What you can do</p>'+
+      '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.8;">'+
+        '✓ Fix the issue mentioned above<br/>'+
+        '✓ Re-upload a clear government ID<br/>'+
+        '✓ Ensure your profile photo shows your face clearly<br/>'+
+        '✓ Then resubmit — our team reviews within 24 hrs'+
+      '</p>'+
+    '</div>'+
+    '<button class="btn btn-gold" style="margin-bottom:12px;" onclick="startResubmit()">✦ Fix &amp; Resubmit Profile</button>'+
+    '<button class="btn btn-dark" style="font-size:12px;opacity:.6;" onclick="doSignOut()">Sign Out</button>'+
+    '<p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:16px;">Need help? <a href="mailto:info@beginforever.in" style="color:var(--gold);text-decoration:none;">info@beginforever.in</a> · +91 97000 25345</p>';
+}
+
+async function startResubmit() {
+  if (!confirm('This will let you edit and resubmit your profile for review. Continue?')) return;
+
+  // Reset status to allow resubmission — keep all existing data
+  try {
+    await sb.from('profiles').update({
+      status: 'resubmitting',
+      rejection_reason: null
+    }).eq('id', U.id);
+  } catch(x) {
+    alert('Error: ' + (x.message || 'Could not start resubmission. Please try again.')); return;
+  }
+
+  // Reload profile into memory
+  var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
+  P = r.data && r.data[0] ? r.data[0] : P;
+
+  // Pre-fill the setup wizard with existing data
+  prefillSetupWizard(P);
+
+  // Go to setup screen at step 1
+  showScr('setupScreen');
+  step = 1;
+  updUI();
+}
+
+function prefillSetupWizard(p) {
+  // Step 1
+  var fn = document.getElementById('fName');    if (fn) fn.value = p.full_name || '';
+  var fa = document.getElementById('fAge');     if (fa) fa.value = p.age || '';
+  var fg = document.getElementById('fGender');  if (fg) fg.value = p.gender || '';
+  var fr = document.getElementById('fReligion');
+  if (fr) {
+    fr.value = p.religion || '';
+    toggleDenom();
+    var fd = document.getElementById('fDenom'); if (fd && p.denomination) fd.value = p.denomination;
+  }
+  var fst = document.getElementById('fState');
+  if (fst) {
+    fst.value = p.state || '';
+    fillC();
+    var fc = document.getElementById('fCity'); if (fc && p.city) fc.value = p.city;
+  }
+  var fph = document.getElementById('fPhone'); if (fph) fph.value = p.phone || '';
+  var frf = document.getElementById('fRegFor'); if (frf) frf.value = p.registered_by || 'Myself';
+
+  // Step 2
+  var fb  = document.getElementById('fBio');  if (fb)  fb.value  = p.bio || '';
+  var fe  = document.getElementById('fEdu');  if (fe)  fe.value  = p.education || '';
+  var fo  = document.getElementById('fOcc');  if (fo)  fo.value  = p.occupation || '';
+  var fht = document.getElementById('fHt');   if (fht) fht.value = p.height_cm || '';
+  var fmt = document.getElementById('fMT');   if (fmt) fmt.value = p.mother_tongue || '';
+  var fms = document.getElementById('fMS');   if (fms) fms.value = p.marital_status || 'Never Married';
+
+  // Step 5
+  var fpmin = document.getElementById('fPMin'); if (fpmin) fpmin.value = p.pref_age_min || 18;
+  var fpmax = document.getElementById('fPMax'); if (fpmax) fpmax.value = p.pref_age_max || 70;
+  var fpd   = document.getElementById('fPD');   if (fpd)   fpd.value   = p.pref_denomination || 'Any';
+  var fpc   = document.getElementById('fPC');   if (fpc)   fpc.value   = p.pref_city || '';
+
+  // Reset photos/id (must re-upload for resubmission — that's the point)
+  photos = [null,null,null,null,null];
+  idFile = null;
+}
