@@ -130,6 +130,7 @@ async function verifyOtp() {
     if (d.error) throw new Error(d.error);
     if (U) { try { await sb.from('profiles').update({phone_verified:true, phone:otpPhone}).eq('id', U.id); } catch(x){} }
     if (resendInterval) clearInterval(resendInterval);
+    if (typeof fbq !== 'undefined') fbq('track', 'CompleteRegistration');
     await loadP();
   } catch(e) { errEl.textContent = e.message; errEl.style.display = ''; }
   btn.disabled = false; btn.textContent = 'Verify & Continue';
