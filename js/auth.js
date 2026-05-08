@@ -70,10 +70,9 @@ async function doRegister() {
     // Save referral if any
     if (U) { try { await saveReferral(U.id, em); } catch(x) {} }
 
-    // Go straight to profile setup
-    showScr('setupScreen');
-    step = 1;
-    updUI();
+    // Flag as fresh registration so loadP() routes to setup wizard
+    _justRegistered = true;
+    await loadP();
 
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Create Account ✦';

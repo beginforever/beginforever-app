@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════ BOOT
 var _appReady = false;
+var _justRegistered = false; // set true by doRegister() before calling loadP()
 
 var _bootFallback = setTimeout(function() {
   if (!_appReady) {
@@ -18,16 +19,9 @@ sb.auth.onAuthStateChange(function(ev, sess) {
     } else {
       showScr('loginScreen');
     }
-  } else if (ev === 'SIGNED_IN') {
-    if (sess && sess.user) {
-      U = sess.user;
-      // Only call loadP if we're not already in the app
-      var mainApp = document.getElementById('mainApp');
-      var isInApp = mainApp && mainApp.classList.contains('active');
-      if (!isInApp) loadP();
-    }
   } else if (ev === 'SIGNED_OUT') {
     U = null; P = null;
+    _justRegistered = false;
     showScr('loginScreen');
   }
 });

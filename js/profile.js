@@ -13,11 +13,20 @@ async function loadP() {
 
   P = profileData;
 
-  // No profile yet → go to setup wizard
+  // No profile yet
   if (!P) {
-    showScr('setupScreen');
-    step = 1;
-    updUI();
+    if (_justRegistered) {
+      // Fresh registration — go to setup wizard
+      _justRegistered = false;
+      showScr('setupScreen');
+      step = 1;
+      updUI();
+    } else {
+      // Stale session, no profile — sign out and show login
+      await sb.auth.signOut();
+      U = null;
+      showScr('loginScreen');
+    }
     return;
   }
 
