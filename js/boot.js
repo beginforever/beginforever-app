@@ -1,4 +1,3 @@
-// ═══════════════════════════════════════════ BOOT
 var _bootFallback = setTimeout(function() {
   showScr('loginScreen');
 }, 4000);
@@ -8,8 +7,6 @@ sb.auth.onAuthStateChange(function(ev, sess) {
     clearTimeout(_bootFallback);
     if (sess && sess.user) {
       U = sess.user;
-      var otpScr = document.getElementById('otpScreen');
-      if (otpScr && otpScr.style.display !== 'none') return;
       loadP();
     } else {
       showScr('loginScreen');
