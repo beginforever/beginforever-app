@@ -1,86 +1,41 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
   if (!U) { showScr('loginScreen'); return; }
-
   var profileData = null;
   try {
     var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r.error) throw r.error;
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
-  } catch(x) {
-    showScr('loginScreen'); return;
-  }
-
+  } catch(x) { showScr('loginScreen'); return; }
   P = profileData;
-
-  // No profile yet
   if (!P) {
     if (_justRegistered) {
-      // Fresh registration — go to setup wizard
       _justRegistered = false;
-      showScr('setupScreen');
-      step = 1;
-      updUI();
+      showScr('setupScreen'); step = 1; updUI();
     } else {
-      // Stale session, no profile — sign out and show login
-      await sb.auth.signOut();
-      U = null;
-      showScr('loginScreen');
+      await sb.auth.signOut(); U = null; showScr('loginScreen');
     }
     return;
   }
-
-  // Profile exists — route by status
-  if (P.status === 'pending') {
-    showScr('pendingScreen');
-    return;
-  }
-
-  if (P.status === 'rejected') {
-    renderRejectedScreen(P);
-    showScr('rejectedScreen');
-    return;
-  }
-
-  if (P.status === 'resubmitting') {
-    // They started resubmit but closed app — resume wizard pre-filled
-    prefillSetupWizard(P);
-    showScr('setupScreen');
-    step = 1;
-    updUI();
-    return;
-  }
-
-  // Approved — load faith prefs and enter app
-  try {
-    fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){ return f.key; });
-  } catch(x) {
-    fpBrowse  = FAITHS.map(function(f){ return f.key; });
-  }
-  try {
-    fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){ return f.key; });
-  } catch(x) {
-    fpReceive = FAITHS.map(function(f){ return f.key; });
-  }
-
-  // Add admin tab if needed
+  if (P.status === 'pending')       { showScr('pendingScreen'); return; }
+  if (P.status === 'rejected')      { renderRejectedScreen(P); showScr('rejectedScreen'); return; }
+  if (P.status === 'resubmitting')  { prefillSetupWizard(P); showScr('setupScreen'); step=1; updUI(); return; }
+  try { fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); } catch(x) { fpBrowse  = FAITHS.map(function(f){return f.key;}); }
+  try { fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); } catch(x) { fpReceive = FAITHS.map(function(f){return f.key;}); }
   if (P.is_admin) {
     var bar = document.getElementById('tBar');
     if (bar && !document.getElementById('adTab')) {
       var ab = document.createElement('button');
-      ab.className = 'tab-btn'; ab.id = 'adTab';
-      ab.onclick = function(){ goTab('admin'); };
-      ab.innerHTML = '<span class="tab-icon">⚙️</span><span class="tab-label">Admin</span>';
+      ab.className='tab-btn'; ab.id='adTab';
+      ab.onclick=function(){goTab('admin');};
+      ab.innerHTML='<span class="tab-icon">⚙️</span><span class="tab-label">Admin</span>';
       bar.appendChild(ab);
     }
   }
-
-  showScr('mainApp');
-  goTab('home');
-  checkNotifs();
+  showScr('mainApp'); goTab('home'); checkNotifs();
 }
 
-// ═══════════════════════════════════════════ SETUP WIZARD
+// ═══════════════════════════════════════════ SETUP WIZARD — 5 steps, no bio, no faith
 function toggleDenom() {
   var r      = document.getElementById('fReligion').value;
   var denoms = DENOM_MAP[r] || [];
@@ -90,21 +45,19 @@ function toggleDenom() {
     dg.style.display = '';
     dd.innerHTML = '<option value="">Select denomination</option>' +
       denoms.map(function(d){ return '<option>'+d+'</option>'; }).join('');
-  } else {
-    dg.style.display = 'none';
-  }
+  } else { dg.style.display = 'none'; }
 }
 
 function fillC() {
   var s = document.getElementById('fState').value;
   var c = document.getElementById('fCity');
   c.innerHTML = '<option value="">Select city</option>';
-  (CT[s] || []).forEach(function(v){ c.innerHTML += '<option>'+v+'</option>'; });
+  (CT[s]||[]).forEach(function(v){ c.innerHTML += '<option>'+v+'</option>'; });
 }
 
 function initPG() {
   var g = document.getElementById('photoGrid'); if (!g) return; g.innerHTML = '';
-  for (var i = 0; i < 5; i++) {
+  for (var i=0;i<5;i++) {
     g.innerHTML += '<div class="photo-slot" id="ps'+i+'" onclick="document.getElementById(\'pi'+i+'\').click()">'+
       '<span style="font-size:15px;opacity:.4">📷</span>'+
       '<span style="font-size:9px;color:var(--w40)">'+(i===0?'Main*':'#'+(i+1))+'</span>'+
@@ -112,138 +65,96 @@ function initPG() {
   }
 }
 
-function pickP(i, inp) {
-  var f = inp.files[0]; if (!f) return;
-  photos[i] = f;
-  var s = document.getElementById('ps'+i);
-  s.style.backgroundImage = 'url('+URL.createObjectURL(f)+')';
-  s.style.borderColor = 'var(--gold)'; s.style.borderStyle = 'solid';
-  s.innerHTML = '<input type="file" accept="image/*" id="pi'+i+'" style="display:none" onchange="pickP('+i+',this)"/>';
+function pickP(i,inp) {
+  var f=inp.files[0]; if(!f) return;
+  photos[i]=f;
+  var s=document.getElementById('ps'+i);
+  s.style.backgroundImage='url('+URL.createObjectURL(f)+')';
+  s.style.borderColor='var(--gold)'; s.style.borderStyle='solid';
+  s.innerHTML='<input type="file" accept="image/*" id="pi'+i+'" style="display:none" onchange="pickP('+i+',this)"/>';
 }
 
 function pickId(inp) {
-  var f = inp.files[0]; if (!f || f.size > 5*1024*1024) { alert('Max 5MB'); return; }
-  idFile = f;
-  document.getElementById('idSlot').innerHTML =
+  var f=inp.files[0]; if(!f||f.size>5*1024*1024){alert('Max 5MB');return;}
+  idFile=f;
+  document.getElementById('idSlot').innerHTML=
     '<span style="font-size:28px">✅</span><br/>'+
     '<span style="font-size:11px;color:var(--gold2)">ID uploaded</span>'+
     '<input type="file" accept="image/*,.pdf" id="idInp" style="display:none" onchange="pickId(this)"/>';
-  var idN = document.getElementById('idN');
-  if (idN) { idN.textContent = '📄 ' + f.name; idN.style.display = ''; }
-}
-
-function initSetupFaithGrids() {
-  setupBrowse  = FAITHS.map(function(f){ return f.key; });
-  setupReceive = FAITHS.map(function(f){ return f.key; });
-  renderFaithCards('s6BrowseCards',  setupBrowse);
-  renderFaithCards('s6ReceiveCards', setupReceive);
-}
-
-function s6All(type) {
-  if (type === 'browse')  { setupBrowse  = FAITHS.map(function(f){return f.key;}); renderFaithCards('s6BrowseCards',  setupBrowse);  }
-  else                    { setupReceive = FAITHS.map(function(f){return f.key;}); renderFaithCards('s6ReceiveCards', setupReceive); }
-}
-function s6None(type) {
-  if (type === 'browse')  { setupBrowse  = []; renderFaithCards('s6BrowseCards',  setupBrowse);  }
-  else                    { setupReceive = []; renderFaithCards('s6ReceiveCards', setupReceive); }
+  var idN=document.getElementById('idN');
+  if(idN){idN.textContent='📄 '+f.name;idN.style.display='';}
 }
 
 function updUI() {
-  var titles = ['Personal Details','About You','Photos','Government ID','Match Preferences','Faith Privacy'];
-  var st = document.getElementById('sTitle'); if (st) st.textContent = titles[step-1];
-  var sl = document.getElementById('sLabel'); if (sl) sl.textContent = 'Step '+step+' of 6';
-  document.querySelectorAll('#sDots .step-dot').forEach(function(d,i){ d.classList.toggle('active', i < step); });
-  for (var i = 1; i <= 6; i++) { var el = document.getElementById('s'+i); if (el) el.style.display = i===step?'':'none'; }
-  var bk = document.getElementById('bkBtn'); if (bk) bk.style.display = step > 1 ? '' : 'none';
-  var nx = document.getElementById('nxBtn'); if (nx) nx.textContent = step < 6 ? 'Next →' : 'Submit for Review ✦';
-  var se = document.getElementById('sErr'); if (se) se.style.display = 'none';
-  if (step === 3) initPG();
-  if (step === 6) initSetupFaithGrids();
+  var titles=['Personal Details','About You','Photos','Government ID','Match Preferences'];
+  var st=document.getElementById('sTitle'); if(st) st.textContent=titles[step-1];
+  var sl=document.getElementById('sLabel'); if(sl) sl.textContent='Step '+step+' of 5';
+  document.querySelectorAll('#sDots .step-dot').forEach(function(d,i){d.classList.toggle('active',i<step);});
+  for(var i=1;i<=6;i++){var el=document.getElementById('s'+i);if(el)el.style.display=(i===step&&i<=5)?'':'none';}
+  var bk=document.getElementById('bkBtn'); if(bk) bk.style.display=step>1?'':'none';
+  var nx=document.getElementById('nxBtn'); if(nx) nx.textContent=step<5?'Next →':'Submit for Review ✦';
+  var se=document.getElementById('sErr'); if(se) se.style.display='none';
+  if(step===3) initPG();
 }
 
-function goBack() { if (step > 1) { step--; updUI(); } }
+function goBack(){if(step>1){step--;updUI();}}
 
-async function goNext() {
-  var e = document.getElementById('sErr'); if (e) e.style.display = 'none';
-
-  if (step === 1) {
-    var name   = document.getElementById('fName').value.trim();
-    var age    = document.getElementById('fAge').value;
-    var gender = document.getElementById('fGender').value;
-    var relig  = document.getElementById('fReligion').value;
-    var state  = document.getElementById('fState').value;
-    var city   = document.getElementById('fCity').value;
-    var phone  = document.getElementById('fPhone').value.trim();
-    if (!name || !age || !gender || !relig || !state || !city || !phone) {
-      if (e) { e.textContent = 'Please fill all required fields.'; e.style.display = 'block'; }
-      return;
+async function goNext(){
+  var e=document.getElementById('sErr'); if(e) e.style.display='none';
+  if(step===1){
+    if(!document.getElementById('fName').value.trim()||!document.getElementById('fAge').value||
+       !document.getElementById('fGender').value||!document.getElementById('fReligion').value||
+       !document.getElementById('fState').value||!document.getElementById('fCity').value||
+       !document.getElementById('fPhone').value.trim()){
+      if(e){e.textContent='Please fill all required fields.';e.style.display='block';}return;
     }
-    step++; updUI(); return;
+    step++;updUI();return;
   }
-
-  if (step === 2) { step++; updUI(); return; }
-
-  if (step === 3) {
-    if (!photos[0]) {
-      if (e) { e.textContent = 'Primary photo is required.'; e.style.display = 'block'; }
-      return;
+  if(step===2){step++;updUI();return;}
+  if(step===3){
+    if(!photos[0]){if(e){e.textContent='Primary photo is required.';e.style.display='block';}return;}
+    step++;updUI();return;
+  }
+  if(step===4){
+    if(!document.getElementById('fIdT').value||!idFile){
+      if(e){e.textContent='ID type and upload are required.';e.style.display='block';}return;
     }
-    step++; updUI(); return;
+    step++;updUI();return;
   }
-
-  if (step === 4) {
-    if (!document.getElementById('fIdT').value || !idFile) {
-      if (e) { e.textContent = 'ID type and upload are required.'; e.style.display = 'block'; }
-      return;
-    }
-    step++; updUI(); return;
-  }
-
-  if (step === 5) { step++; updUI(); return; }
-
-  // Step 6 — submit
-  if (setupBrowse.length === 0) {
-    if (e) { e.textContent = 'Please select at least one faith to browse.'; e.style.display = 'block'; }
-    return;
-  }
-
-  var btn = document.getElementById('nxBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
-
-  try {
-    // Upload photos
-    var urls = ['','','','',''];
-    for (var i = 0; i < 5; i++) {
-      if (photos[i]) {
-        var ext  = photos[i].name.split('.').pop();
-        var path = U.id+'/p'+i+'_'+Date.now()+'.'+ext;
-        var r    = await sb.storage.from('profile-photos').upload(path, photos[i], {upsert:true});
-        if (!r.error) urls[i] = sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
+  // Step 5 — submit
+  var btn=document.getElementById('nxBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
+  try{
+    var urls=['','','','',''];
+    for(var i=0;i<5;i++){
+      if(photos[i]){
+        var ext=photos[i].name.split('.').pop();
+        var path=U.id+'/p'+i+'_'+Date.now()+'.'+ext;
+        var r=await sb.storage.from('profile-photos').upload(path,photos[i],{upsert:true});
+        if(!r.error) urls[i]=sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
       }
     }
-
-    // Upload ID
-    var idUrl = '';
-    if (idFile) {
-      var ext2 = idFile.name.split('.').pop();
-      var idP  = U.id+'/id_'+Date.now()+'.'+ext2;
-      try {
-        var r2 = await sb.storage.from('id-proofs').upload(idP, idFile, {upsert:true});
-        if (!r2.error) idUrl = sb.storage.from('id-proofs').getPublicUrl(idP).data.publicUrl;
-      } catch(x) {
-        try {
-          var r3 = await sb.storage.from('profile-photos').upload(idP, idFile, {upsert:true});
-          if (!r3.error) idUrl = sb.storage.from('profile-photos').getPublicUrl(idP).data.publicUrl;
-        } catch(y) {}
+    var idUrl='';
+    if(idFile){
+      var ext2=idFile.name.split('.').pop();
+      var idP=U.id+'/id_'+Date.now()+'.'+ext2;
+      try{
+        var r2=await sb.storage.from('id-proofs').upload(idP,idFile,{upsert:true});
+        if(!r2.error) idUrl=sb.storage.from('id-proofs').getPublicUrl(idP).data.publicUrl;
+      }catch(x){
+        try{
+          var r3=await sb.storage.from('profile-photos').upload(idP,idFile,{upsert:true});
+          if(!r3.error) idUrl=sb.storage.from('profile-photos').getPublicUrl(idP).data.publicUrl;
+        }catch(y){}
       }
     }
-
-    var countRes = await sb.from('profiles').select('id',{count:'exact',head:true});
-    var foundingNum = (countRes.count || 0) + 1;
-
-    var pd = {
-      id:U.id, email:U.email,
+    var countRes=await sb.from('profiles').select('id',{count:'exact',head:true});
+    var foundingNum=(countRes.count||0)+1;
+    var allFaithKeys=JSON.stringify(FAITHS.map(function(f){return f.key;}));
+    var isResubmit=P&&P.status==='resubmitting';
+    var pd={
+      id:U.id,email:U.email,
       full_name:document.getElementById('fName').value.trim(),
       age:parseInt(document.getElementById('fAge').value),
       gender:document.getElementById('fGender').value,
@@ -253,71 +164,55 @@ async function goNext() {
       state:document.getElementById('fState').value,
       phone:document.getElementById('fPhone').value.trim(),
       registered_by:document.getElementById('fRegFor').value,
-      bio:document.getElementById('fBio').value.trim(),
       education:document.getElementById('fEdu').value.trim(),
       occupation:document.getElementById('fOcc').value.trim(),
-      height_cm:document.getElementById('fHt').value ? parseInt(document.getElementById('fHt').value) : null,
+      height_cm:document.getElementById('fHt').value?parseInt(document.getElementById('fHt').value):null,
       mother_tongue:document.getElementById('fMT').value.trim(),
       marital_status:document.getElementById('fMS').value,
-      photo_url:urls[0], photo_2_url:urls[1], photo_3_url:urls[2], photo_4_url:urls[3], photo_5_url:urls[4],
+      photo_url:urls[0],photo_2_url:urls[1],photo_3_url:urls[2],photo_4_url:urls[3],photo_5_url:urls[4],
       id_proof_type:document.getElementById('fIdT').value,
       id_proof_url:idUrl,
       pref_age_min:parseInt(document.getElementById('fPMin').value)||18,
       pref_age_max:parseInt(document.getElementById('fPMax').value)||70,
       pref_denomination:document.getElementById('fPD').value,
       pref_city:document.getElementById('fPC').value.trim()||'Any',
-      faith_browse:JSON.stringify(setupBrowse),
-      faith_receive:JSON.stringify(setupReceive),
-      founding_number:foundingNum,
-      is_founding_member:true,
-      referred_by:getReferrerId()||null,
+      faith_browse: P&&P.faith_browse ? P.faith_browse : allFaithKeys,
+      faith_receive:P&&P.faith_receive? P.faith_receive: allFaithKeys,
+      founding_number:isResubmit?undefined:foundingNum,
+      is_founding_member:isResubmit?undefined:true,
+      referred_by:isResubmit?undefined:(getReferrerId()||null),
       status:'pending'
     };
-
-    // If resubmitting, don't overwrite founding_number or referred_by
-    var isResubmit = P && P.status === 'resubmitting';
-    if (isResubmit) {
-      delete pd.founding_number;
-      delete pd.is_founding_member;
-      delete pd.referred_by;
-    }
-
-    var res = await sb.from('profiles').upsert(pd, {onConflict:'id'});
-    if (res.error) throw res.error;
-
-    // Send pending notification
-    try {
-      await fetch(SB_URL+'/functions/v1/smart-function', {
-        method:'POST', headers:{'Content-Type':'application/json'},
+    Object.keys(pd).forEach(function(k){if(pd[k]===undefined)delete pd[k];});
+    var res=await sb.from('profiles').upsert(pd,{onConflict:'id'});
+    if(res.error) throw res.error;
+    try{
+      await fetch(SB_URL+'/functions/v1/smart-function',{
+        method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          type: isResubmit ? 'resubmitted' : 'pending',
-          full_name:pd.full_name, email:pd.email, phone:pd.phone,
-          city:pd.city, state:pd.state,
-          religion:pd.religion, denomination:pd.denomination||pd.religion,
-          gender:pd.gender, founding_number:foundingNum
+          type:isResubmit?'resubmitted':'pending',
+          full_name:pd.full_name,email:pd.email,phone:pd.phone,
+          city:pd.city,state:pd.state,religion:pd.religion,
+          denomination:pd.denomination||pd.religion,gender:pd.gender,founding_number:foundingNum
         })
       });
-    } catch(x) {}
-
-    P = pd;
-    clearReferrerId();
+    }catch(x){}
+    P=pd; if(!isResubmit) clearReferrerId();
     showScr('pendingScreen');
-
-  } catch(ex) {
-    if (e) { e.textContent = ex.message || 'Error. Please try again.'; e.style.display = 'block'; }
-    btn.disabled = false; btn.textContent = 'Submit for Review ✦';
+  }catch(ex){
+    if(e){e.textContent=ex.message||'Error. Please try again.';e.style.display='block';}
+    btn.disabled=false;btn.textContent='Submit for Review ✦';
   }
 }
 
 // ═══════════════════════════════════════════ MY PROFILE TAB
-function renP() {
-  if (!P) return;
-  var f  = faithByKey(P.religion || 'Other');
-  var ap = [P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
-  var ph = ap[0] ? 'background-image:url('+ap[0]+');background-size:cover;background-position:center' : '';
-
-  var heroEl = document.getElementById('profileHero');
-  if (heroEl) heroEl.innerHTML =
+function renP(){
+  if(!P) return;
+  var f=faithByKey(P.religion||'Other');
+  var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
+  var ph=ap[0]?'background-image:url('+ap[0]+');background-size:cover;background-position:center':'';
+  var heroEl=document.getElementById('profileHero');
+  if(heroEl) heroEl.innerHTML=
     '<div style="width:80px;height:80px;border-radius:50%;margin:0 auto;border:2px solid '+f.color+';'+ph+';background-color:var(--dark3);display:flex;align-items:center;justify-content:center;">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
     '<h2 style="font-family:Cinzel,serif;font-size:20px;margin-top:10px;color:#fff;">'+P.full_name+'</h2>'+
     '<p style="color:'+f.color+';font-size:12px;margin-top:3px;">'+f.icon+' '+(P.denomination?P.denomination+' · ':'')+P.religion+'</p>'+
@@ -325,195 +220,201 @@ function renP() {
     '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
     (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'');
 
-  var h = '';
+  var h='';
   [{l:'Email',v:P.email},{l:'Phone',v:P.phone},{l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
    {l:'Age',v:P.age},{l:'Education',v:P.education},{l:'Occupation',v:P.occupation},
    {l:'Mother Tongue',v:P.mother_tongue},{l:'Marital Status',v:P.marital_status},
    {l:'Height',v:P.height_cm?P.height_cm+' cm':''}].forEach(function(d){
-    if (d.v) h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);">'+
+    if(d.v) h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);">'+
       '<span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span>'+
       '<span style="font-size:13px;color:var(--w80);font-weight:600;">'+d.v+'</span></div>';
   });
-  if (P.bio) h += '<div style="margin-top:10px;"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">About</p><p style="font-size:13px;color:var(--w70);line-height:1.6;">'+P.bio+'</p></div>';
+  // Bio shown here in profile (not in setup)
+  if(P.bio) h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--w08);">'+
+    '<p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">About Me</p>'+
+    '<p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
 
-  var mi = document.getElementById('mInfo'); if (mi) mi.innerHTML = h;
-  renderProfileFaithSummary();
+  var mi=document.getElementById('mInfo'); if(mi) mi.innerHTML=h;
+  renderFaithPrefCard();
   loadStats();
-  renderReferralCard();
+  if(typeof renderReferralCard==='function') renderReferralCard();
 }
 
-function renderProfileFaithSummary() {
-  var h = '<div style="margin-bottom:10px;"><p style="font-size:9px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">🔍 Browsing from</p><div style="display:flex;flex-wrap:wrap;gap:4px;">';
-  fpBrowse.forEach(function(k){ var f=faithByKey(k); h+='<span class="faith-pill" style="background:'+f.bg+';border-color:'+f.color+';color:'+f.color+';">'+f.icon+' '+k+'</span>'; });
-  h += '</div></div><div><p style="font-size:9px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">💌 Receiving from</p><div style="display:flex;flex-wrap:wrap;gap:4px;">';
-  fpReceive.forEach(function(k){ var f=faithByKey(k); h+='<span class="faith-pill" style="background:'+f.bg+';border-color:'+f.color+';color:'+f.color+';">'+f.icon+' '+k+'</span>'; });
-  h += '</div></div>';
-  var el = document.getElementById('profileFaithSummary'); if (el) el.innerHTML = h;
+// ═══════════════════════════════════════════ FAITH PREF CARD (profile tab)
+function renderFaithPrefCard(){
+  var el=document.getElementById('profileFaithSummary'); if(!el) return;
+  el.innerHTML=
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'+
+      '<div>'+
+        '<p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Faith Preferences</p>'+
+        '<p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Who you see &amp; who can reach you</p>'+
+      '</div>'+
+      '<button onclick="openFaithPrefs()" style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">Edit ✦</button>'+
+    '</div>'+
+    '<div style="margin-bottom:10px;">'+
+      '<p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browsing profiles from</p>'+
+      '<div id="fpBrowsePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div>'+
+    '</div>'+
+    '<div>'+
+      '<p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receiving interest from</p>'+
+      '<div id="fpReceivePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div>'+
+    '</div>';
+  renderFpPills('fpBrowsePills',fpBrowse);
+  renderFpPills('fpReceivePills',fpReceive);
 }
 
-// ═══════════════════════════════════════════ EDIT PROFILE
-function openEdit() {
-  document.getElementById('eBio').value = P.bio||'';
-  document.getElementById('eEdu').value = P.education||'';
-  document.getElementById('eOcc').value = P.occupation||'';
-  document.getElementById('ePh').value  = P.phone||'';
-  editPhotos = [null,null,null,null,null];
-  var g    = document.getElementById('epGrid'); g.innerHTML = '';
-  var urls = [P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url];
-  for (var i = 0; i < 5; i++) {
-    var has = urls[i] && urls[i].length > 0;
-    g.innerHTML += '<div class="photo-slot" id="eps'+i+'" onclick="document.getElementById(\'epi'+i+'\').click()" style="'+(has?'background-image:url('+urls[i]+');border-color:var(--gold);border-style:solid':'')+'">'+
+function renderFpPills(containerId,arr){
+  var el=document.getElementById(containerId); if(!el) return;
+  if(arr.length===FAITHS.length){el.innerHTML='<span style="font-size:12px;color:var(--w50);font-style:italic;">All faiths</span>';return;}
+  if(arr.length===0){el.innerHTML='<span style="font-size:12px;color:#ff6b6b;font-style:italic;">None selected</span>';return;}
+  el.innerHTML=arr.map(function(k){
+    var f=faithByKey(k);
+    return '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+f.color+';background:'+f.bg+';color:'+f.color+';">'+f.icon+' '+k+'</span>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════ FAITH PREFS MODAL — styled multi-select
+function openFaithPrefs(){
+  if(P){
+    var f=faithByKey(P.religion||'Other');
+    var a=document.getElementById('fpMyFaithIcon');  if(a) a.textContent=f.icon;
+    var b=document.getElementById('fpMyFaithName');  if(b) b.textContent=P.religion||'Not set';
+    var c=document.getElementById('fpMyFaithDenom'); if(c) c.textContent=P.denomination||'';
+  }
+  buildFaithDropdown('fpBrowseDropdown', fpBrowse);
+  buildFaithDropdown('fpReceiveDropdown',fpReceive);
+  document.getElementById('faithModal').classList.add('show');
+}
+function closeFaithPrefs(){document.getElementById('faithModal').classList.remove('show');}
+
+// Build a styled custom multi-select for faiths
+function buildFaithDropdown(containerId, selectedArr){
+  var el=document.getElementById(containerId); if(!el) return;
+  el.innerHTML='';
+  FAITHS.forEach(function(f){
+    var on=selectedArr.indexOf(f.key)>-1;
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.05);'+
+      (on?'background:rgba(255,255,255,.06);':'background:transparent;');
+    row.innerHTML=
+      '<span style="font-size:20px;flex-shrink:0;">'+f.icon+'</span>'+
+      '<span style="flex:1;font-size:13px;font-weight:600;color:'+(on?'#fff':'rgba(255,255,255,.5)')+';">'+f.key+'</span>'+
+      '<span style="width:20px;height:20px;border-radius:6px;border:2px solid '+(on?f.color:'rgba(255,255,255,.2)')+';background:'+(on?f.color:'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff;">'+(on?'✓':'')+'</span>';
+    row.onclick=function(){
+      var ix=selectedArr.indexOf(f.key);
+      if(ix>-1) selectedArr.splice(ix,1); else selectedArr.push(f.key);
+      buildFaithDropdown(containerId,selectedArr);
+    };
+    el.appendChild(row);
+  });
+}
+
+function fpSetAll(type,sel){
+  if(type==='browse'){
+    fpBrowse=sel?FAITHS.map(function(f){return f.key;}):[]; buildFaithDropdown('fpBrowseDropdown',fpBrowse);
+  }else{
+    fpReceive=sel?FAITHS.map(function(f){return f.key;}):[]; buildFaithDropdown('fpReceiveDropdown',fpReceive);
+  }
+}
+
+async function saveFaithPrefs(){
+  var btn=document.getElementById('fpSaveBtn');
+  if(btn){btn.disabled=true;btn.textContent='Saving…';}
+  try{
+    await sb.from('profiles').update({
+      faith_browse:JSON.stringify(fpBrowse),
+      faith_receive:JSON.stringify(fpReceive)
+    }).eq('id',U.id);
+    P.faith_browse=JSON.stringify(fpBrowse);
+    P.faith_receive=JSON.stringify(fpReceive);
+  }catch(x){alert('Could not save. Please try again.');}
+  if(btn){btn.disabled=false;btn.textContent='Save Preferences ✦';}
+  closeFaithPrefs();
+  renderFaithPrefCard();
+}
+
+// ═══════════════════════════════════════════ EDIT PROFILE (includes bio)
+function openEdit(){
+  document.getElementById('eBio').value=P.bio||'';
+  document.getElementById('eEdu').value=P.education||'';
+  document.getElementById('eOcc').value=P.occupation||'';
+  document.getElementById('ePh').value=P.phone||'';
+  editPhotos=[null,null,null,null,null];
+  var g=document.getElementById('epGrid'); g.innerHTML='';
+  var urls=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url];
+  for(var i=0;i<5;i++){
+    var has=urls[i]&&urls[i].length>0;
+    g.innerHTML+='<div class="photo-slot" id="eps'+i+'" onclick="document.getElementById(\'epi'+i+'\').click()" style="'+(has?'background-image:url('+urls[i]+');border-color:var(--gold);border-style:solid':'')+'">'+
       '<span style="font-size:13px;opacity:.4">📷</span>'+
       '<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/></div>';
   }
   document.getElementById('editModal').classList.add('show');
 }
-function closeEdit() { document.getElementById('editModal').classList.remove('show'); }
+function closeEdit(){document.getElementById('editModal').classList.remove('show');}
 
-function pickEP(i, inp) {
-  var f = inp.files[0]; if (!f) return;
-  editPhotos[i] = f;
-  var s = document.getElementById('eps'+i);
-  s.style.backgroundImage = 'url('+URL.createObjectURL(f)+')';
-  s.style.borderColor = 'var(--gold)'; s.style.borderStyle = 'solid';
-  s.innerHTML = '<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/>';
+function pickEP(i,inp){
+  var f=inp.files[0]; if(!f) return;
+  editPhotos[i]=f;
+  var s=document.getElementById('eps'+i);
+  s.style.backgroundImage='url('+URL.createObjectURL(f)+')';
+  s.style.borderColor='var(--gold)'; s.style.borderStyle='solid';
+  s.innerHTML='<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/>';
 }
 
-async function saveEdit() {
-  var upd = {
+async function saveEdit(){
+  var upd={
     bio:document.getElementById('eBio').value.trim(),
     education:document.getElementById('eEdu').value.trim(),
     occupation:document.getElementById('eOcc').value.trim(),
     phone:document.getElementById('ePh').value.trim()
   };
-  for (var i = 0; i < 5; i++) {
-    if (editPhotos[i]) {
-      var ext  = editPhotos[i].name.split('.').pop();
-      var path = U.id+'/p'+i+'_'+Date.now()+'.'+ext;
-      var r    = await sb.storage.from('profile-photos').upload(path, editPhotos[i], {upsert:true});
-      if (!r.error) {
-        var url = sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
-        if (i === 0) upd.photo_url = url; else upd['photo_'+(i+1)+'_url'] = url;
+  for(var i=0;i<5;i++){
+    if(editPhotos[i]){
+      var ext=editPhotos[i].name.split('.').pop();
+      var path=U.id+'/p'+i+'_'+Date.now()+'.'+ext;
+      var r=await sb.storage.from('profile-photos').upload(path,editPhotos[i],{upsert:true});
+      if(!r.error){
+        var url=sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
+        if(i===0) upd.photo_url=url; else upd['photo_'+(i+1)+'_url']=url;
       }
     }
   }
-  await sb.from('profiles').update(upd).eq('id', U.id);
-  var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
-  P = r2.data[0]; closeEdit(); renP();
+  await sb.from('profiles').update(upd).eq('id',U.id);
+  var r2=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
+  P=r2.data[0]; closeEdit(); renP();
   alert('Profile updated! ✅');
 }
 
-// ═══════════════════════════════════════════ FAITH PREFS MODAL
-function openFaithPrefs() {
-  document.getElementById('faithModal').classList.add('show');
-  if (P) {
-    var f = faithByKey(P.religion||'Other');
-    var a = document.getElementById('fpMyFaithIcon');  if (a) a.textContent = f.icon;
-    var b = document.getElementById('fpMyFaithName');  if (b) b.textContent = P.religion||'Not set';
-    var c = document.getElementById('fpMyFaithDenom'); if (c) c.textContent = P.denomination||'';
-  }
-  renderFpCards('fpBrowseCards',  fpBrowse);
-  renderFpCards('fpReceiveCards', fpReceive);
-}
-function closeFaithPrefs() { document.getElementById('faithModal').classList.remove('show'); }
-
-function renderFpCards(cid, arr) {
-  var FP = [
-    {k:'Christian',i:'✝️',c:'#9B59B6'},{k:'Hindu',i:'🕉️',c:'#E07020'},
-    {k:'Muslim',i:'☪️',c:'#2E8B57'},{k:'Sikh',i:'☬',c:'#C8960C'},
-    {k:'Jain',i:'🕊️',c:'#4A90D9'},{k:'Buddhist',i:'☸️',c:'#D4700A'},
-    {k:'Parsi',i:'🔥',c:'#C0392B'},{k:'Jewish',i:'✡️',c:'#2980B9'},
-    {k:'Bahai',i:'⭐',c:'#8E44AD'},{k:'Spiritual',i:'🌱',c:'#27AE60'},
-    {k:'Other',i:'🌐',c:'#888'}
-  ];
-  var el = document.getElementById(cid); if (!el) return; el.innerHTML = '';
-  FP.forEach(function(f){
-    var on = arr.indexOf(f.k) > -1;
-    var d  = document.createElement('div');
-    d.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:all .15s;margin-bottom:0;border:1.5px solid '+(on?f.c:'rgba(255,255,255,.1)')+';background:'+(on?'rgba(255,255,255,.08)':'rgba(255,255,255,.02)')+';';
-    d.innerHTML = '<span style="font-size:19px">'+f.i+'</span><span style="font-size:12px;font-weight:700;color:'+(on?'#fff':'rgba(255,255,255,.4)')+'">'+f.k+'</span><span style="margin-left:auto;color:'+f.c+';font-size:15px">'+(on?'✓':'')+'</span>';
-    d.onclick = function(){ var ix=arr.indexOf(f.k); if(ix>-1)arr.splice(ix,1); else arr.push(f.k); renderFpCards(cid,arr); };
-    el.appendChild(d);
-  });
-}
-
-function fpToggleAll(type, sel) {
-  var K = ['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Bahai','Spiritual','Other'];
-  if (type === 'browse')  { fpBrowse  = sel ? K.slice() : []; renderFpCards('fpBrowseCards',  fpBrowse);  }
-  else                    { fpReceive = sel ? K.slice() : []; renderFpCards('fpReceiveCards', fpReceive); }
-}
-
-async function saveFaithPrefs() {
-  try {
-    await sb.from('profiles').update({
-      faith_browse:JSON.stringify(fpBrowse),
-      faith_receive:JSON.stringify(fpReceive)
-    }).eq('id', U.id);
-  } catch(x) {}
-  closeFaithPrefs();
-  renderProfileFaithSummary();
-}
-
 // ═══════════════════════════════════════════ PROFILE VIEW MODAL
-async function viewProfile(id) {
-  try { await sb.from('profile_views').upsert({viewer_id:U.id, viewed_id:id, viewed_at:new Date().toISOString()},{onConflict:'viewer_id,viewed_id'}); } catch(x){}
-  var r = await sb.from('profiles').select('*').eq('id', id).limit(1);
-  if (!r.data || !r.data.length) return;
-  var p  = r.data[0];
-  var f  = faithByKey(p.religion||'Other');
-  var ap = [p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean);
-  var h  = '<div style="text-align:center;padding-top:8px">';
-  if (ap.length) h += '<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">' +
-    ap.map(function(u){ return '<div style="width:70px;height:70px;border-radius:12px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+';"></div>'; }).join('') + '</div>';
-  h += '<h2 style="font-family:Cinzel,serif;font-size:20px;color:#fff;">'+p.full_name+', '+p.age+'</h2>';
-  h += '<p style="margin-top:4px;"><span style="color:'+f.color+'">'+f.icon+' '+p.religion+'</span>'+(p.denomination?' <span style="color:var(--w50);font-size:12px">· '+p.denomination+'</span>':'')+'</p>';
-  h += '<p style="color:var(--w50);font-size:12px;margin-top:3px;">'+p.city+', '+p.state+'</p></div>';
-  h += '<div style="background:var(--w05);border-radius:12px;padding:13px;margin-top:14px;">';
+async function viewProfile(id){
+  try{await sb.from('profile_views').upsert({viewer_id:U.id,viewed_id:id,viewed_at:new Date().toISOString()},{onConflict:'viewer_id,viewed_id'});}catch(x){}
+  var r=await sb.from('profiles').select('*').eq('id',id).limit(1);
+  if(!r.data||!r.data.length) return;
+  var p=r.data[0]; var f=faithByKey(p.religion||'Other');
+  var ap=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean);
+  var h='<div style="text-align:center;padding-top:8px">';
+  if(ap.length) h+='<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">'+
+    ap.map(function(u){return '<div style="width:70px;height:70px;border-radius:12px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>';}).join('')+'</div>';
+  h+='<h2 style="font-family:Cinzel,serif;font-size:20px;color:#fff;">'+p.full_name+', '+p.age+'</h2>';
+  h+='<p style="margin-top:4px;"><span style="color:'+f.color+'">'+f.icon+' '+p.religion+'</span>'+(p.denomination?' <span style="color:var(--w50);font-size:12px">· '+p.denomination+'</span>':'')+'</p>';
+  h+='<p style="color:var(--w50);font-size:12px;margin-top:3px;">'+p.city+', '+p.state+'</p></div>';
+  h+='<div style="background:var(--w05);border-radius:12px;padding:13px;margin-top:14px;">';
   [{l:'Bio',v:p.bio},{l:'Education',v:p.education},{l:'Occupation',v:p.occupation},
    {l:'Mother Tongue',v:p.mother_tongue},{l:'Marital Status',v:p.marital_status},
    {l:'Height',v:p.height_cm?p.height_cm+' cm':''}].forEach(function(dd){
-    if (dd.v) h += '<div style="margin-bottom:9px;"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">'+dd.l+'</p><p style="font-size:13px;margin-top:2px;color:var(--w80);">'+dd.v+'</p></div>';
+    if(dd.v) h+='<div style="margin-bottom:9px;"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">'+dd.l+'</p><p style="font-size:13px;margin-top:2px;color:var(--w80);">'+dd.v+'</p></div>';
   });
-  h += '</div><p style="text-align:center;padding:14px;font-size:13px;color:var(--w40);">🔒 Interest &amp; messaging unlocks launch day</p>';
-  document.getElementById('pmC').innerHTML = h;
+  h+='</div><p style="text-align:center;padding:14px;font-size:13px;color:var(--w40);">🔒 Interest &amp; messaging unlocks launch day</p>';
+  document.getElementById('pmC').innerHTML=h;
   document.getElementById('profileModal').classList.add('show');
 }
-function closeModal() { document.getElementById('profileModal').classList.remove('show'); }
-
-// ═══════════════════════════════════════════ VIEWS TAB
-async function ldViews() {
-  var r = await sb.from('profile_views').select('*,profiles!profile_views_viewer_id_fkey(*)').eq('viewed_id', U.id).order('viewed_at',{ascending:false});
-  var d = r.data || [];
-  var vEmpty = document.getElementById('viewEmpty'); if (vEmpty) vEmpty.style.display = d.length ? 'none' : '';
-  var l = document.getElementById('viewList'); if (!l) return; l.innerHTML = '';
-  d.forEach(function(v){
-    var p = v.profiles; if (!p) return;
-    var f = faithByKey(p.religion||'Other');
-    l.innerHTML += '<div class="card" style="cursor:pointer" onclick="viewProfile(\''+p.id+'\')"><div style="display:flex;gap:10px;align-items:center">'+
-      '<div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+';">'+(p.photo_url?'':'<span style="font-size:18px;opacity:.3">👤</span>')+'</div>'+
-      '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600;color:#fff;">'+p.full_name+', '+p.age+'</h3>'+
-      '<p style="font-size:11px;color:'+f.color+';">'+f.icon+' '+(p.denomination||p.religion||'')+'</p></div>'+
-      '<p style="font-size:10px;color:var(--w50);">'+new Date(v.viewed_at).toLocaleDateString()+'</p>'+
-      '</div></div>';
-  });
-}
-
-// Locked feature stubs
-async function ldBrowse()    { var l=document.getElementById('bList'); if(l)l.innerHTML='<div style="text-align:center;padding:30px 16px;"><p style="font-size:13px;color:var(--w40);">🔒 Discover unlocks on launch day</p></div>'; }
-async function ldInt(type)   {}
-function showInt(t)          { ldInt(t); }
-async function actInt(id,st) { await sb.from('interests').update({status:st}).eq('id',id); ldInt('received'); }
-async function ldChats()     {}
-async function openChat(pid) {}
-async function ldMsgs()      {}
-async function sendMsg()     {}
+function closeModal(){document.getElementById('profileModal').classList.remove('show');}
 
 // ═══════════════════════════════════════════ REJECTED SCREEN
-function renderRejectedScreen(profile) {
-  var reason = profile.rejection_reason || 'Your profile did not meet our verification requirements.';
-  var el = document.getElementById('rejectedContent');
-  if (!el) return;
-  el.innerHTML =
+function renderRejectedScreen(profile){
+  var reason=profile.rejection_reason||'Your profile did not meet our verification requirements.';
+  var el=document.getElementById('rejectedContent'); if(!el) return;
+  el.innerHTML=
     '<div style="font-size:48px;margin-bottom:16px;">😔</div>'+
     '<h2 style="font-family:\'Cinzel\',serif;font-size:22px;color:#ff6b6b;margin-bottom:12px;">Profile Not Approved</h2>'+
     '<div style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left;">'+
@@ -521,80 +422,47 @@ function renderRejectedScreen(profile) {
       '<p style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;">'+reason+'</p>'+
     '</div>'+
     '<div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:14px;padding:16px;margin-bottom:24px;text-align:left;">'+
-      '<p style="font-size:12px;font-weight:700;color:var(--gold2);margin-bottom:8px;">✦ What you can do</p>'+
-      '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.8;">'+
-        '✓ Fix the issue mentioned above<br/>'+
-        '✓ Re-upload a clear government ID<br/>'+
-        '✓ Ensure your profile photo shows your face clearly<br/>'+
-        '✓ Then resubmit — our team reviews within 24 hrs'+
+      '<p style="font-size:12px;font-weight:700;color:var(--gold2);margin-bottom:8px;">✦ What to do next</p>'+
+      '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.9;">'+
+        '✓ Fix the issue mentioned above<br/>✓ Re-upload a clear government ID<br/>'+
+        '✓ Ensure your photo clearly shows your face<br/>✓ Resubmit — reviewed within 24 hrs'+
       '</p>'+
     '</div>'+
     '<button class="btn btn-gold" style="margin-bottom:12px;" onclick="startResubmit()">✦ Fix &amp; Resubmit Profile</button>'+
     '<button class="btn btn-dark" style="font-size:12px;opacity:.6;" onclick="doSignOut()">Sign Out</button>'+
-    '<p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:16px;">Need help? <a href="mailto:info@beginforever.in" style="color:var(--gold);text-decoration:none;">info@beginforever.in</a> · +91 97000 25345</p>';
+    '<p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:16px;">Need help? <a href="mailto:info@beginforever.in" style="color:var(--gold);text-decoration:none;">info@beginforever.in</a></p>';
 }
 
-async function startResubmit() {
-  if (!confirm('This will let you edit and resubmit your profile for review. Continue?')) return;
-
-  // Reset status to allow resubmission — keep all existing data
-  try {
-    await sb.from('profiles').update({
-      status: 'resubmitting',
-      rejection_reason: null
-    }).eq('id', U.id);
-  } catch(x) {
-    alert('Error: ' + (x.message || 'Could not start resubmission. Please try again.')); return;
-  }
-
-  // Reload profile into memory
-  var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
-  P = r.data && r.data[0] ? r.data[0] : P;
-
-  // Pre-fill the setup wizard with existing data
+async function startResubmit(){
+  if(!confirm('This will let you edit and resubmit your profile. Continue?')) return;
+  try{await sb.from('profiles').update({status:'resubmitting',rejection_reason:null}).eq('id',U.id);}
+  catch(x){alert('Error. Please try again.');return;}
+  var r=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
+  P=r.data&&r.data[0]?r.data[0]:P;
   prefillSetupWizard(P);
-
-  // Go to setup screen at step 1
-  showScr('setupScreen');
-  step = 1;
-  updUI();
+  showScr('setupScreen'); step=1; updUI();
 }
 
-function prefillSetupWizard(p) {
-  // Step 1
-  var fn = document.getElementById('fName');    if (fn) fn.value = p.full_name || '';
-  var fa = document.getElementById('fAge');     if (fa) fa.value = p.age || '';
-  var fg = document.getElementById('fGender');  if (fg) fg.value = p.gender || '';
-  var fr = document.getElementById('fReligion');
-  if (fr) {
-    fr.value = p.religion || '';
-    toggleDenom();
-    var fd = document.getElementById('fDenom'); if (fd && p.denomination) fd.value = p.denomination;
-  }
-  var fst = document.getElementById('fState');
-  if (fst) {
-    fst.value = p.state || '';
-    fillC();
-    var fc = document.getElementById('fCity'); if (fc && p.city) fc.value = p.city;
-  }
-  var fph = document.getElementById('fPhone'); if (fph) fph.value = p.phone || '';
-  var frf = document.getElementById('fRegFor'); if (frf) frf.value = p.registered_by || 'Myself';
-
-  // Step 2
-  var fb  = document.getElementById('fBio');  if (fb)  fb.value  = p.bio || '';
-  var fe  = document.getElementById('fEdu');  if (fe)  fe.value  = p.education || '';
-  var fo  = document.getElementById('fOcc');  if (fo)  fo.value  = p.occupation || '';
-  var fht = document.getElementById('fHt');   if (fht) fht.value = p.height_cm || '';
-  var fmt = document.getElementById('fMT');   if (fmt) fmt.value = p.mother_tongue || '';
-  var fms = document.getElementById('fMS');   if (fms) fms.value = p.marital_status || 'Never Married';
-
-  // Step 5
-  var fpmin = document.getElementById('fPMin'); if (fpmin) fpmin.value = p.pref_age_min || 18;
-  var fpmax = document.getElementById('fPMax'); if (fpmax) fpmax.value = p.pref_age_max || 70;
-  var fpd   = document.getElementById('fPD');   if (fpd)   fpd.value   = p.pref_denomination || 'Any';
-  var fpc   = document.getElementById('fPC');   if (fpc)   fpc.value   = p.pref_city || '';
-
-  // Reset photos/id (must re-upload for resubmission — that's the point)
-  photos = [null,null,null,null,null];
-  idFile = null;
+function prefillSetupWizard(p){
+  setTimeout(function(){
+    var fn=document.getElementById('fName');    if(fn) fn.value=p.full_name||'';
+    var fa=document.getElementById('fAge');     if(fa) fa.value=p.age||'';
+    var fg=document.getElementById('fGender');  if(fg) fg.value=p.gender||'';
+    var fr=document.getElementById('fReligion');
+    if(fr){fr.value=p.religion||'';toggleDenom();setTimeout(function(){var fd=document.getElementById('fDenom');if(fd&&p.denomination)fd.value=p.denomination;},60);}
+    var fst=document.getElementById('fState');
+    if(fst){fst.value=p.state||'';fillC();setTimeout(function(){var fc=document.getElementById('fCity');if(fc&&p.city)fc.value=p.city;},60);}
+    var fph=document.getElementById('fPhone'); if(fph) fph.value=p.phone||'';
+    var frf=document.getElementById('fRegFor');if(frf&&p.registered_by) frf.value=p.registered_by;
+    var fe=document.getElementById('fEdu');   if(fe)  fe.value=p.education||'';
+    var fo=document.getElementById('fOcc');   if(fo)  fo.value=p.occupation||'';
+    var fht=document.getElementById('fHt');   if(fht) fht.value=p.height_cm||'';
+    var fmt=document.getElementById('fMT');   if(fmt) fmt.value=p.mother_tongue||'';
+    var fms=document.getElementById('fMS');   if(fms) fms.value=p.marital_status||'Never Married';
+    var fpmin=document.getElementById('fPMin');if(fpmin) fpmin.value=p.pref_age_min||18;
+    var fpmax=document.getElementById('fPMax');if(fpmax) fpmax.value=p.pref_age_max||70;
+    var fpd=document.getElementById('fPD');   if(fpd&&p.pref_denomination) fpd.value=p.pref_denomination;
+    var fpc=document.getElementById('fPC');   if(fpc) fpc.value=p.pref_city||'';
+    photos=[null,null,null,null,null]; idFile=null;
+  },100);
 }
