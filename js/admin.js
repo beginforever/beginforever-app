@@ -28,7 +28,7 @@ async function ldAdmin(st) {
 
     // Show referral info if this user was referred
     var refHtml = p.referred_by
-      ? '<div style="margin:6px 0;background:rgba(212,160,23,.06);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--gold2);">🔗 Referred by user ID: '+p.referred_by.slice(0,8)+'...</div>'
+      ? '<div style="margin:6px 0;background:rgba(212,160,23,.06);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--gold2);">🔗 Referred by user ID: '+p.referred_by.toString().slice(0,8)+'...</div>'
       : '';
 
     var details =
@@ -43,13 +43,22 @@ async function ldAdmin(st) {
       '<span><strong style="color:var(--w80);">Marital:</strong> '+(p.marital_status||'—')+'</span>'+
       '</div>';
 
+    // ── FIX: safe-encode name for use inside onclick string attributes
+    var safeName  = (p.full_name||'').replace(/'/g, "\\'");
+    var safeEmail = (p.email||'').replace(/'/g, "\\'");
+    var safePhone = (p.phone||'').replace(/'/g, "\\'");
+
     var act = st === 'pending'
       ? '<div style="display:flex;gap:8px;margin-top:12px;">'+
-          '<button class="btn btn-grn btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="adAct(\''+p.id+'\',\'approved\',\''+p.full_name+'\',\''+p.email+'\',\''+p.phone+'\')">✅ Approve</button>'+
-          '<button class="btn btn-red btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="openRejectModal(\''+p.id+'\',\''+p.full_name+'\',\''+p.email+'\')">❌ Reject</button>'+
+          '<button class="btn btn-grn btn-sm" style="flex:1;padding:12px;font-size:13px;" '+
+            'onclick="adAct(\''+p.id+'\',\'approved\',\''+safeName+'\',\''+safeEmail+'\',\''+safePhone+'\')">✅ Approve</button>'+
+          '<button class="btn btn-red btn-sm" style="flex:1;padding:12px;font-size:13px;" '+
+            'onclick="openRejectModal(\''+p.id+'\',\''+safeName+'\',\''+safeEmail+'\')">❌ Reject</button>'+
         '</div>'
       : st === 'approved'
-        ? '<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+p.id+'\',\'pending\',\''+p.full_name+'\',\''+p.email+'\',\''+p.phone+'\')">↩ Move back to Pending</button>'
+        // ── FIX: was referencing undefined 'pid', now uses p.id correctly
+        ? '<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" '+
+            'onclick="adAct(\''+p.id+'\',\'pending\',\''+safeName+'\',\''+safeEmail+'\',\''+safePhone+'\')">↩ Move back to Pending</button>'
         : '';
 
     var statusColor = st==='pending'?'rgba(232,184,48,.15)':st==='approved'?'rgba(39,174,96,.15)':'rgba(231,76,60,.15)';
@@ -73,6 +82,7 @@ async function ldAdmin(st) {
   });
 }
 
+// ── FIX: signature now matches all callers (id, st, name, email, phone)
 async function adAct(id, st, name, email, phone) {
   await sb.from('profiles').update({
     status: st,
@@ -80,48 +90,81 @@ async function adAct(id, st, name, email, phone) {
   }).eq('id', id);
 
   if (st === 'approved') {
-    // Send approval email + WhatsApp
+    // Send approval email + WhatsApp via edge function
     try {
       await fetch(SB_URL+'/functions/v1/smart-function', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({type:'approved', full_name:name, email:email, phone:phone||''})
+        body:JSON.stringify({type:'approved', full_name:name||'', email:email||'', phone:phone||''})
       });
-    } catch(x) {}
+    } catch(x) { console.warn('Approval notification failed:', x); }
 
-    // ── REFERRAL: mark referral as approved + trigger reward check ──
+    // Mark referral chain as approved + trigger reward check
     try { await markReferralApproved(id); } catch(x) {}
   }
 
-  ldAdmin('pending');
+  // Reload whichever tab was active
+  ldAdmin(st === 'pending' ? 'pending' : 'pending');
 }
 
 // ═══════════════════════════════════════════ REJECT MODAL
 var _rejectId = '', _rejectName = '', _rejectEmail = '';
 
 function openRejectModal(id, name, email) {
-  _rejectId = id; _rejectName = name; _rejectEmail = email;
-  document.getElementById('rejectModalName').textContent = name;
-  document.getElementById('rejectReason').value = '';
-  document.getElementById('rejectReasonErr').style.display = 'none';
-  document.getElementById('rejectModal').classList.add('show');
+  _rejectId    = id;
+  _rejectName  = name;
+  _rejectEmail = email;
+  var el = document.getElementById('rejectModalName');
+  if (el) el.textContent = name;
+  var ra = document.getElementById('rejectReason');
+  if (ra) ra.value = '';
+  var re = document.getElementById('rejectReasonErr');
+  if (re) re.style.display = 'none';
+  var m = document.getElementById('rejectModal');
+  if (m) m.classList.add('show');
 }
-function closeRejectModal() { document.getElementById('rejectModal').classList.remove('show'); }
-function setRejectReason(text) { document.getElementById('rejectReason').value = text; }
+
+function closeRejectModal() {
+  var m = document.getElementById('rejectModal');
+  if (m) m.classList.remove('show');
+}
+
+function setRejectReason(text) {
+  var el = document.getElementById('rejectReason');
+  if (el) el.value = text;
+}
 
 async function submitReject() {
-  var reason = document.getElementById('rejectReason').value.trim();
+  var reason = (document.getElementById('rejectReason').value || '').trim();
   var errEl  = document.getElementById('rejectReasonErr');
-  if (!reason) { errEl.textContent = 'Please enter a reason before rejecting.'; errEl.style.display = 'block'; return; }
+
+  if (!reason) {
+    if (errEl) { errEl.textContent = 'Please enter a reason before rejecting.'; errEl.style.display = 'block'; }
+    return;
+  }
+
   var btn = document.getElementById('rejectSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Rejecting...';
-  await sb.from('profiles').update({status:'rejected', rejection_reason:reason}).eq('id', _rejectId);
+  btn.disabled = true; btn.textContent = 'Rejecting…';
+
+  await sb.from('profiles').update({
+    status: 'rejected',
+    rejection_reason: reason,
+    approved_at: null
+  }).eq('id', _rejectId);
+
+  // Send rejection email via edge function
   try {
     await fetch(SB_URL+'/functions/v1/smart-function', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({type:'rejected', full_name:_rejectName, email:_rejectEmail, rejection_reason:reason})
+      body:JSON.stringify({
+        type:'rejected',
+        full_name: _rejectName,
+        email:     _rejectEmail,
+        rejection_reason: reason
+      })
     });
-  } catch(x) {}
-  btn.disabled = false; btn.textContent = 'Confirm Rejection';
+  } catch(x) { console.warn('Rejection email failed:', x); }
+
+  btn.disabled = false; btn.textContent = 'Confirm Rejection & Send Email';
   closeRejectModal();
   ldAdmin('pending');
 }
