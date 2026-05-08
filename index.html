@@ -472,12 +472,12 @@ select.field option { background: var(--dark2); color: var(--white); }
 </div>
 
 <!-- REJECTED SCREEN -->
-<div id="rejectedScreen" class="screen" style="display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
-  <div style="font-size:48px;margin-bottom:16px;">😔</div>
-  <h2 style="font-family:'Cinzel',serif;font-size:22px;color:var(--red);">Profile Not Approved</h2>
-  <p style="color:var(--white70);margin-top:8px;max-width:340px;line-height:1.6;">Please contact us for more information.</p>
-  <p style="color:var(--white40);margin-top:12px;font-size:13px;">📧 info@beginforever.in</p>
-  <div style="margin-top:24px;width:200px;"><button class="btn btn-dark" onclick="doSignOut()">Sign Out</button></div>
+<!-- REJECTED SCREEN -->
+<div id="rejectedScreen" class="screen" style="display:none;align-items:flex-start;justify-content:center;flex-direction:column;padding:24px;background:var(--dark1);overflow-y:auto;">
+  <div id="rejectedContent" style="max-width:420px;width:100%;margin:0 auto;padding:20px 0 80px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">😔</div>
+    <h2 style="font-family:'Cinzel',serif;font-size:22px;color:#ff6b6b;">Loading...</h2>
+  </div>
 </div>
 
 <!-- MAIN APP -->
