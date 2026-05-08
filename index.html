@@ -372,7 +372,7 @@ select.field option { background: var(--dark2); color: var(--white); }
       </div>
       <!-- Step 2 -->
       <div id="s2" style="display:none;">
-        <div class="field-group"><label class="field-label">Bio / About</label><textarea class="field" id="fBio" placeholder="Tell us about yourself..." style="min-height:100px;resize:vertical;"></textarea></div>
+  
         <div class="field-group"><label class="field-label">Education</label><input class="field" id="fEdu" placeholder="e.g. MBA, B.Tech"/></div>
         <div class="field-group"><label class="field-label">Occupation</label><input class="field" id="fOcc" placeholder="e.g. Software Engineer"/></div>
         <div class="field-row">
@@ -380,6 +380,7 @@ select.field option { background: var(--dark2); color: var(--white); }
           <div class="field-group"><label class="field-label">Mother Tongue</label><input class="field" id="fMT" placeholder="e.g. Tamil"/></div>
         </div>
         <div class="field-group"><label class="field-label">Marital Status</label><select class="field" id="fMS"><option>Never Married</option><option>Divorced</option><option>Widowed</option><option>Annulled</option></select></div>
+      <p style="font-size:11px;color:var(--w40);margin-top:8px;text-align:center;">✍️ You can add a bio after your profile is approved</p>
       </div>
       <!-- Step 3: Photos -->
       <div id="s3" style="display:none;">
@@ -417,40 +418,6 @@ select.field option { background: var(--dark2); color: var(--white); }
         </div>
         <div class="field-group"><label class="field-label">Preferred Denomination</label><select class="field" id="fPD"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Orthodox</option><option>Other</option></select></div>
         <div class="field-group"><label class="field-label">Preferred City</label><input class="field" id="fPC" placeholder="Any"/></div>
-      </div>
-      <!-- Step 6: Faith Prefs -->
-      <div id="s6" style="display:none;">
-        <p style="font-size:12px;color:var(--w60);margin-bottom:16px;line-height:1.6;">Tap to select which faiths you want to see and who can reach you. You can change this anytime.</p>
-
-        <!-- BROWSE -->
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <div>
-              <p style="font-size:13px;font-weight:700;color:var(--gold2);margin:0;">🔍 Faiths I want to browse</p>
-              <p style="font-size:11px;color:var(--w40);margin:3px 0 0;">These profiles appear in your Discover feed</p>
-            </div>
-            <div style="display:flex;gap:5px;">
-              <button onclick="s6All('browse')" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button>
-              <button onclick="s6None('browse')" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">None</button>
-            </div>
-          </div>
-          <div id="s6BrowseCards"></div>
-        </div>
-
-        <!-- RECEIVE -->
-        <div style="margin-bottom:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <div>
-              <p style="font-size:13px;font-weight:700;color:var(--gold2);margin:0;">💌 Who can send me interest</p>
-              <p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Only these faiths can contact you first</p>
-            </div>
-            <div style="display:flex;gap:5px;">
-              <button onclick="s6All('receive')" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button>
-              <button onclick="s6None('receive')" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">None</button>
-            </div>
-          </div>
-          <div id="s6ReceiveCards"></div>
-        </div>
       </div>
 
       <p id="sErr" style="color:var(--red);font-size:12px;text-align:center;margin:12px 0;display:none;"></p>
@@ -906,39 +873,55 @@ select.field option { background: var(--dark2); color: var(--white); }
     <button class="btn btn-gold" style="margin-top:16px;" onclick="saveEdit()">Save Changes</button>
   </div>
 </div>
-
-<!-- FAITH PREFS MODAL -->
 <div class="modal-overlay" id="faithModal" onclick="closeFaithPrefs()">
-  <div class="modal-body" onclick="event.stopPropagation()" style="padding:0;overflow:hidden;border-radius:24px 24px 0 0;">
-    <div style="background:var(--dark2);padding:16px 20px 12px;border-bottom:1px solid var(--w08);position:sticky;top:0;z-index:10;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
+  <div class="modal-content" onclick="event.stopPropagation()" style="padding:0;border-radius:24px 24px 0 0;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
+    <div style="background:var(--dark2);padding:16px 20px 12px;border-bottom:1px solid var(--w08);flex-shrink:0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
         <h3 style="font-family:'Cinzel',serif;color:var(--gold2);font-size:17px;margin:0;">Faith Preferences</h3>
         <button onclick="closeFaithPrefs()" style="background:var(--w10);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
       </div>
+      <p style="font-size:11px;color:var(--w40);margin:0;">Tap a faith to select / deselect</p>
     </div>
-    <div style="padding:16px 20px 30px;overflow-y:auto;max-height:80vh;">
-      <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
-        <span id="fpMyFaithIcon" style="font-size:24px;"></span>
-        <div><p style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 2px;">My Faith</p><p id="fpMyFaithName" style="font-size:14px;font-weight:700;color:#fff;margin:0;"></p><p id="fpMyFaithDenom" style="font-size:11px;color:var(--w50);margin:0;"></p></div>
-      </div>
-      <div style="margin-bottom:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <div><p style="font-size:13px;font-weight:700;color:#fff;margin:0;">🔍 Who I want to discover</p><p style="font-size:11px;color:var(--w40);margin:2px 0 0;">Tap any faith card to toggle</p></div>
-          <div style="display:flex;gap:5px;"><button onclick="fpToggleAll('browse',true)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button><button onclick="fpToggleAll('browse',false)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">None</button></div>
+    <div style="overflow-y:auto;flex:1;padding:16px 20px 24px;">
+      <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+        <span id="fpMyFaithIcon" style="font-size:22px;"></span>
+        <div>
+          <p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 2px;">My Faith</p>
+          <p id="fpMyFaithName" style="font-size:13px;font-weight:700;color:#fff;margin:0;"></p>
+          <p id="fpMyFaithDenom" style="font-size:11px;color:var(--w50);margin:0;"></p>
         </div>
-        <div id="fpBrowseCards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
       </div>
-      <div style="margin-bottom:18px;">
+      <div style="margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <div><p style="font-size:13px;font-weight:700;color:#fff;margin:0;">💌 Who can send me interest</p><p style="font-size:11px;color:var(--w40);margin:2px 0 0;">Only selected faiths can contact you first</p></div>
-          <div style="display:flex;gap:5px;"><button onclick="fpToggleAll('receive',true)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button><button onclick="fpToggleAll('receive',false)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">None</button></div>
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#fff;margin:0;">🔍 I want to browse</p>
+            <p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Show these faiths in Discover</p>
+          </div>
+          <div style="display:flex;gap:5px;">
+            <button onclick="fpSetAll('browse',true)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button>
+            <button onclick="fpSetAll('browse',false)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">None</button>
+          </div>
         </div>
-        <div id="fpReceiveCards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+        <div id="fpBrowseDropdown" style="background:var(--w05);border:1px solid var(--w10);border-radius:14px;overflow:hidden;"></div>
       </div>
-      <button class="btn btn-gold" style="font-family:'Cinzel',serif;font-size:14px;" onclick="saveFaithPrefs()">Save Preferences ✦</button>
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div>
+            <p style="font-size:13px;font-weight:700;color:#fff;margin:0;">💌 Who can send me interest</p>
+            <p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Only these faiths can contact you first</p>
+          </div>
+          <div style="display:flex;gap:5px;">
+            <button onclick="fpSetAll('receive',true)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button>
+            <button onclick="fpSetAll('receive',false)" style="font-size:10px;padding:4px 10px;background:var(--w08);border:1px solid var(--w15);color:var(--w60);border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">None</button>
+          </div>
+        </div>
+        <div id="fpReceiveDropdown" style="background:var(--w05);border:1px solid var(--w10);border-radius:14px;overflow:hidden;"></div>
+      </div>
+      <button id="fpSaveBtn" class="btn btn-gold" style="font-family:'Cinzel',serif;font-size:14px;" onclick="saveFaithPrefs()">Save Preferences ✦</button>
     </div>
   </div>
 </div>
+
 
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
