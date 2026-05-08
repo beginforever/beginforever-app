@@ -10,7 +10,7 @@ async function loadP() {
 
   P = profileData;
 
-  if (!P) { showScr('setupScreen'); updUI(); return; }
+  if (!P) {   var uCheck = await sb.auth.getUser();   var phoneOk = false;   try {     var pv = await sb.from('profiles').select('phone_verified').eq('id', U.id).limit(1);     phoneOk = pv.data && pv.data[0] && pv.data[0].phone_verified;   } catch(x) {}   if (!phoneOk) {     showScr('otpScreen');     document.getElementById('otpPhoneEntry').style.display = '';     document.getElementById('otpCodeEntry').style.display = 'none';     return;   }   showScr('setupScreen'); updUI(); return; }
 
   if (P.status === 'pending') { showScr('pendingScreen'); return; }
 
