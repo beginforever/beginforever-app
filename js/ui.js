@@ -51,10 +51,9 @@ function goTab(t) {
 }
 
 // ═══════════════════════════════════════════ PRE-LAUNCH LOCK
-// Returns true if this tab should be blocked until 20 May
 function isTabLocked(tab) {
-  if (!isPreLaunch()) return false;           // launch passed — unlock everything
-  if (P && P.is_admin) return false;          // admins always see everything
+  if (!isPreLaunch()) return false;
+  if (P && P.is_admin) return false;
   var lockedTabs = ['browse', 'interests', 'chat', 'chatWin', 'views'];
   return lockedTabs.indexOf(tab) > -1;
 }
@@ -64,15 +63,13 @@ function renderPreLaunchBanner(tabName) {
   var days = Math.max(0, Math.floor(diff / 86400000));
   var hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000));
   var mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
-
   var labels = {
-    browse:    { icon:'🔍', title:'Discover opens on 20 May',   sub:'Your profile is verified and ready. The moment we launch, your matches will appear here.' },
-    interests: { icon:'💝', title:'Interests open on 20 May',   sub:'Every interest you receive will appear here at launch. 300+ verified members are waiting.' },
-    chat:      { icon:'💬', title:'Chat opens on 20 May',       sub:'Connections, conversations, beginnings — all of it unlocks in just a few days.' },
+    browse:    { icon:'🔍', title:'Discover opens on 20 May',      sub:'Your profile is verified and ready. The moment we launch, your matches will appear here.' },
+    interests: { icon:'💝', title:'Interests open on 20 May',      sub:'Every interest you receive will appear here at launch. 300+ verified members are waiting.' },
+    chat:      { icon:'💬', title:'Chat opens on 20 May',          sub:'Connections, conversations, beginnings — all of it unlocks in just a few days.' },
     views:     { icon:'👁️', title:'Who Viewed Me opens on 20 May', sub:'Once launch begins, you\'ll be able to see everyone who visited your profile.' },
   };
   var info = labels[tabName] || labels.browse;
-
   return '<div style="padding:20px 16px 90px;">' +
     '<div style="background:linear-gradient(160deg,#1C0530,#130220);border:1px solid rgba(212,160,23,.25);border-radius:18px;padding:24px 20px;position:relative;overflow:hidden;">' +
       '<div style="position:absolute;top:-60px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.1),transparent 70%);pointer-events:none;"></div>' +
@@ -83,7 +80,6 @@ function renderPreLaunchBanner(tabName) {
         '</div>' +
         '<h2 style="font-family:\'Cinzel\',serif;font-size:20px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:10px;">'+info.title+'</h2>' +
         '<p style="font-family:\'Nunito\',sans-serif;font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:18px;">'+info.sub+'</p>' +
-        // Live countdown
         '<div style="display:flex;gap:8px;margin-bottom:18px;">' +
           '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
             '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(days).padStart(2,'0')+'</div>' +
@@ -98,7 +94,6 @@ function renderPreLaunchBanner(tabName) {
             '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Mins</div>' +
           '</div>' +
         '</div>' +
-        // Verified badge
         '<div style="background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
           '<span style="font-size:20px;">✅</span>' +
           '<div>' +
@@ -118,28 +113,21 @@ function renderHome() {
   var logo  = document.getElementById('appLogoImg');
   var hLogo = document.getElementById('homeLogoImg');
   if (logo && hLogo && logo.src) hLogo.src = logo.src;
-
   var wn = document.getElementById('hWelcomeName');
   if (wn && P) wn.textContent = P.full_name ? P.full_name.split(' ')[0] : 'Friend';
-
   var ws = document.getElementById('hWelcomeSub');
   if (ws && P) {
     var f = faithByKey(P.religion || 'Other');
     ws.innerHTML = '<span style="color:'+f.color+'">'+f.icon+' '+(P.denomination||P.religion||'')+'</span> &nbsp;·&nbsp; '+P.city;
   }
-
   var av = document.getElementById('homeAvatarThumb');
   if (av && P && P.photo_url) { av.style.backgroundImage = 'url('+P.photo_url+')'; av.innerHTML = ''; }
-
   var hn = document.getElementById('hName');
   if (hn && P) hn.textContent = P.full_name ? P.full_name.split(' ')[0] : '';
-
   var pb = document.getElementById('pendingBannerHome');
   if (pb) pb.style.display = (P && P.status === 'pending') ? '' : 'none';
-
   var sc = document.getElementById('homeSafetyCard');
   if (sc) sc.style.display = (P && P.gender === 'Female') ? '' : 'none';
-
   loadStats();
 }
 
@@ -160,20 +148,14 @@ async function loadStats() {
 async function ldBrowse() {
   var el = document.getElementById('tBrowse');
   if (!el) return;
-  if (isTabLocked('browse')) {
-    el.innerHTML = renderPreLaunchBanner('browse');
-    return;
-  }
+  if (isTabLocked('browse')) { el.innerHTML = renderPreLaunchBanner('browse'); return; }
   el.innerHTML = '<div style="text-align:center;padding:30px 16px;"><p style="font-size:13px;color:var(--w40);">Browse is live!</p></div>';
 }
 
 async function ldInt(type) {
   var el = document.getElementById('tInterests');
   if (!el) return;
-  if (isTabLocked('interests')) {
-    el.innerHTML = renderPreLaunchBanner('interests');
-    return;
-  }
+  if (isTabLocked('interests')) { el.innerHTML = renderPreLaunchBanner('interests'); return; }
 }
 
 function showInt(t)          { ldInt(t); }
@@ -182,20 +164,13 @@ async function actInt(id,st) { await sb.from('interests').update({status:st}).eq
 async function ldChats() {
   var el = document.getElementById('tChat');
   if (!el) return;
-  if (isTabLocked('chat')) {
-    el.innerHTML = renderPreLaunchBanner('chat');
-    return;
-  }
+  if (isTabLocked('chat')) { el.innerHTML = renderPreLaunchBanner('chat'); return; }
 }
 
 async function ldViews() {
   var el = document.getElementById('tViews');
   if (!el) return;
-  if (isTabLocked('views')) {
-    el.innerHTML = renderPreLaunchBanner('views');
-    return;
-  }
-  // Real views logic (post launch)
+  if (isTabLocked('views')) { el.innerHTML = renderPreLaunchBanner('views'); return; }
   var r = await sb.from('profile_views').select('*,profiles!profile_views_viewer_id_fkey(*)').eq('viewed_id', U.id).order('viewed_at',{ascending:false});
   var d = r.data || [];
   el.innerHTML = '<div class="content-area">' +
@@ -214,9 +189,9 @@ async function ldViews() {
   });
 }
 
-async function openChat(pid)      {}
-async function ldMsgs()           {}
-async function sendMsg()          {}
+async function openChat(pid) {}
+async function ldMsgs()      {}
+async function sendMsg()     {}
 
 // ═══════════════════════════════════════════ FAITH CARDS UI
 function renderFaithCards(containerId, arr) {
@@ -280,36 +255,118 @@ function submitReview() {
   if (txt) txt.value = '';
 }
 
-// ═══════════════════════════════════════════ SUBSCRIPTION
-function isFoundingMember() {
-  if (!P) return false;
-  if (P.is_founding_member) return true;
-  return false;
+// ═══════════════════════════════════════════ SUBSCRIPTION HELPERS
+function planTierFromType(planType) {
+  if (!planType) return 'none';
+  return planType.toLowerCase().indexOf('premium') > -1 ? 'premium' : 'basic';
 }
 
+async function getActiveSub() {
+  if (!U) return null;
+  try {
+    var r = await sb.from('subscriptions').select('*').eq('user_id', U.id).eq('status','active')
+      .gt('expires_at', new Date().toISOString()).order('expires_at',{ascending:false}).limit(1);
+    return (r.data && r.data.length > 0) ? r.data[0] : null;
+  } catch(x) { return null; }
+}
+
+// Founding members get 1 free Premium week from launch day
+function isFoundingWithinFreeWeek() {
+  if (!P || !P.is_founding_member) return false;
+  var launchPlus7 = new Date(LAUNCH.getTime() + 7 * 24 * 60 * 60 * 1000);
+  return new Date() >= LAUNCH && new Date() < launchPlus7;
+}
+
+async function hasPremium() {
+  if (P && P.is_admin) return true;
+  if (isFoundingWithinFreeWeek()) return true;
+  var sub = await getActiveSub();
+  if (!sub) return false;
+  return planTierFromType(sub.plan_type) === 'premium';
+}
+
+async function hasAnySub() {
+  if (P && P.is_admin) return true;
+  if (isFoundingWithinFreeWeek()) return true;
+  var sub = await getActiveSub();
+  return sub !== null;
+}
+
+// Faith prefs = Premium only (pre-launch: always open so users can configure early)
+async function openFaithPrefsGated() {
+  if (isPreLaunch()) { openFaithPrefs(); return; }
+  var ok = await hasPremium();
+  if (ok) { openFaithPrefs(); }
+  else { showSubscribeModal('faith'); }
+}
+
+// Auto-activate founding member free Premium on first post-launch load
+async function maybeActivateFoundingPremium() {
+  if (!P || !P.is_founding_member || isPreLaunch()) return;
+  if (P.founding_premium_activated) return;
+  try {
+    var existing = await sb.from('subscriptions').select('id').eq('user_id', U.id).eq('plan_type','Founding Premium').limit(1);
+    if (existing.data && existing.data.length > 0) return;
+    var launchPlus7 = new Date(LAUNCH.getTime() + 7 * 24 * 60 * 60 * 1000);
+    await sb.from('subscriptions').insert({
+      user_id: U.id, plan_type: 'Founding Premium', plan_tier: 'premium', amount_paid: 0,
+      status: 'active', started_at: LAUNCH.toISOString(), expires_at: launchPlus7.toISOString()
+    });
+    await sb.from('profiles').update({founding_premium_activated: true}).eq('id', U.id);
+    if (P) P.founding_premium_activated = true;
+  } catch(x) { console.warn('Founding premium activation:', x); }
+}
+
+// Keep legacy alias working
+function isFoundingMember() { return P && P.is_founding_member; }
 function checkSubscription(onAllowed) {
-  if (isFoundingMember()) { onAllowed(); return; }
-  sb.from('subscriptions')
-    .select('id')
-    .eq('user_id', U.id)
-    .eq('status', 'active')
-    .gt('expires_at', new Date().toISOString())
-    .limit(1)
-    .then(function(r) {
-      if (r.data && r.data.length > 0) { onAllowed(); }
-      else { showSubscribeModal(); }
-    }).catch(function() { onAllowed(); });
+  hasAnySub().then(function(ok){ if(ok) onAllowed(); else showSubscribeModal(); });
 }
 
-function showSubscribeModal() {
-  var m = document.getElementById('subscribeModal');
-  if (m) m.classList.add('active');
+// ═══════════════════════════════════════════ SUBSCRIBE MODAL
+function showSubscribeModal(feature) {
+  var m = document.getElementById('subscribeModal'); if (!m) return;
+  var msgs = {
+    faith:   'Faith Preferences require a Premium plan — control exactly who you discover and who can reach you.',
+    browse:  'Browsing profiles requires a subscription.',
+    chat:    'Messaging requires a subscription.',
+    default: 'Choose a plan to browse, connect and find your forever.'
+  };
+  var sub = m.querySelector('.subscribe-subtitle');
+  if (sub) sub.textContent = msgs[feature] || msgs.default;
+  m.classList.add('active');
 }
 function closeSubscribeModal() {
-  var m = document.getElementById('subscribeModal');
-  if (m) m.classList.remove('active');
+  var m = document.getElementById('subscribeModal'); if (m) m.classList.remove('active');
 }
 
+// ═══════════════════════════════════════════ RAZORPAY
+function payRzp(plan, amt) {
+  var tier = planTierFromType(plan);
+  var days = plan.indexOf('Quarterly') !== -1 ? 90 : plan.indexOf('Monthly') !== -1 ? 30 : 7;
+  var opts = {
+    key: 'rzp_live_SausbldU6Vqpy0', amount: amt, currency: 'INR',
+    name: 'Begin Forever', description: plan + ' Plan',
+    handler: async function(resp) {
+      try {
+        await sb.from('subscriptions').insert({
+          user_id: U.id, plan_type: plan, plan_tier: tier, amount_paid: amt,
+          razorpay_payment_id: resp.razorpay_payment_id, status: 'active',
+          started_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+        });
+      } catch(x) {}
+      closeSubscribeModal();
+      alert('✦ Welcome to ' + plan + '!\nYour plan is now active.');
+      await loadP();
+    },
+    prefill: {name: P?P.full_name:'', email: P?P.email:'', contact: P?P.phone:''},
+    theme: {color: '#3B0764'}
+  };
+  new Razorpay(opts).open();
+}
+
+// ═══════════════════════════════════════════ PRICING COUNTDOWN
 function updatePricingCountdown() {
   if (!LAUNCH) return;
   var diff = LAUNCH - new Date();
@@ -317,54 +374,30 @@ function updatePricingCountdown() {
     var overlay = document.querySelector('.pricing-teaser-overlay');
     if (overlay) overlay.style.display = 'none';
     var blur = document.querySelector('.pricing-blur');
-    if (blur) { blur.style.filter='none'; blur.style.opacity='1'; blur.style.pointerEvents=''; }
+    if (blur) { blur.style.filter = 'none'; blur.style.opacity = '1'; blur.style.pointerEvents = ''; }
+    var fm = document.getElementById('pricingFounderMsg');
+    if (fm && P && P.is_founding_member && !P.founding_premium_activated) fm.style.display = 'block';
     return;
   }
   var days = Math.max(0, Math.floor(diff / 86400000));
   var hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000));
   var mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
-  var pad = function(n){ return String(Math.max(0,n)).padStart(2,'0'); };
-  var d = document.getElementById('pcDays'); if(d) d.textContent = pad(days);
-  var h = document.getElementById('pcHrs');  if(h) h.textContent = pad(hrs);
-  var m2= document.getElementById('pcMins'); if(m2) m2.textContent = pad(mins);
-  var fm = document.getElementById('pricingFounderMsg');
-  if (fm && P && isFoundingMember()) fm.style.display = 'block';
+  var pad  = function(n) { return String(Math.max(0, n)).padStart(2, '0'); };
+  var d = document.getElementById('pcDays'); if (d) d.textContent = pad(days);
+  var h = document.getElementById('pcHrs');  if (h) h.textContent = pad(hrs);
+  var m = document.getElementById('pcMins'); if (m) m.textContent = pad(mins);
 }
 
-function payRzp(plan, amt) {
-  var days = plan.indexOf('Monthly')!== -1 ? 30 : plan.indexOf('Quarterly')!== -1 ? 90 : 7;
-  var tier = plan.indexOf('Premium') !== -1 ? 'premium' : 'basic';
-  var opts = {
-    key:'rzp_live_SausbldU6Vqpy0', amount:amt, currency:'INR',
-    name:'Begin Forever', description:plan+' Plan',
-    handler:async function(resp){
-      try {
-        await sb.from('subscriptions').insert({
-          user_id:U.id, plan_type:plan, plan_tier:tier,
-          amount_paid:amt, razorpay_payment_id:resp.razorpay_payment_id,
-          status:'active',
-          expires_at:new Date(Date.now()+days*24*60*60*1000).toISOString()
-        });
-      } catch(x){}
-      closeSubscribeModal();
-      alert('✦ Welcome to '+plan+'!\nYour plan is now active.');
-      await loadP();
-    },
-    prefill:{name:P?P.full_name:'', email:P?P.email:'', contact:P?P.phone:''},
-    theme:{color:'#3B0764'}
-  };
-  new Razorpay(opts).open();
-}
-
+// ═══════════════════════════════════════════ HAMBURGER MENU
 var _menuOpen = false;
-function toggleMenu(){
+function toggleMenu() {
   _menuOpen = !_menuOpen;
   var d  = document.getElementById('menuDrawer');
   var b1 = document.getElementById('mb1');
   var b2 = document.getElementById('mb2');
   var b3 = document.getElementById('mb3');
-  if(d)  d.style.maxHeight  = _menuOpen ? '600px' : '0';
-  if(b1) b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
-  if(b2) b2.style.opacity   = _menuOpen ? '0' : '1';
-  if(b3) b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
+  if (d)  d.style.maxHeight  = _menuOpen ? '600px' : '0';
+  if (b1) b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
+  if (b2) b2.style.opacity   = _menuOpen ? '0' : '1';
+  if (b3) b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
 }
