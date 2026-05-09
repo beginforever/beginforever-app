@@ -364,7 +364,227 @@ async function saveFaithPrefs() {
 // ═══════════════════════════════════════════ EDIT PROFILE (includes bio)
 
 function closeEdit(){document.getElementById('editModal').classList.remove('show');}
-
+function openEdit() {
+  // Basic
+  document.getElementById('eBio').value  = P.bio          || '';
+  document.getElementById('eEdu').value  = P.education    || '';
+  document.getElementById('eOcc').value  = P.occupation   || '';
+  document.getElementById('ePh').value   = P.phone        || '';
+ 
+  // Faith
+  var eRel = document.getElementById('eReligion');
+  if (eRel) { eRel.value = P.religion || ''; updateEditReligionDenoms(); }
+  setTimeout(function(){
+    var eDen = document.getElementById('eDenom');
+    if (eDen && P.denomination) eDen.value = P.denomination;
+  }, 80);
+  var ec = document.getElementById('eChurch'); if (ec) ec.value = P.home_church || '';
+  var eca = document.getElementById('eChurchAttendance'); if (eca) eca.value = P.church_attendance || '';
+  var efi = document.getElementById('eFaithImportance');  if (efi) efi.value = P.faith_importance || '';
+  var eib = document.getElementById('eIsBaptised');       if (eib) eib.value = P.is_baptised !== undefined && P.is_baptised !== null ? String(P.is_baptised) : '';
+  var esr = document.getElementById('eScripture');        if (esr) esr.value = P.scripture || '';
+ 
+  // Lifestyle
+  var ed = document.getElementById('eDiet');     if (ed) ed.value = P.diet     || '';
+  var ee = document.getElementById('eExercise'); if (ee) ee.value = P.exercise || '';
+  var es = document.getElementById('eSmoking');  if (es) es.value = P.smoking  || '';
+  var edr= document.getElementById('eDrinking'); if (edr) edr.value = P.drinking || '';
+ 
+  // Hobbies
+  _selectedHobbies = [];
+  try { _selectedHobbies = JSON.parse(P.hobbies || '[]'); } catch(x) {}
+  renderHobbyChips('editHobbyChips', _selectedHobbies);
+ 
+  // Looking for
+  var elf = document.getElementById('eLookingFor'); if (elf) elf.value = P.looking_for || '';
+ 
+  // Family
+  var eft  = document.getElementById('eFamilyType');   if (eft)  eft.value  = P.family_type   || '';
+  var efv  = document.getElementById('eFamilyValues'); if (efv)  efv.value  = P.family_values  || '';
+  var efao = document.getElementById('eFatherOcc');    if (efao) efao.value = P.father_occupation || '';
+  var emao = document.getElementById('eMotherOcc');    if (emao) emao.value = P.mother_occupation || '';
+  var esib = document.getElementById('eSiblings');     if (esib) esib.value = P.siblings || '';
+ 
+  // Partner prefs
+  var epamin = document.getElementById('ePrefAgeMin');  if (epamin) epamin.value = P.pref_age_min || '';
+  var epamax = document.getElementById('ePrefAgeMax');  if (epamax) epamax.value = P.pref_age_max || '';
+  var epm    = document.getElementById('ePrefMarital'); if (epm)    epm.value    = P.pref_marital_status || '';
+  var epe    = document.getElementById('ePrefEdu');     if (epe)    epe.value    = P.pref_education || '';
+  var epc    = document.getElementById('ePrefCity');    if (epc)    epc.value    = P.pref_city || '';
+ 
+  // Photos
+  editPhotos = [null,null,null,null,null];
+  var g = document.getElementById('epGrid'); g.innerHTML = '';
+  var urls = [P.photo_url, P.photo_2_url, P.photo_3_url, P.photo_4_url, P.photo_5_url];
+  for (var i = 0; i < 5; i++) {
+    var has = urls[i] && urls[i].length > 0;
+    g.innerHTML += '<div class="photo-slot" id="eps'+i+'" onclick="document.getElementById(\'epi'+i+'\').click()" style="'+(has?'background-image:url('+urls[i]+');border-color:var(--gold);border-style:solid':'')+'">'+
+      '<span style="font-size:13px;opacity:.4">📷</span>'+
+      '<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/></div>';
+  }
+  document.getElementById('editModal').classList.add('show');
+}
+ 
+async function saveEdit() {
+  if (_selectedHobbies.length > 8) {
+    alert('Please select up to 8 hobbies.'); return;
+  }
+  var upd = {
+    bio:         document.getElementById('eBio').value.trim(),
+    education:   document.getElementById('eEdu').value.trim(),
+    occupation:  document.getElementById('eOcc').value.trim(),
+    phone:       document.getElementById('ePh').value.trim(),
+ 
+    // Faith
+    religion:         (document.getElementById('eReligion') || {}).value || P.religion,
+    denomination:     (document.getElementById('eDenom') || {}).value    || null,
+    home_church:      (document.getElementById('eChurch') || {}).value   || null,
+    church_attendance:(document.getElementById('eChurchAttendance') || {}).value || null,
+    faith_importance: (document.getElementById('eFaithImportance') || {}).value  || null,
+    is_baptised:      (document.getElementById('eIsBaptised') || {}).value === 'true' ? true : (document.getElementById('eIsBaptised') || {}).value === 'false' ? false : null,
+    scripture:        (document.getElementById('eScripture') || {}).value || null,
+ 
+    // Lifestyle
+    diet:     (document.getElementById('eDiet')     || {}).value || null,
+    exercise: (document.getElementById('eExercise') || {}).value || null,
+    smoking:  (document.getElementById('eSmoking')  || {}).value || null,
+    drinking: (document.getElementById('eDrinking') || {}).value || null,
+ 
+    // Hobbies
+    hobbies: JSON.stringify(_selectedHobbies),
+ 
+    // Looking for
+    looking_for: (document.getElementById('eLookingFor') || {}).value.trim() || null,
+ 
+    // Family
+    family_type:        (document.getElementById('eFamilyType')   || {}).value || null,
+    family_values:      (document.getElementById('eFamilyValues') || {}).value || null,
+    father_occupation:  (document.getElementById('eFatherOcc')    || {}).value || null,
+    mother_occupation:  (document.getElementById('eMotherOcc')    || {}).value || null,
+    siblings:           (document.getElementById('eSiblings')     || {}).value || null,
+ 
+    // Partner prefs
+    pref_age_min:         parseInt((document.getElementById('ePrefAgeMin')  || {}).value) || null,
+    pref_age_max:         parseInt((document.getElementById('ePrefAgeMax')  || {}).value) || null,
+    pref_marital_status:  (document.getElementById('ePrefMarital') || {}).value || null,
+    pref_education:       (document.getElementById('ePrefEdu')     || {}).value || null,
+    pref_city:            (document.getElementById('ePrefCity')    || {}).value || null,
+  };
+ 
+  // Photos
+  for (var i = 0; i < 5; i++) {
+    if (editPhotos[i]) {
+      var ext  = editPhotos[i].name.split('.').pop();
+      var path = U.id + '/p' + i + '_' + Date.now() + '.' + ext;
+      var r    = await sb.storage.from('profile-photos').upload(path, editPhotos[i], {upsert:true});
+      if (!r.error) {
+        var url = sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
+        if (i === 0) upd.photo_url = url; else upd['photo_' + (i+1) + '_url'] = url;
+      }
+    }
+  }
+ 
+  await sb.from('profiles').update(upd).eq('id', U.id);
+  var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
+  P = r2.data[0];
+  closeEdit();
+  renP();
+  alert('Profile updated! ✅');
+}
+ 
+// ─────────────────────────────────────────────────────────────
+// renP() — Full enriched profile tab render
+// REPLACE the existing renP() in profile.js with this
+// ─────────────────────────────────────────────────────────────
+function renP() {
+  if (!P) return;
+  var f = faithByKey(P.religion || 'Other');
+  var ap = [P.photo_url, P.photo_2_url, P.photo_3_url, P.photo_4_url, P.photo_5_url].filter(Boolean);
+  var ph = ap[0] ? 'background-image:url('+ap[0]+');background-size:cover;background-position:center' : '';
+ 
+  var heroEl = document.getElementById('profileHero');
+  if (heroEl) heroEl.innerHTML =
+    '<div style="width:80px;height:80px;border-radius:50%;margin:0 auto;border:2px solid '+f.color+';'+ph+';background-color:var(--dark3);display:flex;align-items:center;justify-content:center;">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
+    '<h2 style="font-family:Cinzel,serif;font-size:20px;margin-top:10px;color:#fff;">'+P.full_name+'</h2>'+
+    '<p style="color:'+f.color+';font-size:12px;margin-top:3px;">'+f.icon+' '+(P.denomination?P.denomination+' · ':'')+P.religion+'</p>'+
+    '<p style="color:var(--w50);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
+    '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
+    (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'');
+ 
+  // Basic info rows
+  var h = '';
+  [{l:'Email',v:P.email},{l:'Phone',v:P.phone},{l:'Age',v:P.age},
+   {l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
+   {l:'Education',v:P.education},{l:'Occupation',v:P.occupation},
+   {l:'Mother Tongue',v:P.mother_tongue},{l:'Marital Status',v:P.marital_status},
+   {l:'Height',v:P.height_cm?P.height_cm+' cm':''}
+  ].forEach(function(d){
+    if (d.v) h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);">'+
+      '<span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span>'+
+      '<span style="font-size:13px;color:var(--w80);font-weight:600;">'+d.v+'</span></div>';
+  });
+  if (P.bio) h += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--w08);">'+
+    '<p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">About Me</p>'+
+    '<p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
+  var mi = document.getElementById('mInfo'); if (mi) mi.innerHTML = h;
+ 
+  // Hobbies section
+  var hobbies = [];
+  try { hobbies = JSON.parse(P.hobbies || '[]'); } catch(e) {}
+  var hobEl = document.getElementById('profileHobbies');
+  if (hobEl) {
+    if (hobbies.length) {
+      hobEl.style.display = '';
+      var hp = document.getElementById('hobbyPills');
+      if (hp) hp.innerHTML = hobbies.map(function(h2){
+        return '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(212,160,23,.35);background:rgba(212,160,23,.1);color:#F5C842;margin:2px;">'+h2+'</span>';
+      }).join('');
+    } else hobEl.style.display = 'none';
+  }
+ 
+  // Looking for section
+  var lfEl = document.getElementById('profileLookingFor');
+  if (lfEl) {
+    if (P.looking_for) { lfEl.style.display=''; var lft=document.getElementById('lookingForText'); if(lft) lft.textContent=P.looking_for; }
+    else lfEl.style.display='none';
+  }
+ 
+  // Faith & Beliefs
+  var fbEl = document.getElementById('profileFaithBeliefs');
+  if (fbEl) {
+    var frows='';
+    if (P.church_attendance) frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Church</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.church_attendance+'</span></div>';
+    if (P.faith_importance)  frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Faith Importance</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.faith_importance+'</span></div>';
+    if (P.is_baptised!==null && P.is_baptised!==undefined) frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Baptised</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+(P.is_baptised?'Yes ✓':'No')+'</span></div>';
+    if (P.home_church) frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Home Church</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.home_church+'</span></div>';
+    if (P.scripture)   frows+='<div style="margin-top:8px;font-family:\'EB Garamond\',serif;font-style:italic;font-size:13px;color:var(--gold);border-left:3px solid var(--gold);padding-left:10px;">"'+P.scripture+'"</div>';
+    fbEl.style.display = frows ? '' : 'none';
+    var fbc = document.getElementById('faithBeliefsContent'); if (fbc) fbc.innerHTML = frows;
+  }
+ 
+  // Lifestyle
+  var lsEl = document.getElementById('profileLifestyle');
+  if (lsEl) {
+    var lrows='';
+    if (P.diet)     lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Diet</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.diet+'</span></div>';
+    if (P.exercise) lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Exercise</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.exercise+'</span></div>';
+    if (P.smoking)  lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Smoking</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.smoking+'</span></div>';
+    if (P.drinking) lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Drinking</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.drinking+'</span></div>';
+    lsEl.style.display = lrows ? '' : 'none';
+    var lsc = document.getElementById('lifestyleContent'); if (lsc) lsc.innerHTML = lrows;
+  }
+ 
+  // Privacy badge
+  var pvb = document.getElementById('privacyBadge');
+  if (pvb) pvb.textContent =
+    'Photos: ' + (P.photos_visible_to==='all'?'Everyone':P.photos_visible_to==='interests_only'?'Interests only':'Hidden') +
+    ' · Contact: '+(P.contact_visible_to==='premium'?'Premium members':P.contact_visible_to==='interests_only'?'Interests only':'Hidden');
+ 
+  renderFaithPrefCard();
+  loadStats();
+  if (typeof renderReferralCard === 'function') renderReferralCard();
+}
+ 
 function pickEP(i,inp){
   var f=inp.files[0]; if(!f) return;
   editPhotos[i]=f;
