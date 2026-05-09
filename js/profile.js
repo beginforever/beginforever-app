@@ -527,3 +527,140 @@ function prefillSetupWizard(p){
     photos=[null,null,null,null,null]; idFile=null;
   },100);
 }
+// ═══════════════════════════════════════════════════════════════
+// PROFILE ENRICHMENT — paste these functions into js/profile.js
+// ═══════════════════════════════════════════════════════════════
+
+// ── HOBBY / INTEREST CHIPS ────────────────────────────────────
+var ALL_HOBBIES = [
+  'Reading','Travel','Music','Movies','Cooking','Photography',
+  'Fitness','Yoga','Hiking','Cricket','Football','Badminton',
+  'Painting','Dancing','Singing','Gaming','Cycling','Swimming',
+  'Volunteering','Gardening','Crafts','Writing','Meditation',
+  'Fashion','Foodie','Cars','Tech','Startups'
+];
+
+var _selectedHobbies = [];
+
+function renderHobbyChips(containerId, selectedArr) {
+  var c = document.getElementById(containerId); if (!c) return;
+  c.innerHTML = '';
+  ALL_HOBBIES.forEach(function(h) {
+    var on = selectedArr.indexOf(h) > -1;
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.textContent = h;
+    chip.style.cssText =
+      'padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;' +
+      'font-family:Nunito,sans-serif;transition:all .15s;margin:3px;' +
+      'border:1px solid ' + (on ? 'var(--gold)' : 'rgba(255,255,255,.18)') + ';' +
+      'background:' + (on ? 'rgba(212,160,23,.2)' : 'rgba(255,255,255,.05)') + ';' +
+      'color:' + (on ? '#F5C842' : 'rgba(255,255,255,.5)') + ';';
+    chip.onclick = function() {
+      var ix = selectedArr.indexOf(h);
+      if (ix > -1) selectedArr.splice(ix, 1); else selectedArr.push(h);
+      renderHobbyChips(containerId, selectedArr);
+    };
+    c.appendChild(chip);
+  });
+}
+
+// ── RENDER ENRICHED PROFILE CARD ─────────────────────────────
+function renderEnrichedProfile() {
+  // Hobbies
+  var hob = document.getElementById('profileHobbies'); if (!hob) return;
+  var hobbies = [];
+  try { hobbies = JSON.parse(P.hobbies || '[]'); } catch(e) {}
+  if (hobbies.length) {
+    hob.style.display = '';
+    var pills = document.getElementById('hobbyPills');
+    if (pills) pills.innerHTML = hobbies.map(function(h) {
+      return '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(212,160,23,.35);background:rgba(212,160,23,.1);color:#F5C842;margin:2px;">' + h + '</span>';
+    }).join('');
+  } else { hob.style.display = 'none'; }
+
+  // Looking for
+  var lf = document.getElementById('profileLookingFor'); if (lf) {
+    if (P.looking_for) { lf.style.display = ''; document.getElementById('lookingForText').textContent = P.looking_for; }
+    else lf.style.display = 'none';
+  }
+
+  // Faith & Beliefs card
+  var fb = document.getElementById('profileFaithBeliefs'); if (fb) {
+    fb.style.display = '';
+    var rows = '';
+    if (P.church_attendance) rows += '<div class="info-row"><span class="info-label">Church</span><span class="info-value">' + P.church_attendance + '</span></div>';
+    if (P.faith_importance)  rows += '<div class="info-row"><span class="info-label">Faith matters</span><span class="info-value">' + P.faith_importance + '</span></div>';
+    if (P.is_baptised !== null && P.is_baptised !== undefined) rows += '<div class="info-row"><span class="info-label">Baptised</span><span class="info-value">' + (P.is_baptised ? 'Yes' : 'No') + '</span></div>';
+    if (!rows) fb.style.display = 'none';
+    var fbc = document.getElementById('faithBeliefsContent'); if (fbc) fbc.innerHTML = rows;
+  }
+
+  // Lifestyle card
+  var ls = document.getElementById('profileLifestyle'); if (ls) {
+    var lrows = '';
+    if (P.diet)     lrows += '<div class="info-row"><span class="info-label">Diet</span><span class="info-value">' + P.diet + '</span></div>';
+    if (P.smoking)  lrows += '<div class="info-row"><span class="info-label">Smoking</span><span class="info-value">' + P.smoking + '</span></div>';
+    if (P.drinking) lrows += '<div class="info-row"><span class="info-label">Drinking</span><span class="info-value">' + P.drinking + '</span></div>';
+    if (P.exercise) lrows += '<div class="info-row"><span class="info-label">Exercise</span><span class="info-value">' + P.exercise + '</span></div>';
+    ls.style.display = lrows ? '' : 'none';
+    var lsc = document.getElementById('lifestyleContent'); if (lsc) lsc.innerHTML = lrows;
+  }
+
+  // Privacy status badge
+  var pvb = document.getElementById('privacyBadge'); if (pvb) {
+    pvb.textContent =
+      'Photos: ' + (P.photos_visible_to === 'all' ? 'Everyone' : P.photos_visible_to === 'interests_only' ? 'Interests only' : 'Hidden') +
+      ' · Contact: ' + (P.contact_visible_to === 'premium' ? 'Premium members' : P.contact_visible_to === 'interests_only' ? 'Interests only' : 'Hidden');
+  }
+}
+
+// ── PRIVACY MODAL ─────────────────────────────────────────────
+function openPrivacySettings() {
+  var m = document.getElementById('privacyModal'); if (!m) return;
+  var pv = document.getElementById('pvPhotos');     if (pv) pv.value = P.photos_visible_to  || 'all';
+  var pc = document.getElementById('pvContact');    if (pc) pc.value = P.contact_visible_to || 'premium';
+  var pp = document.getElementById('pvProfile');    if (pp) pp.value = P.profile_visible_to || 'all';
+  m.classList.add('show');
+}
+function closePrivacySettings() {
+  var m = document.getElementById('privacyModal'); if (m) m.classList.remove('show');
+}
+async function savePrivacySettings() {
+  var pv = document.getElementById('pvPhotos').value;
+  var pc = document.getElementById('pvContact').value;
+  var pp = document.getElementById('pvProfile').value;
+  var btn = document.getElementById('pvSaveBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
+    await sb.from('profiles').update({
+      photos_visible_to: pv,
+      contact_visible_to: pc,
+      profile_visible_to: pp
+    }).eq('id', U.id);
+    if (P) { P.photos_visible_to = pv; P.contact_visible_to = pc; P.profile_visible_to = pp; }
+    closePrivacySettings();
+    renderEnrichedProfile();
+  } catch(x) { alert('Could not save. Please try again.'); }
+  if (btn) { btn.disabled = false; btn.textContent = 'Save Privacy Settings'; }
+}
+
+// ── UPDATE FAITH in Edit Profile ──────────────────────────────
+function updateEditReligionDenoms() {
+  var r = document.getElementById('eReligion'); if (!r) return;
+  var rel = r.value;
+  var DENOM_MAP_EDIT = {
+    Christian: ['Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','SDA','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],
+    Hindu:     ['Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],
+    Muslim:    ['Sunni','Shia','Sufi','Ahmadiyya','Ismaili'],
+    Sikh:      ['Amritdhari','Sahajdhari','Nanakpanthi']
+  };
+  var dg = document.getElementById('eDenomGroup'); if (!dg) return;
+  var dd = document.getElementById('eDenom'); if (!dd) return;
+  var list = DENOM_MAP_EDIT[rel] || [];
+  if (list.length) {
+    dg.style.display = '';
+    dd.innerHTML = '<option value="">Select denomination</option>' + list.map(function(d){ return '<option>'+d+'</option>'; }).join('');
+    if (P && P.denomination) dd.value = P.denomination;
+  } else { dg.style.display = 'none'; }
+}
