@@ -870,8 +870,9 @@ select.field option { background: var(--dark2); color: var(--white); }
     <button class="btn btn-gold" style="margin-top:16px;" onclick="saveEdit()">Save Changes</button>
   </div>
 </div>
-<div class="modal-overlay" id="faithModal" onclick="closeFaithPrefs()">
-  <div class="modal-content" onclick="event.stopPropagation()" style="padding:0;border-radius:24px 24px 0 0;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;background:#1C0530;">
+<div id="faithModal" onclick="closeFaithPrefs()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
+  <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;background:#1C0530;border-radius:24px 24px 0 0;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;">
+    <!-- Header -->
     <div style="background:#280840;padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
         <h3 style="font-family:'Cinzel',serif;color:#F5C842;font-size:17px;margin:0;">Faith Preferences <span style="font-size:11px;font-family:Nunito,sans-serif;color:rgba(212,160,23,.6);">✦ Premium</span></h3>
@@ -879,21 +880,23 @@ select.field option { background: var(--dark2); color: var(--white); }
       </div>
       <p style="font-size:11px;color:rgba(255,255,255,.4);margin:0;">Set the faiths you want to discover and hear from.</p>
     </div>
+    <!-- Body -->
     <div style="overflow-y:auto;flex:1;padding:16px 16px 28px;">
+      <!-- My Faith -->
       <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
-        <span id="fpMyFaithIcon" style="font-size:22px;"></span>
+        <span id="fpMyFaithIcon" style="font-size:22px;">🌐</span>
         <div>
           <p style="font-size:9px;color:#D4A017;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 2px;">My Faith</p>
-          <p id="fpMyFaithName" style="font-size:13px;font-weight:700;color:#fff;margin:0;"></p>
+          <p id="fpMyFaithName"  style="font-size:13px;font-weight:700;color:#fff;margin:0;"></p>
           <p id="fpMyFaithDenom" style="font-size:11px;color:rgba(255,255,255,.5);margin:0;"></p>
         </div>
       </div>
       <!-- Side by side -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
-        <!-- Browse from -->
+        <!-- BROWSE FROM -->
         <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-            <span style="font-size:16px;">🔍</span>
+            <span style="font-size:15px;">🔍</span>
             <p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Browse from</p>
           </div>
           <p style="font-size:10px;color:rgba(255,255,255,.35);margin:0 0 9px;line-height:1.4;">Faiths you see in Discover</p>
@@ -912,14 +915,14 @@ select.field option { background: var(--dark2); color: var(--white); }
             <option value="Other">🌐 Other</option>
           </select>
           <div id="fpBrowseDenomWrap" style="display:none;">
-            <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px;">Denomination <span style="color:rgba(255,255,255,.22);font-weight:400;text-transform:none;letter-spacing:0;">· tap to pick</span></p>
+            <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px;">Denomination <span style="color:rgba(255,255,255,.22);font-weight:400;text-transform:none;">· tap to pick</span></p>
             <div id="fpBrowseChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
           </div>
         </div>
-        <!-- Accept from -->
+        <!-- ACCEPT FROM -->
         <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-            <span style="font-size:16px;">💌</span>
+            <span style="font-size:15px;">💌</span>
             <p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Accept from</p>
           </div>
           <p style="font-size:10px;color:rgba(255,255,255,.35);margin:0 0 9px;line-height:1.4;">Faiths that can send interest</p>
@@ -938,15 +941,17 @@ select.field option { background: var(--dark2); color: var(--white); }
             <option value="Other">🌐 Other</option>
           </select>
           <div id="fpReceiveDenomWrap" style="display:none;">
-            <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px;">Denomination <span style="color:rgba(255,255,255,.22);font-weight:400;text-transform:none;letter-spacing:0;">· tap to pick</span></p>
+            <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px;">Denomination <span style="color:rgba(255,255,255,.22);font-weight:400;text-transform:none;">· tap to pick</span></p>
             <div id="fpReceiveChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
           </div>
         </div>
       </div>
-      <button id="fpSaveBtn" class="btn btn-gold" style="font-family:'Cinzel',serif;font-size:14px;" onclick="saveFaithPrefs()">Save Preferences ✦</button>
+      <!-- Save -->
+      <button id="fpSaveBtn" onclick="saveFaithPrefs()" style="width:100%;padding:13px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-size:14px;font-weight:800;border:none;border-radius:12px;cursor:pointer;letter-spacing:.5px;">Save Preferences ✦</button>
     </div>
   </div>
 </div>
+
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="js/config.js"></script>
