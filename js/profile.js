@@ -274,65 +274,126 @@ function renderFpPills(containerId,arr){
 }
 
 // ═══════════════════════════════════════════ FAITH PREFS MODAL — styled multi-select
-function openFaithPrefs(){
-  if(P){
-    var f=faithByKey(P.religion||'Other');
-    var a=document.getElementById('fpMyFaithIcon');  if(a) a.textContent=f.icon;
-    var b=document.getElementById('fpMyFaithName');  if(b) b.textContent=P.religion||'Not set';
-    var c=document.getElementById('fpMyFaithDenom'); if(c) c.textContent=P.denomination||'';
-  }
-  buildFaithDropdown('fpBrowseDropdown', fpBrowse);
-  buildFaithDropdown('fpReceiveDropdown',fpReceive);
-  document.getElementById('faithModal').classList.add('show');
+var fpBrowseDenoms  = [];
+var fpReceiveDenoms = [];
+ 
+var FP_DENOM_MAP = {
+  Christian: ['Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','SDA','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],
+  Hindu:     ['Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],
+  Muslim:    ['Sunni','Shia','Sufi','Ahmadiyya','Ismaili'],
+  Sikh:      ['Amritdhari','Sahajdhari','Nanakpanthi'],
+  Jain:      ['Digambara','Shvetambara'],
+  Buddhist:  ['Theravada','Mahayana','Vajrayana','Zen'],
+  Jewish:    ['Orthodox','Conservative','Reform']
+};
+ 
+function openFaithPrefs() {
+  // My Faith badge
+  var f = faithByKey(P && P.religion ? P.religion : 'Other');
+  var iconEl  = document.getElementById('fpMyFaithIcon');
+  var nameEl  = document.getElementById('fpMyFaithName');
+  var denomEl = document.getElementById('fpMyFaithDenom');
+  if (iconEl)  iconEl.textContent  = f.icon || '🌐';
+  if (nameEl)  nameEl.textContent  = (P && P.religion)    || 'Not set';
+  if (denomEl) denomEl.textContent = (P && P.denomination) || '';
+ 
+  // Restore saved Browse prefs
+  var savedBrowse = [];
+  try { savedBrowse = JSON.parse((P && P.faith_browse) || '[]'); } catch(e) {}
+  var bRel = (savedBrowse.length === 1) ? savedBrowse[0] : 'all';
+  var bRelSel = document.getElementById('fpBrowseReligion');
+  if (bRelSel) { bRelSel.value = bRel; }
+  fpBrowseDenoms = [];
+  _buildFpChips('browse', bRel, fpBrowseDenoms);
+ 
+  // Restore saved Receive prefs
+  var savedReceive = [];
+  try { savedReceive = JSON.parse((P && P.faith_receive) || '[]'); } catch(e) {}
+  var rRel = (savedReceive.length === 1) ? savedReceive[0] : 'all';
+  var rRelSel = document.getElementById('fpReceiveReligion');
+  if (rRelSel) { rRelSel.value = rRel; }
+  fpReceiveDenoms = [];
+  _buildFpChips('receive', rRel, fpReceiveDenoms);
+ 
+  // Show modal
+  var m = document.getElementById('faithModal');
+  if (m) m.classList.add('show');
 }
-function closeFaithPrefs(){document.getElementById('faithModal').classList.remove('show');}
-
-// Build a styled custom multi-select for faiths
-function buildFaithDropdown(containerId, selectedArr){
-  var el=document.getElementById(containerId); if(!el) return;
-  el.innerHTML='';
-  FAITHS.forEach(function(f){
-    var on=selectedArr.indexOf(f.key)>-1;
-    var row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.05);'+
-      (on?'background:rgba(255,255,255,.06);':'background:transparent;');
-    row.innerHTML=
-      '<span style="font-size:20px;flex-shrink:0;">'+f.icon+'</span>'+
-      '<span style="flex:1;font-size:13px;font-weight:600;color:'+(on?'#fff':'rgba(255,255,255,.5)')+';">'+f.key+'</span>'+
-      '<span style="width:20px;height:20px;border-radius:6px;border:2px solid '+(on?f.color:'rgba(255,255,255,.2)')+';background:'+(on?f.color:'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff;">'+(on?'✓':'')+'</span>';
-    row.onclick=function(){
-      var ix=selectedArr.indexOf(f.key);
-      if(ix>-1) selectedArr.splice(ix,1); else selectedArr.push(f.key);
-      buildFaithDropdown(containerId,selectedArr);
+ 
+function closeFaithPrefs() {
+  var m = document.getElementById('faithModal');
+  if (m) m.classList.remove('show');
+}
+ 
+// Called by onchange on religion <select>
+function fpSyncDenom(type) {
+  var relId = type === 'browse' ? 'fpBrowseReligion' : 'fpReceiveReligion';
+  var rel = document.getElementById(relId).value;
+  if (type === 'browse') fpBrowseDenoms = [];
+  else fpReceiveDenoms = [];
+  _buildFpChips(type, rel, []);
+}
+ 
+function _buildFpChips(type, religion, selectedDenoms) {
+  var wrapId = type === 'browse' ? 'fpBrowseDenomWrap' : 'fpReceiveDenomWrap';
+  var contId = type === 'browse' ? 'fpBrowseChips'     : 'fpReceiveChips';
+  var wrap = document.getElementById(wrapId);
+  var cont = document.getElementById(contId);
+  if (!wrap || !cont) return;
+ 
+  var list = FP_DENOM_MAP[religion] || [];
+  if (!list.length || religion === 'all') {
+    wrap.style.display = 'none';
+    cont.innerHTML = '';
+    return;
+  }
+ 
+  wrap.style.display = '';
+  cont.innerHTML = '';
+  var state = type === 'browse' ? fpBrowseDenoms : fpReceiveDenoms;
+ 
+  list.forEach(function(d) {
+    var on = state.indexOf(d) > -1;
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.textContent = d;
+    chip.style.cssText =
+      'padding:5px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;' +
+      'font-family:Nunito,sans-serif;transition:all .15s;margin-bottom:4px;' +
+      'border:1px solid ' + (on ? '#9B59B6' : 'rgba(255,255,255,.18)') + ';' +
+      'background:' + (on ? 'rgba(155,89,182,.3)' : 'rgba(255,255,255,.05)') + ';' +
+      'color:' + (on ? '#C39BD3' : 'rgba(255,255,255,.5)') + ';';
+    chip.onclick = function() {
+      var ix = state.indexOf(d);
+      if (ix > -1) state.splice(ix, 1);
+      else state.push(d);
+      _buildFpChips(type, religion, state);
     };
-    el.appendChild(row);
+    cont.appendChild(chip);
   });
 }
-
-function fpSetAll(type,sel){
-  if(type==='browse'){
-    fpBrowse=sel?FAITHS.map(function(f){return f.key;}):[]; buildFaithDropdown('fpBrowseDropdown',fpBrowse);
-  }else{
-    fpReceive=sel?FAITHS.map(function(f){return f.key;}):[]; buildFaithDropdown('fpReceiveDropdown',fpReceive);
-  }
-}
-
-async function saveFaithPrefs(){
-  var btn=document.getElementById('fpSaveBtn');
-  if(btn){btn.disabled=true;btn.textContent='Saving…';}
-  try{
+ 
+async function saveFaithPrefs() {
+  var bRel = document.getElementById('fpBrowseReligion').value;
+  var rRel = document.getElementById('fpReceiveReligion').value;
+  var allFaiths = ['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
+  var fpBrowse  = bRel === 'all' ? allFaiths : [bRel];
+  var fpReceive = rRel === 'all' ? allFaiths : [rRel];
+  var btn = document.getElementById('fpSaveBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
     await sb.from('profiles').update({
-      faith_browse:JSON.stringify(fpBrowse),
-      faith_receive:JSON.stringify(fpReceive)
-    }).eq('id',U.id);
-    P.faith_browse=JSON.stringify(fpBrowse);
-    P.faith_receive=JSON.stringify(fpReceive);
-  }catch(x){alert('Could not save. Please try again.');}
-  if(btn){btn.disabled=false;btn.textContent='Save Preferences ✦';}
-  closeFaithPrefs();
-  renderFaithPrefCard();
+      faith_browse:  JSON.stringify(fpBrowse),
+      faith_receive: JSON.stringify(fpReceive)
+    }).eq('id', U.id);
+    if (P) { P.faith_browse = JSON.stringify(fpBrowse); P.faith_receive = JSON.stringify(fpReceive); }
+    closeFaithPrefs();
+    if (typeof renderFaithPrefCard === 'function') renderFaithPrefCard();
+  } catch(x) {
+    alert('Could not save preferences. Please try again.');
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Save Preferences ✦'; }
 }
-
 // ═══════════════════════════════════════════ EDIT PROFILE (includes bio)
 function openEdit(){
   document.getElementById('eBio').value=P.bio||'';
