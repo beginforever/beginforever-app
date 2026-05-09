@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════ BOOT
 var _appReady = false;
-var _justRegistered = false; // set true by doRegister() before calling loadP()
+var _justRegistered = false;
 
 var _bootFallback = setTimeout(function() {
   if (!_appReady) {
@@ -19,6 +19,11 @@ sb.auth.onAuthStateChange(function(ev, sess) {
     } else {
       showScr('loginScreen');
     }
+  } else if (ev === 'SIGNED_IN') {
+    // Only handle if not already loaded (avoids double loadP on login)
+    if (U && U.id === sess.user.id) return;
+    U = sess.user;
+    loadP();
   } else if (ev === 'SIGNED_OUT') {
     U = null; P = null;
     _justRegistered = false;

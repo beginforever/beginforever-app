@@ -30,6 +30,25 @@ updateCountdown();
 
 // ═══════════════════════════════════════════ TABS
 function goTab(t) {
+  // ── GUARD: never show main app tabs to rejected/pending users ──
+  if (P) {
+    if (P.status === 'rejected') {
+      renderRejectedScreen(P);
+      showScr('rejectedScreen');
+      return;
+    }
+    if (P.status === 'pending') {
+      showScr('pendingScreen');
+      return;
+    }
+    if (P.status === 'resubmitting') {
+      prefillSetupWizard(P);
+      showScr('setupScreen');
+      step = 1; updUI();
+      return;
+    }
+  }
+
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x) {
     var el = document.getElementById(x); if (el) el.style.display = 'none';
   });
@@ -98,6 +117,9 @@ function renderPreLaunchBanner(tabName) {
 
 // ═══════════════════════════════════════════ HOME
 function renderHome() {
+  // ── GUARD ──
+  if (!P || P.status === 'rejected' || P.status === 'pending') return;
+
   var logo = document.getElementById('appLogoImg');
   var hLogo = document.getElementById('homeLogoImg');
   if (logo && hLogo && logo.src) hLogo.src = logo.src;
@@ -133,10 +155,6 @@ async function loadStats() {
 }
 
 // ═══════════════════════════════════════════ TAB FUNCTIONS
-// NOTE: ldBrowse, ldInt, ldChats, ldViews are defined in browse.js / their own files.
-// This file only provides the pre-launch banner helper + isTabLocked().
-// DO NOT redefine those functions here — that would overwrite the real implementations.
-
 function showInt(t) { if(typeof ldInt === 'function') ldInt(t); }
 async function actInt(id,st) { await sb.from('interests').update({status:st}).eq('id',id); if(typeof ldInt==='function') ldInt('received'); }
 async function openChat(pid) {}
