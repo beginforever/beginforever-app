@@ -1299,6 +1299,10 @@ select.field option { background: var(--dark2); color: var(--white); }
     </div>
   </div>
 </div>
-
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js');
+}
+</script>
 </body>
 </html>
