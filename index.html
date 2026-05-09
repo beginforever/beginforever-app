@@ -856,112 +856,194 @@ select.field option { background: var(--dark2); color: var(--white); }
 </div>
 
 <!-- EDIT PROFILE MODAL -->
-<div class="modal-overlay" id="editModal" onclick="closeEdit()">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="font-family:'Cinzel',serif;color:var(--gold-bright);">Edit Profile</h3>
-      <button onclick="closeEdit()" style="background:var(--w10);border:none;color:var(--white);border-radius:50%;width:32px;height:32px;cursor:pointer;">✕</button>
-    </div>
-    <div class="field-group"><label class="field-label">Bio</label><textarea class="field" id="eBio" style="min-height:80px;resize:vertical;"></textarea></div>
-    <div class="field-group"><label class="field-label">Education</label><input class="field" id="eEdu"/></div>
-    <div class="field-group"><label class="field-label">Occupation</label><input class="field" id="eOcc"/></div>
-    <div class="field-group"><label class="field-label">Phone</label><input class="field" id="ePh"/></div>
-    <p style="font-size:12px;color:var(--gold);margin-bottom:8px;">Update Photos</p>
-    <div class="photo-grid" id="epGrid"></div>
-    <button class="btn btn-gold" style="margin-top:16px;" onclick="saveEdit()">Save Changes</button>
-  </div>
-</div>
-<div id="faithModal" onclick="closeFaithPrefs()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
-  <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;background:#1C0530;border-radius:24px 24px 0 0;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;">
+div class="modal-overlay" id="editModal" onclick="closeEdit()">
+  <div class="modal-content" onclick="event.stopPropagation()" style="padding:0;border-radius:20px 20px 0 0;max-height:94vh;overflow:hidden;display:flex;flex-direction:column;background:var(--dark1);">
+
     <!-- Header -->
-    <div style="background:#280840;padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-        <h3 style="font-family:'Cinzel',serif;color:#F5C842;font-size:17px;margin:0;">Faith Preferences <span style="font-size:11px;font-family:Nunito,sans-serif;color:rgba(212,160,23,.6);">✦ Premium</span></h3>
-        <button onclick="closeFaithPrefs()" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;line-height:1;">✕</button>
-      </div>
-      <p style="font-size:11px;color:rgba(255,255,255,.4);margin:0;">Set the faiths you want to discover and hear from.</p>
+    <div style="background:var(--dark2);padding:14px 18px;border-bottom:1px solid var(--w08);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold2);font-size:16px;margin:0;">Edit Profile</h3>
+      <button onclick="closeEdit()" style="background:var(--w10);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
     </div>
-    <!-- Body -->
+
+    <!-- Scrollable body -->
     <div style="overflow-y:auto;flex:1;padding:16px 16px 28px;">
-      <!-- My Faith -->
-      <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
-        <span id="fpMyFaithIcon" style="font-size:22px;">🌐</span>
-        <div>
-          <p style="font-size:9px;color:#D4A017;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 2px;">My Faith</p>
-          <p id="fpMyFaithName"  style="font-size:13px;font-weight:700;color:#fff;margin:0;"></p>
-          <p id="fpMyFaithDenom" style="font-size:11px;color:rgba(255,255,255,.5);margin:0;"></p>
+
+      <!-- ── Section: Bio ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">About Me</p>
+      <div class="field-group"><label class="field-label">Bio</label><textarea class="field" id="eBio" style="min-height:80px;resize:vertical;" placeholder="Tell potential matches about yourself..."></textarea></div>
+
+      <!-- ── Section: Basic ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Basic Details</p>
+      <div class="field-group"><label class="field-label">Education</label><input class="field" id="eEdu" placeholder="e.g. B.Tech, MBA"/></div>
+      <div class="field-group"><label class="field-label">Occupation</label><input class="field" id="eOcc" placeholder="e.g. Software Engineer"/></div>
+      <div class="field-group"><label class="field-label">Phone</label><input class="field" id="ePh" placeholder="+91 XXXXX XXXXX"/></div>
+
+      <!-- ── Section: Faith ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Faith & Beliefs</p>
+      <div class="field-group">
+        <label class="field-label">Religion</label>
+        <select class="field" id="eReligion" onchange="updateEditReligionDenoms()">
+          <option value="">Select</option>
+          <option>Christian</option><option>Hindu</option><option>Muslim</option>
+          <option>Sikh</option><option>Jain</option><option>Buddhist</option>
+          <option>Parsi</option><option>Jewish</option><option>Spiritual</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field-group" id="eDenomGroup" style="display:none;">
+        <label class="field-label">Denomination</label>
+        <select class="field" id="eDenom"><option value="">Select</option></select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Church / Place of Worship</label>
+        <input class="field" id="eChurch" placeholder="e.g. CSI St. Thomas Church, Pune"/>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Church Attendance</label>
+          <select class="field" id="eChurchAttendance">
+            <option value="">Select</option>
+            <option>Weekly</option><option>Fortnightly</option>
+            <option>Occasionally</option><option>Online only</option><option>Rarely</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Faith Importance</label>
+          <select class="field" id="eFaithImportance">
+            <option value="">Select</option>
+            <option>Very important</option><option>Important</option>
+            <option>Somewhat important</option><option>Not important</option>
+          </select>
         </div>
       </div>
-      <!-- Side by side -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
-        <!-- BROWSE FROM -->
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-            <span style="font-size:15px;">🔍</span>
-            <p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Browse from</p>
-          </div>
-          <p style="font-size:10px;color:rgba(255,255,255,.35);margin:0 0 9px;line-height:1.4;">Faiths you see in Discover</p>
-          <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;">Religion</p>
-          <select id="fpBrowseReligion" onchange="fpSyncDenom('browse')" style="width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.15);border-radius:10px;font-size:12px;color:#fff;background:#280840;outline:none;margin-bottom:10px;cursor:pointer;">
-            <option value="all">All faiths</option>
-            <option value="Christian">✝️ Christian</option>
-            <option value="Hindu">🕉️ Hindu</option>
-            <option value="Muslim">☪️ Muslim</option>
-            <option value="Sikh">☬ Sikh</option>
-            <option value="Jain">🕊️ Jain</option>
-            <option value="Buddhist">☸️ Buddhist</option>
-            <option value="Parsi">🔥 Parsi</option>
-            <option value="Jewish">✡️ Jewish</option>
-            <option value="Spiritual">🌱 Spiritual</option>
-            <option value="Other">🌐 Other</option>
+      <div class="field-group">
+        <label class="field-label">Baptised?</label>
+        <select class="field" id="eIsBaptised">
+          <option value="">Select</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Favourite Scripture / Verse</label>
+        <input class="field" id="eScripture" placeholder="e.g. Jeremiah 29:11"/>
+      </div>
+
+      <!-- ── Section: Lifestyle ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Lifestyle</p>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Diet</label>
+          <select class="field" id="eDiet">
+            <option value="">Select</option>
+            <option>Vegetarian</option><option>Non-Vegetarian</option>
+            <option>Vegan</option><option>Jain</option><option>No preference</option>
           </select>
-          <div id="fpBrowseDenomWrap" style="display:none;">
-            <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px;">Denomination <span style="color:rgba(255,255,255,.22);font-weight:400;text-transform:none;">· tap to pick</span></p>
-            <div id="fpBrowseChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
-          </div>
         </div>
-        <!-- ACCEPT FROM -->
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-            <span style="font-size:15px;">💌</span>
-            <p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Accept from</p>
-          </div>
-          <p style="font-size:10px;color:rgba(255,255,255,.35);margin:0 0 9px;line-height:1.4;">Faiths that can send interest</p>
-          <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;">Religion</p>
-          <select id="fpReceiveReligion" onchange="fpSyncDenom('receive')" style="width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.15);border-radius:10px;font-size:12px;color:#fff;background:#280840;outline:none;margin-bottom:10px;cursor:pointer;">
-            <option value="all">All faiths</option>
-            <option value="Christian">✝️ Christian</option>
-            <option value="Hindu">🕉️ Hindu</option>
-            <option value="Muslim">☪️ Muslim</option>
-            <option value="Sikh">☬ Sikh</option>
-            <option value="Jain">🕊️ Jain</option>
-            <option value="Buddhist">☸️ Buddhist</option>
-            <option value="Parsi">🔥 Parsi</option>
-            <option value="Jewish">✡️ Jewish</option>
-            <option value="Spiritual">🌱 Spiritual</option>
-            <option value="Other">🌐 Other</option>
+        <div class="field-group">
+          <label class="field-label">Exercise</label>
+          <select class="field" id="eExercise">
+            <option value="">Select</option>
+            <option>Daily</option><option>Often</option>
+            <option>Sometimes</option><option>Rarely</option>
           </select>
-          <div id="fpReceiveDenomWrap" style="display:none;">
-            <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin:0 0 5px;">Denomination <span style="color:rgba(255,255,255,.22);font-weight:400;text-transform:none;">· tap to pick</span></p>
-            <div id="fpReceiveChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
-          </div>
         </div>
       </div>
-      <!-- Save -->
-      <button id="fpSaveBtn" onclick="saveFaithPrefs()" style="width:100%;padding:13px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-size:14px;font-weight:800;border:none;border-radius:12px;cursor:pointer;letter-spacing:.5px;">Save Preferences ✦</button>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Smoking</label>
+          <select class="field" id="eSmoking">
+            <option value="">Select</option>
+            <option>Never</option><option>Occasionally</option><option>Yes</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Drinking</label>
+          <select class="field" id="eDrinking">
+            <option value="">Select</option>
+            <option>Never</option><option>Occasionally</option><option>Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── Section: Hobbies ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 4px;">Hobbies & Interests</p>
+      <p style="font-size:11px;color:var(--w40);margin-bottom:8px;">Tap to select (up to 8)</p>
+      <div id="editHobbyChips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;"></div>
+
+      <!-- ── Section: What I'm Looking For ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">What I'm Looking For</p>
+      <div class="field-group">
+        <textarea class="field" id="eLookingFor" style="min-height:80px;resize:vertical;" placeholder="Describe the kind of person and relationship you're looking for..."></textarea>
+      </div>
+
+      <!-- ── Section: Family Background ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Family Background</p>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Family Type</label>
+          <select class="field" id="eFamilyType">
+            <option value="">Select</option>
+            <option>Nuclear</option><option>Joint</option><option>Extended</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Family Values</label>
+          <select class="field" id="eFamilyValues">
+            <option value="">Select</option>
+            <option>Traditional</option><option>Moderate</option><option>Liberal</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Father's Occupation</label>
+          <input class="field" id="eFatherOcc" placeholder="e.g. Retired / Business"/>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Mother's Occupation</label>
+          <input class="field" id="eMotherOcc" placeholder="e.g. Homemaker"/>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Siblings</label>
+        <select class="field" id="eSiblings">
+          <option value="">Select</option>
+          <option>Only child</option><option>1 sibling</option>
+          <option>2 siblings</option><option>3 or more</option>
+        </select>
+      </div>
+
+      <!-- ── Section: Partner Preferences ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Partner Preferences</p>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="ePrefAgeMin" placeholder="18"/></div>
+        <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="ePrefAgeMax" placeholder="55"/></div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Preferred Marital Status</label>
+        <select class="field" id="ePrefMarital">
+          <option value="">Any</option>
+          <option>Never married</option><option>Divorced</option>
+          <option>Widowed</option><option>Any</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Preferred Education</label>
+        <input class="field" id="ePrefEdu" placeholder="e.g. Graduate and above"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Preferred Location</label>
+        <input class="field" id="ePrefCity" placeholder="e.g. Pune, Mumbai or Any"/>
+      </div>
+
+      <!-- ── Section: Photos ── -->
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Update Photos</p>
+      <div class="photo-grid" id="epGrid"></div>
+
+      <button class="btn btn-gold" style="margin-top:18px;" onclick="saveEdit()">Save Changes ✦</button>
     </div>
   </div>
 </div>
-
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="js/config.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/referral.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/admin.js"></script>
-<script src="js/boot.js"></script>
 
 <!-- REJECT MODAL -->
 <div class="modal-overlay" id="rejectModal" onclick="closeRejectModal()">
