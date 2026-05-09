@@ -790,6 +790,50 @@ select.field option { background: var(--dark2); color: var(--white); }
       </div>
     </div>
     <div id="mInfo"></div>
+    <!-- Hobbies & Interests -->
+<div id="profileHobbies" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:14px;">
+  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">🎯 Hobbies & Interests</p>
+  <div id="hobbyPills"></div>
+</div>
+
+<!-- What I'm Looking For -->
+<div id="profileLookingFor" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;">💑 What I'm Looking For</p>
+  <p id="lookingForText" style="font-size:13px;color:var(--w70);line-height:1.7;margin:0;"></p>
+</div>
+
+<!-- Faith & Beliefs -->
+<div id="profileFaithBeliefs" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">✝️ Faith & Beliefs</p>
+  <div id="faithBeliefsContent"></div>
+</div>
+
+<!-- Lifestyle -->
+<div id="profileLifestyle" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">🌿 Lifestyle</p>
+  <div id="lifestyleContent"></div>
+</div>
+
+<!-- Faith Preferences summary (existing, already there) -->
+<!-- <div id="profileFaithSummary"> already in the file — keep it -->
+
+<!-- Privacy status strip -->
+<div style="background:rgba(155,89,182,.08);border:1px solid rgba(155,89,182,.2);border-radius:12px;padding:10px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <p style="font-size:9px;font-weight:700;color:#C39BD3;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">🔒 Privacy</p>
+    <p id="privacyBadge" style="font-size:11px;color:rgba(255,255,255,.5);margin:0;"></p>
+  </div>
+  <button onclick="openPrivacySettings()" style="background:rgba(155,89,182,.15);border:1px solid rgba(155,89,182,.3);color:#C39BD3;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;">Edit</button>
+</div>
+
+<!-- Buttons (these replace the old single button) -->
+<!-- 
+  REPLACE the existing buttons in tProfile with these:
+-->
+<button class="btn btn-dark" style="margin-top:14px;" onclick="openEdit()">✏️ Edit Profile</button>
+<button class="btn btn-dark" style="margin-top:10px;" onclick="openFaithPrefsGated()">⚙️ Faith Preferences <span style="font-size:10px;color:#F5C842;">✦ Premium</span></button>
+<button class="btn btn-dark" style="margin-top:10px;" onclick="openPrivacySettings()">🔒 Privacy Settings</button>
+<button class="btn btn-dark" style="margin-top:10px;opacity:.6;font-size:12px;" onclick="doSignOut()">Sign Out</button>
     <!-- Faith Summary -->
     <div style="background:var(--w05);border-radius:14px;padding:14px;margin-top:14px;" id="profileFaithSummary"></div>
     <button class="btn btn-dark" style="margin-top:14px;" onclick="openEdit()">✏️ Edit Profile</button>
