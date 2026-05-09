@@ -1129,6 +1129,51 @@ div class="modal-overlay" id="editModal" onclick="closeEdit()">
     <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);">🔒 Secured by Razorpay · Cancel anytime</p>
   </div>
 </div>
+<div id="privacyModal" onclick="closePrivacySettings()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
+  <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;background:#1C0530;border-radius:24px 24px 0 0;padding:0;overflow:hidden;">
+    <div style="background:#280840;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="font-family:'Cinzel',serif;color:#F5C842;font-size:16px;margin:0;">🔒 Privacy Settings</h3>
+      <button onclick="closePrivacySettings()" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+    </div>
+    <div style="padding:20px 18px 28px;">
+      <p style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:18px;line-height:1.6;">Control who can see your profile information. Changes apply immediately.</p>
+
+      <div class="field-group">
+        <label class="field-label">📷 Who can see my photos?</label>
+        <select class="field" id="pvPhotos">
+          <option value="all">Everyone (default)</option>
+          <option value="interests_only">Only people I've sent / received interest from</option>
+          <option value="none">Hidden — nobody</option>
+        </select>
+        <p style="font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;">Hiding photos may reduce interest from potential matches.</p>
+      </div>
+
+      <div class="field-group" style="margin-top:12px;">
+        <label class="field-label">📞 Who can see my contact details?</label>
+        <select class="field" id="pvContact">
+          <option value="premium">Premium members only (default)</option>
+          <option value="interests_only">Only mutual interests</option>
+          <option value="none">Hidden — share manually</option>
+        </select>
+        <p style="font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;">Phone and email are never shown without your consent.</p>
+      </div>
+
+      <div class="field-group" style="margin-top:12px;">
+        <label class="field-label">👁️ Who can see my profile?</label>
+        <select class="field" id="pvProfile">
+          <option value="all">All verified members (default)</option>
+          <option value="verified_only">ID-verified members only</option>
+        </select>
+      </div>
+
+      <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.15);border-radius:10px;padding:10px 12px;margin:14px 0;font-size:11px;color:rgba(255,255,255,.45);line-height:1.6;">
+        🛡️ Begin Forever never shares your data with third parties. Government ID is used for verification only and is never visible to other members.
+      </div>
+
+      <button id="pvSaveBtn" onclick="savePrivacySettings()" class="btn btn-gold" style="font-family:'Cinzel',serif;font-size:13px;">Save Privacy Settings</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
