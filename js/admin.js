@@ -88,26 +88,48 @@ async function ldAdmin(st){
 }
 
 async function ldFounders(){
+  var FOUNDER_CAP = 300;
   var l=document.getElementById('adList');if(!l)return;l.innerHTML='';
   var adE=document.getElementById('adEmpty');if(adE)adE.style.display='none';
-  var r=await sb.from('profiles').select('*').eq('is_founding_member',true).order('founding_number',{ascending:true});
+
+  // Fetch ALL founding members for stats, but only show approved in list
+  var rAll=await sb.from('profiles').select('id,status').eq('is_founding_member',true);
+  var dAll=rAll.data||[];
+  var appr=dAll.filter(function(p){return p.status==='approved';}).length;
+  var pend=dAll.filter(function(p){return p.status==='pending';}).length;
+  var rejc=dAll.filter(function(p){return p.status==='rejected';}).length;
+  var spotsLeft=Math.max(0,FOUNDER_CAP-appr);
+
+  // Fetch only approved for the list display
+  var r=await sb.from('profiles').select('*').eq('is_founding_member',true).eq('status','approved').order('founding_number',{ascending:true}).limit(FOUNDER_CAP);
   var d=r.data||[];
-  if(!d.length){if(adE)adE.style.display='block';return;}
-  var appr=d.filter(function(p){return p.status==='approved';}).length;
-  var pend=d.filter(function(p){return p.status==='pending';}).length;
-  var rejc=d.filter(function(p){return p.status==='rejected';}).length;
+
+  if(!d.length&&!pend&&!rejc){if(adE)adE.style.display='block';return;}
+
+  // Progress bar fill %
+  var pct=Math.min(100,Math.round((appr/FOUNDER_CAP)*100));
+
   l.innerHTML+=
-    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;">'+
-      '<div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:22px;color:var(--gold2);font-weight:700;margin:0;">'+d.length+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Total</p></div>'+
-      '<div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:22px;color:#4ade80;font-weight:700;margin:0;">'+appr+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Approved</p></div>'+
-      '<div style="background:rgba(232,184,48,.1);border:1px solid rgba(232,184,48,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:22px;color:#FFD54F;font-weight:700;margin:0;">'+pend+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Pending</p></div>'+
-      '<div style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:22px;color:#ff6b6b;font-weight:700;margin:0;">'+rejc+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Rejected</p></div>'+
+    // Stats grid
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">'+
+      '<div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:20px;color:var(--gold2);font-weight:700;margin:0;">'+dAll.length+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Registered</p></div>'+
+      '<div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:20px;color:#4ade80;font-weight:700;margin:0;">'+appr+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Approved</p></div>'+
+      '<div style="background:rgba(232,184,48,.1);border:1px solid rgba(232,184,48,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:20px;color:#FFD54F;font-weight:700;margin:0;">'+pend+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Pending</p></div>'+
+      '<div style="background:rgba(155,89,182,.1);border:1px solid rgba(155,89,182,.3);border-radius:10px;padding:10px;text-align:center;"><p style="font-family:Cinzel,serif;font-size:20px;color:#C39BD3;font-weight:700;margin:0;">'+spotsLeft+'</p><p style="font-size:10px;color:var(--w40);margin:3px 0 0;">Spots Left</p></div>'+
     '</div>'+
-    '<p style="font-size:11px;color:var(--w40);margin-bottom:12px;">✦ Every founder gets 1 week Premium free from 20 May 2026</p>';
+    // Progress bar
+    '<div style="margin-bottom:14px;">'+
+      '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--w40);margin-bottom:4px;">'+
+        '<span>Founding Members Progress</span><span>'+appr+' / '+FOUNDER_CAP+'</span>'+
+      '</div>'+
+      '<div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;">'+
+        '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#D4A017,#F5C842);border-radius:3px;transition:width .4s;"></div>'+
+      '</div>'+
+    '</div>'+
+    '<p style="font-size:11px;color:var(--w40);margin-bottom:12px;">Showing approved founding members only · Each gets 1 week Premium free from 20 May 2026</p>';
+
   d.forEach(function(p){
     var f=faithByKey(p.religion||'Other');
-    var sc=p.status==='approved'?'#4ade80':p.status==='rejected'?'#ff6b6b':'#FFD54F';
-    var bg=p.status==='approved'?'rgba(39,174,96,.15)':p.status==='rejected'?'rgba(231,76,60,.15)':'rgba(232,184,48,.15)';
     l.innerHTML+=
       '<div class="card" style="margin-bottom:8px;border:1px solid rgba(212,160,23,.12);display:flex;gap:10px;align-items:center;">'+
         '<div style="font-family:Cinzel,serif;font-size:15px;font-weight:700;color:var(--gold2);min-width:36px;text-align:center;">#'+(p.founding_number||'?')+'</div>'+
@@ -117,7 +139,7 @@ async function ldFounders(){
           '<p style="font-size:11px;color:'+f.color+';margin:1px 0;">'+f.icon+' '+(p.religion||'')+(p.denomination?' · '+p.denomination:'')+'</p>'+
           '<p style="font-size:10px;color:var(--w40);margin:0;">'+p.city+', '+p.state+' · '+(p.gender||'')+'</p>'+
         '</div>'+
-        '<span style="font-size:9px;padding:3px 8px;border-radius:10px;font-weight:700;background:'+bg+';color:'+sc+';white-space:nowrap;">'+(p.status||'').toUpperCase()+'</span>'+
+        '<span style="font-size:9px;padding:3px 8px;border-radius:10px;font-weight:700;background:rgba(39,174,96,.15);color:#4ade80;white-space:nowrap;">APPROVED ✓</span>'+
       '</div>';
   });
 }

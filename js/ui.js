@@ -54,8 +54,7 @@ function goTab(t) {
 function isTabLocked(tab) {
   if (!isPreLaunch()) return false;
   if (P && P.is_admin) return false;
-  var lockedTabs = ['browse', 'interests', 'chat', 'chatWin', 'views'];
-  return lockedTabs.indexOf(tab) > -1;
+  return ['browse','interests','chat','chatWin','views'].indexOf(tab) > -1;
 }
 
 function renderPreLaunchBanner(tabName) {
@@ -67,7 +66,7 @@ function renderPreLaunchBanner(tabName) {
     browse:    { icon:'🔍', title:'Discover opens on 20 May',      sub:'Your profile is verified and ready. The moment we launch, your matches will appear here.' },
     interests: { icon:'💝', title:'Interests open on 20 May',      sub:'Every interest you receive will appear here at launch. 300+ verified members are waiting.' },
     chat:      { icon:'💬', title:'Chat opens on 20 May',          sub:'Connections, conversations, beginnings — all of it unlocks in just a few days.' },
-    views:     { icon:'👁️', title:'Who Viewed Me opens on 20 May', sub:'Once launch begins, you\'ll be able to see everyone who visited your profile.' },
+    views:     { icon:'👁️', title:'Who Viewed Me opens on 20 May', sub:"Once launch begins, you'll be able to see everyone who visited your profile." },
   };
   var info = labels[tabName] || labels.browse;
   return '<div style="padding:20px 16px 90px;">' +
@@ -79,29 +78,18 @@ function renderPreLaunchBanner(tabName) {
           '<span style="width:5px;height:5px;border-radius:50%;background:var(--gold2);animation:blink 1.6s infinite;display:inline-block;"></span>Launching 20 May 2026' +
         '</div>' +
         '<h2 style="font-family:\'Cinzel\',serif;font-size:20px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:10px;">'+info.title+'</h2>' +
-        '<p style="font-family:\'Nunito\',sans-serif;font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:18px;">'+info.sub+'</p>' +
+        '<p style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:18px;">'+info.sub+'</p>' +
         '<div style="display:flex;gap:8px;margin-bottom:18px;">' +
-          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
-            '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(days).padStart(2,'0')+'</div>' +
-            '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Days</div>' +
-          '</div>' +
-          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
-            '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(hrs).padStart(2,'0')+'</div>' +
-            '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Hrs</div>' +
-          '</div>' +
-          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;">' +
-            '<div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(mins).padStart(2,'0')+'</div>' +
-            '<div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Mins</div>' +
-          '</div>' +
+          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;"><div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(days).padStart(2,'0')+'</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Days</div></div>' +
+          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;"><div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(hrs).padStart(2,'0')+'</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Hrs</div></div>' +
+          '<div style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:11px;padding:10px 4px;text-align:center;"><div style="font-family:\'Cinzel\',serif;font-size:24px;font-weight:900;color:var(--gold2);line-height:1;">'+String(mins).padStart(2,'0')+'</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;letter-spacing:1px;">Mins</div></div>' +
         '</div>' +
         '<div style="background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
           '<span style="font-size:20px;">✅</span>' +
-          '<div>' +
-            '<p style="font-size:12px;font-weight:700;color:#4ade80;margin:0;">Your profile is verified &amp; ready</p>' +
-            '<p style="font-size:11px;color:rgba(255,255,255,.4);margin:2px 0 0;">You\'ll be among the first visible to matches at launch</p>' +
-          '</div>' +
+          '<div><p style="font-size:12px;font-weight:700;color:#4ade80;margin:0;">Your profile is verified &amp; ready</p>' +
+          '<p style="font-size:11px;color:rgba(255,255,255,.4);margin:2px 0 0;">You\'ll be among the first visible to matches at launch</p></div>' +
         '</div>' +
-        '<button style="width:100%;padding:12px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:\'Cinzel\',serif;font-size:13px;font-weight:700;border:none;border-radius:10px;cursor:pointer;letter-spacing:.5px;" onclick="shareApp()">✦ Invite someone special</button>' +
+        '<button style="width:100%;padding:12px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:\'Cinzel\',serif;font-size:13px;font-weight:700;border:none;border-radius:10px;cursor:pointer;" onclick="shareApp()">✦ Invite someone special</button>' +
         '<p style="font-family:\'EB Garamond\',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:12px;">"A time to love." — Ecclesiastes 3:8</p>' +
       '</div>' +
     '</div>' +
@@ -110,7 +98,7 @@ function renderPreLaunchBanner(tabName) {
 
 // ═══════════════════════════════════════════ HOME
 function renderHome() {
-  var logo  = document.getElementById('appLogoImg');
+  var logo = document.getElementById('appLogoImg');
   var hLogo = document.getElementById('homeLogoImg');
   if (logo && hLogo && logo.src) hLogo.src = logo.src;
   var wn = document.getElementById('hWelcomeName');
@@ -144,81 +132,27 @@ async function loadStats() {
   } catch(x) {}
 }
 
-// ═══════════════════════════════════════════ LOCKED TAB STUBS
-async function ldBrowse() {
-  var el = document.getElementById('tBrowse');
-  if (!el) return;
-  if (isTabLocked('browse')) { el.innerHTML = renderPreLaunchBanner('browse'); return; }
-  el.innerHTML = '<div style="text-align:center;padding:30px 16px;"><p style="font-size:13px;color:var(--w40);">Browse is live!</p></div>';
-}
+// ═══════════════════════════════════════════ TAB FUNCTIONS
+// NOTE: ldBrowse, ldInt, ldChats, ldViews are defined in browse.js / their own files.
+// This file only provides the pre-launch banner helper + isTabLocked().
+// DO NOT redefine those functions here — that would overwrite the real implementations.
 
-async function ldInt(type) {
-  var el = document.getElementById('tInterests');
-  if (!el) return;
-  if (isTabLocked('interests')) { el.innerHTML = renderPreLaunchBanner('interests'); return; }
-}
-
-function showInt(t)          { ldInt(t); }
-async function actInt(id,st) { await sb.from('interests').update({status:st}).eq('id',id); ldInt('received'); }
-
-async function ldChats() {
-  var el = document.getElementById('tChat');
-  if (!el) return;
-  if (isTabLocked('chat')) { el.innerHTML = renderPreLaunchBanner('chat'); return; }
-}
-
-async function ldViews() {
-  var el = document.getElementById('tViews');
-  if (!el) return;
-  if (isTabLocked('views')) { el.innerHTML = renderPreLaunchBanner('views'); return; }
-  var r = await sb.from('profile_views').select('*,profiles!profile_views_viewer_id_fkey(*)').eq('viewed_id', U.id).order('viewed_at',{ascending:false});
-  var d = r.data || [];
-  el.innerHTML = '<div class="content-area">' +
-    '<h2 style="font-family:\'Cinzel\',serif;font-size:20px;color:var(--gold-bright);margin-bottom:16px;">Who Viewed Me</h2>' +
-    (d.length === 0 ? '<div style="text-align:center;padding:40px 20px;"><div style="font-size:40px">👁️</div><p style="color:var(--white40);font-size:14px;margin-top:12px;">No views yet.</p></div>' : '') +
-    '<div id="viewList"></div></div>';
-  var l = document.getElementById('viewList'); if (!l) return;
-  d.forEach(function(v){
-    var p = v.profiles; if (!p) return;
-    var f = faithByKey(p.religion||'Other');
-    l.innerHTML += '<div class="card" style="cursor:pointer" onclick="viewProfile(\''+p.id+'\')"><div style="display:flex;gap:10px;align-items:center">'+
-      '<div class="avatar" style="'+(p.photo_url?'background-image:url('+p.photo_url+')':'')+';border-color:'+f.color+';">'+(p.photo_url?'':'<span style="font-size:18px;opacity:.3">👤</span>')+'</div>'+
-      '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600;color:#fff;">'+p.full_name+', '+p.age+'</h3>'+
-      '<p style="font-size:11px;color:'+f.color+';">'+f.icon+' '+(p.denomination||p.religion||'')+'</p></div>'+
-      '<p style="font-size:10px;color:var(--w50);">'+new Date(v.viewed_at).toLocaleDateString()+'</p></div></div>';
-  });
-}
-
+function showInt(t) { if(typeof ldInt === 'function') ldInt(t); }
+async function actInt(id,st) { await sb.from('interests').update({status:st}).eq('id',id); if(typeof ldInt==='function') ldInt('received'); }
 async function openChat(pid) {}
-async function ldMsgs()      {}
-async function sendMsg()     {}
+async function ldMsgs() {}
+async function sendMsg() {}
 
 // ═══════════════════════════════════════════ FAITH CARDS UI
 function renderFaithCards(containerId, arr) {
-  var c = document.getElementById(containerId);
-  if (!c) return;
+  var c = document.getElementById(containerId); if (!c) return;
   c.innerHTML = '';
   FAITH_CARDS.forEach(function(f) {
     var on = arr.indexOf(f.key) > -1;
     var card = document.createElement('div');
-    card.style.cssText = [
-      'display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;',
-      'cursor:pointer;transition:all .15s;margin-bottom:7px;',
-      'border:1.5px solid '+(on?f.color:'rgba(255,255,255,.08)')+';',
-      'background:'+(on?'rgba(255,255,255,.07)':'rgba(255,255,255,.02)')+';'
-    ].join('');
-    card.innerHTML =
-      '<span style="font-size:22px;flex-shrink:0;">'+f.icon+'</span>'+
-      '<div style="flex:1;min-width:0;">'+
-        '<p style="font-size:13px;font-weight:700;color:'+(on?'#fff':'rgba(255,255,255,.5)')+';margin:0;">'+f.key+'</p>'+
-        (f.denoms?'<p style="font-size:10px;color:rgba(255,255,255,.3);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.denoms+'</p>':'')+
-      '</div>'+
-      '<span style="flex-shrink:0;font-size:16px;color:'+f.color+';width:20px;text-align:center;">'+(on?'✓':'')+'</span>';
-    card.onclick = function() {
-      var ix = arr.indexOf(f.key);
-      if (ix > -1) arr.splice(ix, 1); else arr.push(f.key);
-      renderFaithCards(containerId, arr);
-    };
+    card.style.cssText = 'display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;cursor:pointer;transition:all .15s;margin-bottom:7px;border:1.5px solid '+(on?f.color:'rgba(255,255,255,.08)')+';background:'+(on?'rgba(255,255,255,.07)':'rgba(255,255,255,.02)')+';';
+    card.innerHTML = '<span style="font-size:22px;flex-shrink:0;">'+f.icon+'</span><div style="flex:1;min-width:0;"><p style="font-size:13px;font-weight:700;color:'+(on?'#fff':'rgba(255,255,255,.5)')+';margin:0;">'+f.key+'</p>'+(f.denoms?'<p style="font-size:10px;color:rgba(255,255,255,.3);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+f.denoms+'</p>':'')+'</div><span style="flex-shrink:0;font-size:16px;color:'+f.color+';width:20px;text-align:center;">'+(on?'✓':'')+'</span>';
+    card.onclick = function() { var ix=arr.indexOf(f.key); if(ix>-1) arr.splice(ix,1); else arr.push(f.key); renderFaithCards(containerId,arr); };
     c.appendChild(card);
   });
 }
@@ -234,7 +168,7 @@ function togglePw(inputId, btn) {
 function shareApp() {
   var code = P ? P.id.slice(0,8) : 'friend';
   var link = 'https://beginforever.in?ref=' + code;
-  var msg  = "I just joined Begin Forever — India's first 100% ID-verified matrimony platform! Join: " + link;
+  var msg = "I just joined Begin Forever — India's first 100% ID-verified matrimony platform! Join: " + link;
   if (navigator.share) navigator.share({title:'Begin Forever', text:msg, url:link});
   else if (navigator.clipboard) navigator.clipboard.writeText(link).then(function(){ alert('Referral link copied! 🔗'); });
 }
@@ -264,16 +198,15 @@ function planTierFromType(planType) {
 async function getActiveSub() {
   if (!U) return null;
   try {
-    var r = await sb.from('subscriptions').select('*').eq('user_id', U.id).eq('status','active')
-      .gt('expires_at', new Date().toISOString()).order('expires_at',{ascending:false}).limit(1);
+    var r = await sb.from('subscriptions').select('*').eq('user_id',U.id).eq('status','active')
+      .gt('expires_at',new Date().toISOString()).order('expires_at',{ascending:false}).limit(1);
     return (r.data && r.data.length > 0) ? r.data[0] : null;
   } catch(x) { return null; }
 }
 
-// Founding members get 1 free Premium week from launch day
 function isFoundingWithinFreeWeek() {
   if (!P || !P.is_founding_member) return false;
-  var launchPlus7 = new Date(LAUNCH.getTime() + 7 * 24 * 60 * 60 * 1000);
+  var launchPlus7 = new Date(LAUNCH.getTime() + 7*24*60*60*1000);
   return new Date() >= LAUNCH && new Date() < launchPlus7;
 }
 
@@ -288,37 +221,34 @@ async function hasPremium() {
 async function hasAnySub() {
   if (P && P.is_admin) return true;
   if (isFoundingWithinFreeWeek()) return true;
-  var sub = await getActiveSub();
-  return sub !== null;
+  return (await getActiveSub()) !== null;
 }
 
-// Faith prefs = Premium only (pre-launch: always open so users can configure early)
 async function openFaithPrefsGated() {
   if (isPreLaunch()) { openFaithPrefs(); return; }
   var ok = await hasPremium();
-  if (ok) { openFaithPrefs(); }
-  else { showSubscribeModal('faith'); }
+  if (ok) openFaithPrefs();
+  else showSubscribeModal('faith');
 }
 
-// Auto-activate founding member free Premium on first post-launch load
 async function maybeActivateFoundingPremium() {
   if (!P || !P.is_founding_member || isPreLaunch()) return;
   if (P.founding_premium_activated) return;
   try {
-    var existing = await sb.from('subscriptions').select('id').eq('user_id', U.id).eq('plan_type','Founding Premium').limit(1);
+    var existing = await sb.from('subscriptions').select('id').eq('user_id',U.id).eq('plan_type','Founding Premium').limit(1);
     if (existing.data && existing.data.length > 0) return;
-    var launchPlus7 = new Date(LAUNCH.getTime() + 7 * 24 * 60 * 60 * 1000);
+    var launchPlus7 = new Date(LAUNCH.getTime() + 7*24*60*60*1000);
     await sb.from('subscriptions').insert({
-      user_id: U.id, plan_type: 'Founding Premium', plan_tier: 'premium', amount_paid: 0,
-      status: 'active', started_at: LAUNCH.toISOString(), expires_at: launchPlus7.toISOString()
+      user_id:U.id, plan_type:'Founding Premium', plan_tier:'premium', amount_paid:0,
+      status:'active', started_at:LAUNCH.toISOString(), expires_at:launchPlus7.toISOString()
     });
-    await sb.from('profiles').update({founding_premium_activated: true}).eq('id', U.id);
+    await sb.from('profiles').update({founding_premium_activated:true}).eq('id',U.id);
     if (P) P.founding_premium_activated = true;
   } catch(x) { console.warn('Founding premium activation:', x); }
 }
 
-// Keep legacy alias working
-function isFoundingMember() { return P && P.is_founding_member; }
+// Legacy aliases
+function isFoundingMember() { return !!(P && P.is_founding_member); }
 function checkSubscription(onAllowed) {
   hasAnySub().then(function(ok){ if(ok) onAllowed(); else showSubscribeModal(); });
 }
@@ -343,25 +273,25 @@ function closeSubscribeModal() {
 // ═══════════════════════════════════════════ RAZORPAY
 function payRzp(plan, amt) {
   var tier = planTierFromType(plan);
-  var days = plan.indexOf('Quarterly') !== -1 ? 90 : plan.indexOf('Monthly') !== -1 ? 30 : 7;
+  var days = plan.indexOf('Quarterly')!==-1 ? 90 : plan.indexOf('Monthly')!==-1 ? 30 : 7;
   var opts = {
-    key: 'rzp_live_SausbldU6Vqpy0', amount: amt, currency: 'INR',
-    name: 'Begin Forever', description: plan + ' Plan',
+    key:'rzp_live_SausbldU6Vqpy0', amount:amt, currency:'INR',
+    name:'Begin Forever', description:plan+' Plan',
     handler: async function(resp) {
       try {
         await sb.from('subscriptions').insert({
-          user_id: U.id, plan_type: plan, plan_tier: tier, amount_paid: amt,
-          razorpay_payment_id: resp.razorpay_payment_id, status: 'active',
-          started_at: new Date().toISOString(),
-          expires_at: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+          user_id:U.id, plan_type:plan, plan_tier:tier, amount_paid:amt,
+          razorpay_payment_id:resp.razorpay_payment_id, status:'active',
+          started_at:new Date().toISOString(),
+          expires_at:new Date(Date.now()+days*24*60*60*1000).toISOString()
         });
       } catch(x) {}
       closeSubscribeModal();
-      alert('✦ Welcome to ' + plan + '!\nYour plan is now active.');
+      alert('✦ Welcome to '+plan+'!\nYour plan is now active.');
       await loadP();
     },
-    prefill: {name: P?P.full_name:'', email: P?P.email:'', contact: P?P.phone:''},
-    theme: {color: '#3B0764'}
+    prefill:{name:P?P.full_name:'', email:P?P.email:'', contact:P?P.phone:''},
+    theme:{color:'#3B0764'}
   };
   new Razorpay(opts).open();
 }
@@ -374,30 +304,30 @@ function updatePricingCountdown() {
     var overlay = document.querySelector('.pricing-teaser-overlay');
     if (overlay) overlay.style.display = 'none';
     var blur = document.querySelector('.pricing-blur');
-    if (blur) { blur.style.filter = 'none'; blur.style.opacity = '1'; blur.style.pointerEvents = ''; }
+    if (blur) { blur.style.filter='none'; blur.style.opacity='1'; blur.style.pointerEvents=''; }
     var fm = document.getElementById('pricingFounderMsg');
     if (fm && P && P.is_founding_member && !P.founding_premium_activated) fm.style.display = 'block';
     return;
   }
-  var days = Math.max(0, Math.floor(diff / 86400000));
-  var hrs  = Math.max(0, Math.floor((diff % 86400000) / 3600000));
-  var mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
-  var pad  = function(n) { return String(Math.max(0, n)).padStart(2, '0'); };
-  var d = document.getElementById('pcDays'); if (d) d.textContent = pad(days);
-  var h = document.getElementById('pcHrs');  if (h) h.textContent = pad(hrs);
-  var m = document.getElementById('pcMins'); if (m) m.textContent = pad(mins);
+  var days = Math.max(0,Math.floor(diff/86400000));
+  var hrs  = Math.max(0,Math.floor((diff%86400000)/3600000));
+  var mins = Math.max(0,Math.floor((diff%3600000)/60000));
+  var pad = function(n){ return String(Math.max(0,n)).padStart(2,'0'); };
+  var d=document.getElementById('pcDays'); if(d) d.textContent=pad(days);
+  var h=document.getElementById('pcHrs');  if(h) h.textContent=pad(hrs);
+  var m=document.getElementById('pcMins'); if(m) m.textContent=pad(mins);
 }
 
 // ═══════════════════════════════════════════ HAMBURGER MENU
 var _menuOpen = false;
 function toggleMenu() {
   _menuOpen = !_menuOpen;
-  var d  = document.getElementById('menuDrawer');
-  var b1 = document.getElementById('mb1');
-  var b2 = document.getElementById('mb2');
-  var b3 = document.getElementById('mb3');
-  if (d)  d.style.maxHeight  = _menuOpen ? '600px' : '0';
-  if (b1) b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
-  if (b2) b2.style.opacity   = _menuOpen ? '0' : '1';
-  if (b3) b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
+  var d=document.getElementById('menuDrawer');
+  var b1=document.getElementById('mb1');
+  var b2=document.getElementById('mb2');
+  var b3=document.getElementById('mb3');
+  if(d)  d.style.maxHeight  = _menuOpen ? '600px' : '0';
+  if(b1) b1.style.transform = _menuOpen ? 'translateY(6.5px) rotate(45deg)' : '';
+  if(b2) b2.style.opacity   = _menuOpen ? '0' : '1';
+  if(b3) b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
 }
