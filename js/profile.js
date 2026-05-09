@@ -206,39 +206,6 @@ async function goNext(){
 }
 
 // ═══════════════════════════════════════════ MY PROFILE TAB
-function renP(){
-  if(!P) return;
-  var f=faithByKey(P.religion||'Other');
-  var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
-  var ph=ap[0]?'background-image:url('+ap[0]+');background-size:cover;background-position:center':'';
-  var heroEl=document.getElementById('profileHero');
-  if(heroEl) heroEl.innerHTML=
-    '<div style="width:80px;height:80px;border-radius:50%;margin:0 auto;border:2px solid '+f.color+';'+ph+';background-color:var(--dark3);display:flex;align-items:center;justify-content:center;">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
-    '<h2 style="font-family:Cinzel,serif;font-size:20px;margin-top:10px;color:#fff;">'+P.full_name+'</h2>'+
-    '<p style="color:'+f.color+';font-size:12px;margin-top:3px;">'+f.icon+' '+(P.denomination?P.denomination+' · ':'')+P.religion+'</p>'+
-    '<p style="color:var(--w50);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
-    '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
-    (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'');
-
-  var h='';
-  [{l:'Email',v:P.email},{l:'Phone',v:P.phone},{l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
-   {l:'Age',v:P.age},{l:'Education',v:P.education},{l:'Occupation',v:P.occupation},
-   {l:'Mother Tongue',v:P.mother_tongue},{l:'Marital Status',v:P.marital_status},
-   {l:'Height',v:P.height_cm?P.height_cm+' cm':''}].forEach(function(d){
-    if(d.v) h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);">'+
-      '<span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span>'+
-      '<span style="font-size:13px;color:var(--w80);font-weight:600;">'+d.v+'</span></div>';
-  });
-  // Bio shown here in profile (not in setup)
-  if(P.bio) h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--w08);">'+
-    '<p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">About Me</p>'+
-    '<p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
-
-  var mi=document.getElementById('mInfo'); if(mi) mi.innerHTML=h;
-  renderFaithPrefCard();
-  loadStats();
-  if(typeof renderReferralCard==='function') renderReferralCard();
-}
 
 // ═══════════════════════════════════════════ FAITH PREF CARD (profile tab)
 function renderFaithPrefCard(){
@@ -395,22 +362,7 @@ async function saveFaithPrefs() {
   if (btn) { btn.disabled = false; btn.textContent = 'Save Preferences ✦'; }
 }
 // ═══════════════════════════════════════════ EDIT PROFILE (includes bio)
-function openEdit(){
-  document.getElementById('eBio').value=P.bio||'';
-  document.getElementById('eEdu').value=P.education||'';
-  document.getElementById('eOcc').value=P.occupation||'';
-  document.getElementById('ePh').value=P.phone||'';
-  editPhotos=[null,null,null,null,null];
-  var g=document.getElementById('epGrid'); g.innerHTML='';
-  var urls=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url];
-  for(var i=0;i<5;i++){
-    var has=urls[i]&&urls[i].length>0;
-    g.innerHTML+='<div class="photo-slot" id="eps'+i+'" onclick="document.getElementById(\'epi'+i+'\').click()" style="'+(has?'background-image:url('+urls[i]+');border-color:var(--gold);border-style:solid':'')+'">'+
-      '<span style="font-size:13px;opacity:.4">📷</span>'+
-      '<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/></div>';
-  }
-  document.getElementById('editModal').classList.add('show');
-}
+
 function closeEdit(){document.getElementById('editModal').classList.remove('show');}
 
 function pickEP(i,inp){
@@ -420,30 +372,6 @@ function pickEP(i,inp){
   s.style.backgroundImage='url('+URL.createObjectURL(f)+')';
   s.style.borderColor='var(--gold)'; s.style.borderStyle='solid';
   s.innerHTML='<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/>';
-}
-
-async function saveEdit(){
-  var upd={
-    bio:document.getElementById('eBio').value.trim(),
-    education:document.getElementById('eEdu').value.trim(),
-    occupation:document.getElementById('eOcc').value.trim(),
-    phone:document.getElementById('ePh').value.trim()
-  };
-  for(var i=0;i<5;i++){
-    if(editPhotos[i]){
-      var ext=editPhotos[i].name.split('.').pop();
-      var path=U.id+'/p'+i+'_'+Date.now()+'.'+ext;
-      var r=await sb.storage.from('profile-photos').upload(path,editPhotos[i],{upsert:true});
-      if(!r.error){
-        var url=sb.storage.from('profile-photos').getPublicUrl(path).data.publicUrl;
-        if(i===0) upd.photo_url=url; else upd['photo_'+(i+1)+'_url']=url;
-      }
-    }
-  }
-  await sb.from('profiles').update(upd).eq('id',U.id);
-  var r2=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
-  P=r2.data[0]; closeEdit(); renP();
-  alert('Profile updated! ✅');
 }
 
 // ═══════════════════════════════════════════ PROFILE VIEW MODAL
