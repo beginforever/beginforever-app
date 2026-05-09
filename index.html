@@ -1223,5 +1223,82 @@ select.field option { background: var(--dark2); color: var(--white); }
 <script src="js/profile.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/boot.js"></script>
+  <div id="faithModal" onclick="closeFaithPrefs()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
+  <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;background:#1C0530;border-radius:24px 24px 0 0;padding:0;overflow:hidden;max-height:90vh;overflow-y:auto;">
+
+    <!-- Header -->
+    <div style="background:#280840;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1;">
+      <div>
+        <h3 style="font-family:'Cinzel',serif;color:#F5C842;font-size:16px;margin:0;">⚙️ Faith Preferences</h3>
+        <p style="font-size:11px;color:rgba(255,255,255,.4);margin:3px 0 0;">Control who you see &amp; who can reach you</p>
+      </div>
+      <button onclick="closeFaithPrefs()" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;font-family:'Nunito',sans-serif;">✕</button>
+    </div>
+
+    <div style="padding:20px 18px 32px;">
+
+      <!-- My Faith badge -->
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:10px 14px;margin-bottom:20px;">
+        <span id="fpMyFaithIcon" style="font-size:22px;">✝️</span>
+        <div>
+          <p style="font-size:10px;color:rgba(212,160,23,.8);text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">My Faith</p>
+          <p style="font-size:13px;color:#fff;font-weight:700;margin:0;" id="fpMyFaithName">Christian</p>
+          <p style="font-size:11px;color:rgba(255,255,255,.5);margin:0;" id="fpMyFaithDenom"></p>
+        </div>
+      </div>
+
+      <!-- Browse Religion -->
+      <div style="margin-bottom:20px;">
+        <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🔍 I want to browse profiles from</p>
+        <select id="fpBrowseReligion" class="field" onchange="fpSyncDenom('browse')" style="margin-bottom:10px;">
+          <option value="all">All Faiths</option>
+          <option value="Christian">✝️ Christian</option>
+          <option value="Hindu">🕉️ Hindu</option>
+          <option value="Muslim">☪️ Muslim</option>
+          <option value="Sikh">☬ Sikh</option>
+          <option value="Jain">🕊️ Jain</option>
+          <option value="Buddhist">☸️ Buddhist</option>
+          <option value="Parsi">🔥 Parsi</option>
+          <option value="Jewish">✡️ Jewish</option>
+          <option value="Spiritual">🌱 Spiritual / No Religion</option>
+          <option value="Other">🌐 Other</option>
+        </select>
+        <div id="fpBrowseDenomWrap" style="display:none;">
+          <p style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px;">Specific denomination (optional)</p>
+          <div id="fpBrowseChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+        </div>
+      </div>
+
+      <!-- Receive Religion -->
+      <div style="margin-bottom:24px;">
+        <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💌 I want to receive interest from</p>
+        <select id="fpReceiveReligion" class="field" onchange="fpSyncDenom('receive')" style="margin-bottom:10px;">
+          <option value="all">All Faiths</option>
+          <option value="Christian">✝️ Christian</option>
+          <option value="Hindu">🕉️ Hindu</option>
+          <option value="Muslim">☪️ Muslim</option>
+          <option value="Sikh">☬ Sikh</option>
+          <option value="Jain">🕊️ Jain</option>
+          <option value="Buddhist">☸️ Buddhist</option>
+          <option value="Parsi">🔥 Parsi</option>
+          <option value="Jewish">✡️ Jewish</option>
+          <option value="Spiritual">🌱 Spiritual / No Religion</option>
+          <option value="Other">🌐 Other</option>
+        </select>
+        <div id="fpReceiveDenomWrap" style="display:none;">
+          <p style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px;">Specific denomination (optional)</p>
+          <div id="fpReceiveChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+        </div>
+      </div>
+
+      <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.15);border-radius:10px;padding:10px 12px;margin-bottom:18px;font-size:11px;color:rgba(255,255,255,.45);line-height:1.6;">
+        🔒 These settings only affect <strong style="color:rgba(255,255,255,.7);">your</strong> discovery feed and who can send you interest. Other members cannot see your preferences.
+      </div>
+
+      <button id="fpSaveBtn" onclick="saveFaithPrefs()" style="width:100%;padding:14px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;">Save Preferences ✦</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
