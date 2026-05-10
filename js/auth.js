@@ -57,11 +57,17 @@ async function doRegister() {
       err.textContent = res.error.message; err.style.display = 'block'; return;
     }
 
-    U = res.data.user;
+    var newUser = res.data && res.data.user;
+    if (!newUser) {
+      err.textContent = 'Account creation failed. Please try again.';
+      err.style.display = 'block'; return;
+    }
+
+    U = newUser;
 
     if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
-    // Welcome email
+    // Welcome email (fire-and-forget)
     try {
       fetch(SB_URL + '/functions/v1/smart-function', {
         method: 'POST',
@@ -70,10 +76,10 @@ async function doRegister() {
       });
     } catch(x) {}
 
-    // Save referral if any
+    // Save referral
     if (U) { try { await saveReferral(U.id, em); } catch(x) {} }
 
-    // Set flag BEFORE loadP so onAuthStateChange SIGNED_IN doesn't race
+    // Block onAuthStateChange SIGNED_IN from calling loadP() a second time
     _justRegistered = true;
     _loadingProfile = true;
     await loadP();

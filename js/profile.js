@@ -1,5 +1,9 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
+  // ── FIX: capture flag BEFORE any await to prevent race with onAuthStateChange ──
+  var isNewUser = _justRegistered;
+  _justRegistered = false;
+
   if (!U) { showScr('loginScreen'); return; }
   var profileData = null;
   try {
@@ -9,17 +13,16 @@ async function loadP() {
   } catch(x) { showScr('loginScreen'); return; }
   P = profileData;
   if (!P) {
-    if (_justRegistered) {
-      _justRegistered = false;
+    if (isNewUser) {
       showScr('setupScreen'); step = 1; updUI();
     } else {
       await sb.auth.signOut(); U = null; showScr('loginScreen');
     }
     return;
   }
-  if (P.status === 'pending')       { showScr('pendingScreen'); return; }
-  if (P.status === 'rejected')      { renderRejectedScreen(P); showScr('rejectedScreen'); return; }
-  if (P.status === 'resubmitting')  { prefillSetupWizard(P); showScr('setupScreen'); step=1; updUI(); return; }
+  if (P.status === 'pending')      { showScr('pendingScreen'); return; }
+  if (P.status === 'rejected')     { renderRejectedScreen(P); showScr('rejectedScreen'); return; }
+  if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step=1; updUI(); return; }
   try { fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); } catch(x) { fpBrowse  = FAITHS.map(function(f){return f.key;}); }
   try { fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); } catch(x) { fpReceive = FAITHS.map(function(f){return f.key;}); }
   if (P.is_admin) {
@@ -35,7 +38,7 @@ async function loadP() {
   showScr('mainApp'); goTab('home'); checkNotifs();
 }
 
-// ═══════════════════════════════════════════ SETUP WIZARD — 5 steps, no bio, no faith
+// ═══════════════════════════════════════════ SETUP WIZARD — 5 steps
 function toggleDenom() {
   var r      = document.getElementById('fReligion').value;
   var denoms = DENOM_MAP[r] || [];
@@ -197,16 +200,14 @@ async function goNext(){
         })
       });
     }catch(x){}
-  P=pd; if(!isResubmit) clearReferrerId();
-showScr('pendingScreen');
-if (!isResubmit && typeof fbq !== 'undefined') fbq('track', 'CompleteRegistration');
+    P=pd; if(!isResubmit) clearReferrerId();
+    showScr('pendingScreen');
+    if (!isResubmit && typeof fbq !== 'undefined') fbq('track', 'CompleteRegistration');
   }catch(ex){
     if(e){e.textContent=ex.message||'Error. Please try again.';e.style.display='block';}
     btn.disabled=false;btn.textContent='Submit for Review ✦';
   }
 }
-
-// ═══════════════════════════════════════════ MY PROFILE TAB
 
 // ═══════════════════════════════════════════ FAITH PREF CARD (profile tab)
 function renderFaithPrefCard(){
@@ -241,10 +242,10 @@ function renderFpPills(containerId,arr){
   }).join('');
 }
 
-// ═══════════════════════════════════════════ FAITH PREFS MODAL — styled multi-select
+// ═══════════════════════════════════════════ FAITH PREFS MODAL
 var fpBrowseDenoms  = [];
 var fpReceiveDenoms = [];
- 
+
 var FP_DENOM_MAP = {
   Christian: ['Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','SDA','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],
   Hindu:     ['Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],
@@ -254,9 +255,8 @@ var FP_DENOM_MAP = {
   Buddhist:  ['Theravada','Mahayana','Vajrayana','Zen'],
   Jewish:    ['Orthodox','Conservative','Reform']
 };
- 
+
 function openFaithPrefs() {
-  // My Faith badge
   var f = faithByKey(P && P.religion ? P.religion : 'Other');
   var iconEl  = document.getElementById('fpMyFaithIcon');
   var nameEl  = document.getElementById('fpMyFaithName');
@@ -264,8 +264,6 @@ function openFaithPrefs() {
   if (iconEl)  iconEl.textContent  = f.icon || '🌐';
   if (nameEl)  nameEl.textContent  = (P && P.religion)    || 'Not set';
   if (denomEl) denomEl.textContent = (P && P.denomination) || '';
- 
-  // Restore saved Browse prefs
   var savedBrowse = [];
   try { savedBrowse = JSON.parse((P && P.faith_browse) || '[]'); } catch(e) {}
   var bRel = (savedBrowse.length === 1) ? savedBrowse[0] : 'all';
@@ -273,8 +271,6 @@ function openFaithPrefs() {
   if (bRelSel) { bRelSel.value = bRel; }
   fpBrowseDenoms = [];
   _buildFpChips('browse', bRel, fpBrowseDenoms);
- 
-  // Restore saved Receive prefs
   var savedReceive = [];
   try { savedReceive = JSON.parse((P && P.faith_receive) || '[]'); } catch(e) {}
   var rRel = (savedReceive.length === 1) ? savedReceive[0] : 'all';
@@ -282,18 +278,15 @@ function openFaithPrefs() {
   if (rRelSel) { rRelSel.value = rRel; }
   fpReceiveDenoms = [];
   _buildFpChips('receive', rRel, fpReceiveDenoms);
- 
-  // Show modal
   var m = document.getElementById('faithModal');
   if (m) m.classList.add('show');
 }
- 
+
 function closeFaithPrefs() {
   var m = document.getElementById('faithModal');
   if (m) m.classList.remove('show');
 }
- 
-// Called by onchange on religion <select>
+
 function fpSyncDenom(type) {
   var relId = type === 'browse' ? 'fpBrowseReligion' : 'fpReceiveReligion';
   var rel = document.getElementById(relId).value;
@@ -301,30 +294,24 @@ function fpSyncDenom(type) {
   else fpReceiveDenoms = [];
   _buildFpChips(type, rel, []);
 }
- 
+
 function _buildFpChips(type, religion, selectedDenoms) {
   var wrapId = type === 'browse' ? 'fpBrowseDenomWrap' : 'fpReceiveDenomWrap';
   var contId = type === 'browse' ? 'fpBrowseChips'     : 'fpReceiveChips';
   var wrap = document.getElementById(wrapId);
   var cont = document.getElementById(contId);
   if (!wrap || !cont) return;
- 
   var list = FP_DENOM_MAP[religion] || [];
   if (!list.length || religion === 'all') {
-    wrap.style.display = 'none';
-    cont.innerHTML = '';
-    return;
+    wrap.style.display = 'none'; cont.innerHTML = ''; return;
   }
- 
   wrap.style.display = '';
   cont.innerHTML = '';
   var state = type === 'browse' ? fpBrowseDenoms : fpReceiveDenoms;
- 
   list.forEach(function(d) {
     var on = state.indexOf(d) > -1;
     var chip = document.createElement('button');
-    chip.type = 'button';
-    chip.textContent = d;
+    chip.type = 'button'; chip.textContent = d;
     chip.style.cssText =
       'padding:5px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;' +
       'font-family:Nunito,sans-serif;transition:all .15s;margin-bottom:4px;' +
@@ -333,14 +320,13 @@ function _buildFpChips(type, religion, selectedDenoms) {
       'color:' + (on ? '#C39BD3' : 'rgba(255,255,255,.5)') + ';';
     chip.onclick = function() {
       var ix = state.indexOf(d);
-      if (ix > -1) state.splice(ix, 1);
-      else state.push(d);
+      if (ix > -1) state.splice(ix, 1); else state.push(d);
       _buildFpChips(type, religion, state);
     };
     cont.appendChild(chip);
   });
 }
- 
+
 async function saveFaithPrefs() {
   var bRel = document.getElementById('fpBrowseReligion').value;
   var rRel = document.getElementById('fpReceiveReligion').value;
@@ -357,22 +343,17 @@ async function saveFaithPrefs() {
     if (P) { P.faith_browse = JSON.stringify(fpBrowse); P.faith_receive = JSON.stringify(fpReceive); }
     closeFaithPrefs();
     if (typeof renderFaithPrefCard === 'function') renderFaithPrefCard();
-  } catch(x) {
-    alert('Could not save preferences. Please try again.');
-  }
+  } catch(x) { alert('Could not save preferences. Please try again.'); }
   if (btn) { btn.disabled = false; btn.textContent = 'Save Preferences ✦'; }
 }
-// ═══════════════════════════════════════════ EDIT PROFILE (includes bio)
 
+// ═══════════════════════════════════════════ EDIT PROFILE
 function closeEdit(){document.getElementById('editModal').classList.remove('show');}
 function openEdit() {
-  // Basic
   document.getElementById('eBio').value  = P.bio          || '';
   document.getElementById('eEdu').value  = P.education    || '';
   document.getElementById('eOcc').value  = P.occupation   || '';
   document.getElementById('ePh').value   = P.phone        || '';
- 
-  // Faith
   var eRel = document.getElementById('eReligion');
   if (eRel) { eRel.value = P.religion || ''; updateEditReligionDenoms(); }
   setTimeout(function(){
@@ -384,36 +365,24 @@ function openEdit() {
   var efi = document.getElementById('eFaithImportance');  if (efi) efi.value = P.faith_importance || '';
   var eib = document.getElementById('eIsBaptised');       if (eib) eib.value = P.is_baptised !== undefined && P.is_baptised !== null ? String(P.is_baptised) : '';
   var esr = document.getElementById('eScripture');        if (esr) esr.value = P.scripture || '';
- 
-  // Lifestyle
   var ed = document.getElementById('eDiet');     if (ed) ed.value = P.diet     || '';
   var ee = document.getElementById('eExercise'); if (ee) ee.value = P.exercise || '';
   var es = document.getElementById('eSmoking');  if (es) es.value = P.smoking  || '';
   var edr= document.getElementById('eDrinking'); if (edr) edr.value = P.drinking || '';
- 
-  // Hobbies
   _selectedHobbies = [];
   try { _selectedHobbies = JSON.parse(P.hobbies || '[]'); } catch(x) {}
   renderHobbyChips('editHobbyChips', _selectedHobbies);
- 
-  // Looking for
   var elf = document.getElementById('eLookingFor'); if (elf) elf.value = P.looking_for || '';
- 
-  // Family
   var eft  = document.getElementById('eFamilyType');   if (eft)  eft.value  = P.family_type   || '';
   var efv  = document.getElementById('eFamilyValues'); if (efv)  efv.value  = P.family_values  || '';
   var efao = document.getElementById('eFatherOcc');    if (efao) efao.value = P.father_occupation || '';
   var emao = document.getElementById('eMotherOcc');    if (emao) emao.value = P.mother_occupation || '';
   var esib = document.getElementById('eSiblings');     if (esib) esib.value = P.siblings || '';
- 
-  // Partner prefs
   var epamin = document.getElementById('ePrefAgeMin');  if (epamin) epamin.value = P.pref_age_min || '';
   var epamax = document.getElementById('ePrefAgeMax');  if (epamax) epamax.value = P.pref_age_max || '';
   var epm    = document.getElementById('ePrefMarital'); if (epm)    epm.value    = P.pref_marital_status || '';
   var epe    = document.getElementById('ePrefEdu');     if (epe)    epe.value    = P.pref_education || '';
   var epc    = document.getElementById('ePrefCity');    if (epc)    epc.value    = P.pref_city || '';
- 
-  // Photos
   editPhotos = [null,null,null,null,null];
   var g = document.getElementById('epGrid'); g.innerHTML = '';
   var urls = [P.photo_url, P.photo_2_url, P.photo_3_url, P.photo_4_url, P.photo_5_url];
@@ -425,18 +394,14 @@ function openEdit() {
   }
   document.getElementById('editModal').classList.add('show');
 }
- 
+
 async function saveEdit() {
-  if (_selectedHobbies.length > 8) {
-    alert('Please select up to 8 hobbies.'); return;
-  }
+  if (_selectedHobbies.length > 8) { alert('Please select up to 8 hobbies.'); return; }
   var upd = {
     bio:         document.getElementById('eBio').value.trim(),
     education:   document.getElementById('eEdu').value.trim(),
     occupation:  document.getElementById('eOcc').value.trim(),
     phone:       document.getElementById('ePh').value.trim(),
- 
-    // Faith
     religion:         (document.getElementById('eReligion') || {}).value || P.religion,
     denomination:     (document.getElementById('eDenom') || {}).value    || null,
     home_church:      (document.getElementById('eChurch') || {}).value   || null,
@@ -444,35 +409,23 @@ async function saveEdit() {
     faith_importance: (document.getElementById('eFaithImportance') || {}).value  || null,
     is_baptised:      (document.getElementById('eIsBaptised') || {}).value === 'true' ? true : (document.getElementById('eIsBaptised') || {}).value === 'false' ? false : null,
     scripture:        (document.getElementById('eScripture') || {}).value || null,
- 
-    // Lifestyle
     diet:     (document.getElementById('eDiet')     || {}).value || null,
     exercise: (document.getElementById('eExercise') || {}).value || null,
     smoking:  (document.getElementById('eSmoking')  || {}).value || null,
     drinking: (document.getElementById('eDrinking') || {}).value || null,
- 
-    // Hobbies
     hobbies: JSON.stringify(_selectedHobbies),
- 
-    // Looking for
     looking_for: (document.getElementById('eLookingFor') || {}).value.trim() || null,
- 
-    // Family
     family_type:        (document.getElementById('eFamilyType')   || {}).value || null,
     family_values:      (document.getElementById('eFamilyValues') || {}).value || null,
     father_occupation:  (document.getElementById('eFatherOcc')    || {}).value || null,
     mother_occupation:  (document.getElementById('eMotherOcc')    || {}).value || null,
     siblings:           (document.getElementById('eSiblings')     || {}).value || null,
- 
-    // Partner prefs
     pref_age_min:         parseInt((document.getElementById('ePrefAgeMin')  || {}).value) || null,
     pref_age_max:         parseInt((document.getElementById('ePrefAgeMax')  || {}).value) || null,
     pref_marital_status:  (document.getElementById('ePrefMarital') || {}).value || null,
     pref_education:       (document.getElementById('ePrefEdu')     || {}).value || null,
     pref_city:            (document.getElementById('ePrefCity')    || {}).value || null,
   };
- 
-  // Photos
   for (var i = 0; i < 5; i++) {
     if (editPhotos[i]) {
       var ext  = editPhotos[i].name.split('.').pop();
@@ -484,25 +437,18 @@ async function saveEdit() {
       }
     }
   }
- 
   await sb.from('profiles').update(upd).eq('id', U.id);
   var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
   P = r2.data[0];
-  closeEdit();
-  renP();
-  alert('Profile updated! ✅');
+  closeEdit(); renP(); alert('Profile updated! ✅');
 }
- 
-// ─────────────────────────────────────────────────────────────
-// renP() — Full enriched profile tab render
-// REPLACE the existing renP() in profile.js with this
-// ─────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════ renP — full profile tab render
 function renP() {
   if (!P) return;
   var f = faithByKey(P.religion || 'Other');
   var ap = [P.photo_url, P.photo_2_url, P.photo_3_url, P.photo_4_url, P.photo_5_url].filter(Boolean);
   var ph = ap[0] ? 'background-image:url('+ap[0]+');background-size:cover;background-position:center' : '';
- 
   var heroEl = document.getElementById('profileHero');
   if (heroEl) heroEl.innerHTML =
     '<div style="width:80px;height:80px;border-radius:50%;margin:0 auto;border:2px solid '+f.color+';'+ph+';background-color:var(--dark3);display:flex;align-items:center;justify-content:center;">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
@@ -511,13 +457,10 @@ function renP() {
     '<p style="color:var(--w50);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
     '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
     (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'');
- 
-  // Basic info rows
   var h = '';
   [{l:'Email',v:P.email?P.email.replace(/(.{2}).+(@.+)/,'$1***$2'):''},
- {l:'Phone',v:P.phone?P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2'):''},
- {l:'Age',v:P.age},
-   {l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
+   {l:'Phone',v:P.phone?P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2'):''},
+   {l:'Age',v:P.age},{l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
    {l:'Education',v:P.education},{l:'Occupation',v:P.occupation},
    {l:'Mother Tongue',v:P.mother_tongue},{l:'Marital Status',v:P.marital_status},
    {l:'Height',v:P.height_cm?P.height_cm+' cm':''}
@@ -530,10 +473,7 @@ function renP() {
     '<p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">About Me</p>'+
     '<p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
   var mi = document.getElementById('mInfo'); if (mi) mi.innerHTML = h;
- 
-  // Hobbies section
-  var hobbies = [];
-  try { hobbies = JSON.parse(P.hobbies || '[]'); } catch(e) {}
+  var hobbies = []; try { hobbies = JSON.parse(P.hobbies || '[]'); } catch(e) {}
   var hobEl = document.getElementById('profileHobbies');
   if (hobEl) {
     if (hobbies.length) {
@@ -544,15 +484,11 @@ function renP() {
       }).join('');
     } else hobEl.style.display = 'none';
   }
- 
-  // Looking for section
   var lfEl = document.getElementById('profileLookingFor');
   if (lfEl) {
     if (P.looking_for) { lfEl.style.display=''; var lft=document.getElementById('lookingForText'); if(lft) lft.textContent=P.looking_for; }
     else lfEl.style.display='none';
   }
- 
-  // Faith & Beliefs
   var fbEl = document.getElementById('profileFaithBeliefs');
   if (fbEl) {
     var frows='';
@@ -564,8 +500,6 @@ function renP() {
     fbEl.style.display = frows ? '' : 'none';
     var fbc = document.getElementById('faithBeliefsContent'); if (fbc) fbc.innerHTML = frows;
   }
- 
-  // Lifestyle
   var lsEl = document.getElementById('profileLifestyle');
   if (lsEl) {
     var lrows='';
@@ -576,18 +510,15 @@ function renP() {
     lsEl.style.display = lrows ? '' : 'none';
     var lsc = document.getElementById('lifestyleContent'); if (lsc) lsc.innerHTML = lrows;
   }
- 
-  // Privacy badge
   var pvb = document.getElementById('privacyBadge');
   if (pvb) pvb.textContent =
     'Photos: ' + (P.photos_visible_to==='all'?'Everyone':P.photos_visible_to==='interests_only'?'Interests only':'Hidden') +
     ' · Contact: '+(P.contact_visible_to==='premium'?'Premium members':P.contact_visible_to==='interests_only'?'Interests only':'Hidden');
- 
   renderFaithPrefCard();
   loadStats();
   if (typeof renderReferralCard === 'function') renderReferralCard();
 }
- 
+
 function pickEP(i,inp){
   var f=inp.files[0]; if(!f) return;
   editPhotos[i]=f;
@@ -678,11 +609,8 @@ function prefillSetupWizard(p){
     photos=[null,null,null,null,null]; idFile=null;
   },100);
 }
-// ═══════════════════════════════════════════════════════════════
-// PROFILE ENRICHMENT — paste these functions into js/profile.js
-// ═══════════════════════════════════════════════════════════════
 
-// ── HOBBY / INTEREST CHIPS ────────────────────────────────────
+// ═══════════════════════════════════════════ HOBBY CHIPS
 var ALL_HOBBIES = [
   'Reading','Travel','Music','Movies','Cooking','Photography',
   'Fitness','Yoga','Hiking','Cricket','Football','Badminton',
@@ -690,7 +618,6 @@ var ALL_HOBBIES = [
   'Volunteering','Gardening','Crafts','Writing','Meditation',
   'Fashion','Foodie','Cars','Tech','Startups'
 ];
-
 var _selectedHobbies = [];
 
 function renderHobbyChips(containerId, selectedArr) {
@@ -699,8 +626,7 @@ function renderHobbyChips(containerId, selectedArr) {
   ALL_HOBBIES.forEach(function(h) {
     var on = selectedArr.indexOf(h) > -1;
     var chip = document.createElement('button');
-    chip.type = 'button';
-    chip.textContent = h;
+    chip.type = 'button'; chip.textContent = h;
     chip.style.cssText =
       'padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;' +
       'font-family:Nunito,sans-serif;transition:all .15s;margin:3px;' +
@@ -716,62 +642,12 @@ function renderHobbyChips(containerId, selectedArr) {
   });
 }
 
-// ── RENDER ENRICHED PROFILE CARD ─────────────────────────────
-function renderEnrichedProfile() {
-  // Hobbies
-  var hob = document.getElementById('profileHobbies'); if (!hob) return;
-  var hobbies = [];
-  try { hobbies = JSON.parse(P.hobbies || '[]'); } catch(e) {}
-  if (hobbies.length) {
-    hob.style.display = '';
-    var pills = document.getElementById('hobbyPills');
-    if (pills) pills.innerHTML = hobbies.map(function(h) {
-      return '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(212,160,23,.35);background:rgba(212,160,23,.1);color:#F5C842;margin:2px;">' + h + '</span>';
-    }).join('');
-  } else { hob.style.display = 'none'; }
-
-  // Looking for
-  var lf = document.getElementById('profileLookingFor'); if (lf) {
-    if (P.looking_for) { lf.style.display = ''; document.getElementById('lookingForText').textContent = P.looking_for; }
-    else lf.style.display = 'none';
-  }
-
-  // Faith & Beliefs card
-  var fb = document.getElementById('profileFaithBeliefs'); if (fb) {
-    fb.style.display = '';
-    var rows = '';
-    if (P.church_attendance) rows += '<div class="info-row"><span class="info-label">Church</span><span class="info-value">' + P.church_attendance + '</span></div>';
-    if (P.faith_importance)  rows += '<div class="info-row"><span class="info-label">Faith matters</span><span class="info-value">' + P.faith_importance + '</span></div>';
-    if (P.is_baptised !== null && P.is_baptised !== undefined) rows += '<div class="info-row"><span class="info-label">Baptised</span><span class="info-value">' + (P.is_baptised ? 'Yes' : 'No') + '</span></div>';
-    if (!rows) fb.style.display = 'none';
-    var fbc = document.getElementById('faithBeliefsContent'); if (fbc) fbc.innerHTML = rows;
-  }
-
-  // Lifestyle card
-  var ls = document.getElementById('profileLifestyle'); if (ls) {
-    var lrows = '';
-    if (P.diet)     lrows += '<div class="info-row"><span class="info-label">Diet</span><span class="info-value">' + P.diet + '</span></div>';
-    if (P.smoking)  lrows += '<div class="info-row"><span class="info-label">Smoking</span><span class="info-value">' + P.smoking + '</span></div>';
-    if (P.drinking) lrows += '<div class="info-row"><span class="info-label">Drinking</span><span class="info-value">' + P.drinking + '</span></div>';
-    if (P.exercise) lrows += '<div class="info-row"><span class="info-label">Exercise</span><span class="info-value">' + P.exercise + '</span></div>';
-    ls.style.display = lrows ? '' : 'none';
-    var lsc = document.getElementById('lifestyleContent'); if (lsc) lsc.innerHTML = lrows;
-  }
-
-  // Privacy status badge
-  var pvb = document.getElementById('privacyBadge'); if (pvb) {
-    pvb.textContent =
-      'Photos: ' + (P.photos_visible_to === 'all' ? 'Everyone' : P.photos_visible_to === 'interests_only' ? 'Interests only' : 'Hidden') +
-      ' · Contact: ' + (P.contact_visible_to === 'premium' ? 'Premium members' : P.contact_visible_to === 'interests_only' ? 'Interests only' : 'Hidden');
-  }
-}
-
-// ── PRIVACY MODAL ─────────────────────────────────────────────
+// ═══════════════════════════════════════════ PRIVACY MODAL
 function openPrivacySettings() {
   var m = document.getElementById('privacyModal'); if (!m) return;
-  var pv = document.getElementById('pvPhotos');     if (pv) pv.value = P.photos_visible_to  || 'all';
-  var pc = document.getElementById('pvContact');    if (pc) pc.value = P.contact_visible_to || 'premium';
-  var pp = document.getElementById('pvProfile');    if (pp) pp.value = P.profile_visible_to || 'all';
+  var pv = document.getElementById('pvPhotos');  if (pv) pv.value = P.photos_visible_to  || 'all';
+  var pc = document.getElementById('pvContact'); if (pc) pc.value = P.contact_visible_to || 'premium';
+  var pp = document.getElementById('pvProfile'); if (pp) pp.value = P.profile_visible_to || 'all';
   m.classList.add('show');
 }
 function closePrivacySettings() {
@@ -784,19 +660,13 @@ async function savePrivacySettings() {
   var btn = document.getElementById('pvSaveBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
   try {
-    await sb.from('profiles').update({
-      photos_visible_to: pv,
-      contact_visible_to: pc,
-      profile_visible_to: pp
-    }).eq('id', U.id);
+    await sb.from('profiles').update({photos_visible_to: pv, contact_visible_to: pc, profile_visible_to: pp}).eq('id', U.id);
     if (P) { P.photos_visible_to = pv; P.contact_visible_to = pc; P.profile_visible_to = pp; }
-    closePrivacySettings();
-    renderEnrichedProfile();
+    closePrivacySettings(); renP();
   } catch(x) { alert('Could not save. Please try again.'); }
   if (btn) { btn.disabled = false; btn.textContent = 'Save Privacy Settings'; }
 }
 
-// ── UPDATE FAITH in Edit Profile ──────────────────────────────
 function updateEditReligionDenoms() {
   var r = document.getElementById('eReligion'); if (!r) return;
   var rel = r.value;
