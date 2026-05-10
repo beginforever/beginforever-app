@@ -3,9 +3,11 @@ var _justRegistered = false;
 var _loadingProfile = false;
 
 var _bootFallback = setTimeout(function() {
-  if (!_appReady) { _appReady = true; showScr('loginScreen'); }
+  if (!_appReady) { 
+    _appReady = true; 
+    if (!_justRegistered && !_loadingProfile) showScr('loginScreen'); 
+  }
 }, 5000);
-
 sb.auth.onAuthStateChange(function(ev, sess) {
   if (ev === 'INITIAL_SESSION') {
     clearTimeout(_bootFallback);
