@@ -1,39 +1,36 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
-  if (!U) { if(!_justRegistered && !_loadingProfile) showScr('loginScreen'); return; }
+  // If registration is in progress never redirect
+  if (!U) {
+    if (!_justRegistered && !_loadingProfile) {
+      var sess = await sb.auth.getSession();
+      if (sess.data && sess.data.session && sess.data.session.user) {
+        U = sess.data.session.user;
+      } else {
+        showScr('loginScreen'); return;
+      }
+    } else { return; }
+  }
 
   var profileData = null;
   try {
     var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r.error) throw r.error;
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
-  } catch(x) {
-    // Only go to login if NOT in registration flow
-    return;
-  }
+  } catch(x) { return; }
 
   P = profileData;
 
   if (!P) {
-    // New user — always go to setup, never login
-    showScr('setupScreen'); step = 1; updUI();
-    return;
+    showScr('setupScreen'); step = 1; updUI(); return;
   }
 
   if (P.status === 'pending')      { showScr('pendingScreen'); return; }
   if (P.status === 'rejected')     { renderRejectedScreen(P); showScr('rejectedScreen'); return; }
   if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step=1; updUI(); return; }
 
-  try {
-    fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); 
-  } catch(x) { 
-    fpBrowse  = FAITHS.map(function(f){return f.key;}); 
-  }
-  try {
-    fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); 
-  } catch(x) { 
-    fpReceive = FAITHS.map(function(f){return f.key;}); 
-  }
+  try { fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); } catch(x) { fpBrowse  = FAITHS.map(function(f){return f.key;}); }
+  try { fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); } catch(x) { fpReceive = FAITHS.map(function(f){return f.key;}); }
 
   if (P.is_admin) {
     var bar = document.getElementById('tBar');
@@ -165,10 +162,14 @@ async function goNext(){
     var countRes=await sb.from('profiles').select('id',{count:'exact',head:true});
     var foundingNum=(countRes.count||0)+1;
     var allFaithKeys=JSON.stringify(FAITHS.map(function(f){return f.key;}));
-    if (!U) {
-  var r = await sb.auth.getUser();
-  if (r.data && r.data.user) U = r.data.user;
-  else { if(e){e.textContent='Session expired. Please sign in again.';e.style.display='block';} btn.disabled=false; btn.textContent='Submit for Review ✦'; return; }
+if (!U) {
+  var sess = await sb.auth.getSession();
+  if (sess.data && sess.data.session && sess.data.session.user) {
+    U = sess.data.session.user;
+  } else {
+    if(e){e.textContent='Session expired. Please sign in again.';e.style.display='block';}
+    btn.disabled=false; btn.textContent='Submit for Review ✦'; return;
+  }
 }
     var isResubmit=P&&P.status==='resubmitting';
     var pd={
