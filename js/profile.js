@@ -195,6 +195,7 @@ async function goNext(){
       pref_age_max:parseInt(document.getElementById('fPMax').value)||70,
       pref_denomination:document.getElementById('fPD').value,
       pref_city:document.getElementById('fPC').value.trim()||'Any',
+      pref_religion: document.getElementById('fPR') ? document.getElementById('fPR').value : 'Any',
       faith_browse: P&&P.faith_browse ? P.faith_browse : allFaithKeys,
       faith_receive:P&&P.faith_receive? P.faith_receive: allFaithKeys,
       founding_number:isResubmit?undefined:foundingNum,
