@@ -1,22 +1,16 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
-  // Re-fetch session if U is null
   if (!U) {
-    if (!U) {
-  try {
-    var sessRes2 = await sb.auth.getUser();
-    if (sessRes2.data && sessRes2.data.user) U = sessRes2.data.user;
-  } catch(x) {}
-}
-    if (_justRegistered || _loadingProfile) return; // registration in progress, wait
+    // First try getUser()
     try {
-      var sessRes = await sb.auth.getSession();
-      if (sessRes.data && sessRes.data.session && sessRes.data.session.user) {
-        U = sessRes.data.session.user;
-      } else {
-        showScr('loginScreen'); return;
-      }
-    } catch(x) { showScr('loginScreen'); return; }
+      var sessRes2 = await sb.auth.getUser();
+      if (sessRes2.data && sessRes2.data.user) U = sessRes2.data.user;
+    } catch(x) {}
+  }
+
+  if (!U) {
+    if (_justRegistered || _loadingProfile) return;
+    showScr('loginScreen'); return;
   }
 
   var profileData = null;
