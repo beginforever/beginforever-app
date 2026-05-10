@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.beginforever.twa",
+        "sha256_cert_fingerprints": ["2F:32:CB:F5:51:43:E7:D2:88:CB:04:D0:6B:3B:C1:D3:7A:D6:6A:63:AB:57:33:D8:A3:C9:52:EC:77:23:F3:95"]
+      }
+    }]
