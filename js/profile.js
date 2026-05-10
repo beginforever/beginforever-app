@@ -197,8 +197,9 @@ async function goNext(){
         })
       });
     }catch(x){}
-    P=pd; if(!isResubmit) clearReferrerId();
-    showScr('pendingScreen');
+  P=pd; if(!isResubmit) clearReferrerId();
+showScr('pendingScreen');
+if (!isResubmit && typeof fbq !== 'undefined') fbq('track', 'CompleteRegistration');
   }catch(ex){
     if(e){e.textContent=ex.message||'Error. Please try again.';e.style.display='block';}
     btn.disabled=false;btn.textContent='Submit for Review ✦';
