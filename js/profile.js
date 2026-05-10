@@ -120,7 +120,6 @@ function pickId(inp) {
   var idN=document.getElementById('idN');
   if(idN){idN.textContent='📄 '+f.name;idN.style.display='';}
 }
-
 function updUI() {
   var titles=['Personal Details','About You','Photos','Government ID','Match Preferences'];
   var st=document.getElementById('sTitle'); if(st) st.textContent=titles[step-1];
