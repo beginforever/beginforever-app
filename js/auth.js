@@ -55,7 +55,8 @@ async function doRegister() {
     }
 
     U = res.data.user;
-
+     console.log('User after signup:', U);        // ← ADD
+    console.log('Session:', res.data.session);   // ← ADD
     if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
     // Welcome email
