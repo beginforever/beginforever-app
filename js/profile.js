@@ -1,30 +1,41 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
-  // ── FIX: capture flag BEFORE any await to prevent race with onAuthStateChange ──
-  var isNewUser = _justRegistered;
-  _justRegistered = false;
-
   if (!U) { showScr('loginScreen'); return; }
+
   var profileData = null;
   try {
     var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r.error) throw r.error;
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
-  } catch(x) { showScr('loginScreen'); return; }
-  P = profileData;
-  if (!P) {
-    if (isNewUser) {
-      showScr('setupScreen'); step = 1; updUI();
-    } else {
-      await sb.auth.signOut(); U = null; showScr('loginScreen');
-    }
+  } catch(x) {
+    // Only go to login if NOT in registration flow
+    if (!_justRegistered) showScr('loginScreen');
     return;
   }
+
+  P = profileData;
+
+  if (!P) {
+    // New user — always go to setup, never login
+    showScr('setupScreen'); step = 1; updUI();
+    return;
+  }
+
   if (P.status === 'pending')      { showScr('pendingScreen'); return; }
   if (P.status === 'rejected')     { renderRejectedScreen(P); showScr('rejectedScreen'); return; }
   if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step=1; updUI(); return; }
-  try { fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); } catch(x) { fpBrowse  = FAITHS.map(function(f){return f.key;}); }
-  try { fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); } catch(x) { fpReceive = FAITHS.map(function(f){return f.key;}); }
+
+  try {
+    fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); 
+  } catch(x) { 
+    fpBrowse  = FAITHS.map(function(f){return f.key;}); 
+  }
+  try {
+    fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); 
+  } catch(x) { 
+    fpReceive = FAITHS.map(function(f){return f.key;}); 
+  }
+
   if (P.is_admin) {
     var bar = document.getElementById('tBar');
     if (bar && !document.getElementById('adTab')) {
@@ -35,9 +46,9 @@ async function loadP() {
       bar.appendChild(ab);
     }
   }
+
   showScr('mainApp'); goTab('home'); checkNotifs();
 }
-
 // ═══════════════════════════════════════════ SETUP WIZARD — 5 steps
 function toggleDenom() {
   var r      = document.getElementById('fReligion').value;
