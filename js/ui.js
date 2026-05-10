@@ -352,3 +352,23 @@ function renderBrowseChips() {
 function renderFaithPrefSummary() {
   if (typeof renderFaithPrefCard === 'function') renderFaithPrefCard();
 }
+function filterPrefDenoms() {
+  var rel = document.getElementById('fPR');
+  var den = document.getElementById('fPD');
+  if (!rel || !den) return;
+  var map = {
+    Christian: ['Any Denomination','Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],
+    Hindu:     ['Any Denomination','Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],
+    Muslim:    ['Any Denomination','Sunni','Shia','Sufi','Ahmadiyya','Ismaili'],
+    Sikh:      ['Any Denomination','Amritdhari','Sahajdhari','Nanakpanthi'],
+    Jain:      ['Any Denomination','Digambara','Shvetambara'],
+    Buddhist:  ['Any Denomination','Theravada','Mahayana','Vajrayana','Zen'],
+    Jewish:    ['Any Denomination','Orthodox','Conservative','Reform'],
+    Parsi:     ['Any Denomination','Zoroastrian'],
+    Any:       ['Any Denomination']
+  };
+  var options = map[rel.value] || ['Any Denomination'];
+  den.innerHTML = options.map(function(o) {
+    return '<option value="'+o+'">'+o+'</option>';
+  }).join('');
+}
