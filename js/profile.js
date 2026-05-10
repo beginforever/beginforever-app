@@ -514,7 +514,9 @@ function renP() {
  
   // Basic info rows
   var h = '';
-  [{l:'Email',v:P.email},{l:'Phone',v:P.phone},{l:'Age',v:P.age},
+  [{l:'Email',v:P.email?P.email.replace(/(.{2}).+(@.+)/,'$1***$2'):''},
+ {l:'Phone',v:P.phone?P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2'):''},
+ {l:'Age',v:P.age},
    {l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
    {l:'Education',v:P.education},{l:'Occupation',v:P.occupation},
    {l:'Mother Tongue',v:P.mother_tongue},{l:'Marital Status',v:P.marital_status},
