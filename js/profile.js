@@ -163,11 +163,11 @@ async function goNext(){
   btn.innerHTML='<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
 
   // Re-fetch U from session if null
-  if (!U) {
+ if (!U) {
     try {
-      var sessRes = await sb.auth.getSession();
-      if (sessRes.data && sessRes.data.session && sessRes.data.session.user) {
-        U = sessRes.data.session.user;
+      var sessRes = await sb.auth.getUser();
+      if (sessRes.data && sessRes.data.user) {
+        U = sessRes.data.user;
       } else {
         if(e){e.textContent='Session expired. Please sign in again.';e.style.display='block';}
         btn.disabled=false; btn.textContent='Submit for Review ✦'; return;
@@ -177,7 +177,6 @@ async function goNext(){
       btn.disabled=false; btn.textContent='Submit for Review ✦'; return;
     }
   }
-
   try{
     var urls=['','','','',''];
     for(var i=0;i<5;i++){
