@@ -166,6 +166,11 @@ async function goNext(){
     var countRes=await sb.from('profiles').select('id',{count:'exact',head:true});
     var foundingNum=(countRes.count||0)+1;
     var allFaithKeys=JSON.stringify(FAITHS.map(function(f){return f.key;}));
+    if (!U) {
+  var r = await sb.auth.getUser();
+  if (r.data && r.data.user) U = r.data.user;
+  else { if(e){e.textContent='Session expired. Please sign in again.';e.style.display='block';} btn.disabled=false; btn.textContent='Submit for Review ✦'; return; }
+}
     var isResubmit=P&&P.status==='resubmitting';
     var pd={
       id:U.id,email:U.email,
