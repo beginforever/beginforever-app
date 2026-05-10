@@ -13,8 +13,9 @@ sb.auth.onAuthStateChange(function(ev, sess) {
     _appReady = true;
     if (sess && sess.user) { U = sess.user; loadP(); }
     else { showScr('loginScreen'); }
-  } else if (ev === 'SIGNED_IN') {
+ } else if (ev === 'SIGNED_IN') {
     if (_loadingProfile) return;
+    if (_justRegistered) return;
     if (U && U.id === sess.user.id && P) return;
     U = sess.user;
     loadP();
