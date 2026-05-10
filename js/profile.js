@@ -93,7 +93,7 @@ function updUI() {
   var st=document.getElementById('sTitle'); if(st) st.textContent=titles[step-1];
   var sl=document.getElementById('sLabel'); if(sl) sl.textContent='Step '+step+' of 5';
   document.querySelectorAll('#sDots .step-dot').forEach(function(d,i){d.classList.toggle('active',i<step);});
-  for(var i=1;i<=6;i++){var el=document.getElementById('s'+i);if(el)el.style.display=(i===step&&i<=5)?'':'none';}
+for(var i=1;i<=5;i++){var el=document.getElementById('s'+i);if(el)el.style.display=(i===step)?'':'none';}
   var bk=document.getElementById('bkBtn'); if(bk) bk.style.display=step>1?'':'none';
   var nx=document.getElementById('nxBtn'); if(nx) nx.textContent=step<5?'Next →':'Submit for Review ✦';
   var se=document.getElementById('sErr'); if(se) se.style.display='none';
