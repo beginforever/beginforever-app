@@ -1,6 +1,4 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
-// ═══════════════════════════════════════════ LOAD PROFILE
-// REPLACE your entire loadP() function with this
 async function loadP() {
   // Re-fetch session if U is null
   if (!U) {
