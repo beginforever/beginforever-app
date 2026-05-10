@@ -70,7 +70,7 @@ async function doRegister() {
     }
 
     U = newUser;
-
+    try { sessionStorage.setItem('bf_uid', newUser.id); } catch(x) {}
     if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
     // Fire and forget — no await
