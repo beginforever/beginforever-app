@@ -411,16 +411,57 @@ select.field option { background: var(--dark2); color: var(--white); }
           <p id="idN" style="font-size:12px;color:var(--gold-bright);margin-top:8px;display:none;"></p>
         </div>
       </div>
-      <!-- Step 5: Preferences -->
-      <div id="s5" style="display:none;">
-        <p style="font-size:13px;color:var(--white70);margin-bottom:16px;">Help us find your best matches.</p>
-        <div class="field-row">
-          <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="fPMin" value="18"/></div>
-          <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="fPMax" value="70"/></div>
-        </div>
-        <div class="field-group"><label class="field-label">Preferred Denomination</label><select class="field" id="fPD"><option>Any</option><option>Catholic</option><option>Protestant</option><option>Pentecostal</option><option>Orthodox</option><option>Other</option></select></div>
-        <div class="field-group"><label class="field-label">Preferred City</label><input class="field" id="fPC" placeholder="Any"/></div>
-      </div>
+    <!-- Step 5: Preferences -->
+<div id="s5" style="display:none;">
+  <p style="font-size:13px;color:var(--white70);margin-bottom:16px;">Help us find your best matches.</p>
+  <div class="field-row">
+    <div class="field-group"><label class="field-label">Min Age</label><input type="number" class="field" id="fPMin" value="18"/></div>
+    <div class="field-group"><label class="field-label">Max Age</label><input type="number" class="field" id="fPMax" value="70"/></div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">Preferred Religion</label>
+    <select class="field" id="fPR">
+      <option value="Any">Any Religion</option>
+      <option value="Christian">✝️ Christian</option>
+      <option value="Hindu">🕉️ Hindu</option>
+      <option value="Muslim">☪️ Muslim</option>
+      <option value="Sikh">☬ Sikh</option>
+      <option value="Jain">🕊️ Jain</option>
+      <option value="Buddhist">☸️ Buddhist</option>
+      <option value="Parsi">🔥 Parsi</option>
+      <option value="Jewish">✡️ Jewish</option>
+      <option value="Other">🌐 Other</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">Preferred Denomination</label>
+    <select class="field" id="fPD">
+      <option value="Any">Any Denomination</option>
+      <option value="Catholic">Catholic</option>
+      <option value="Protestant">Protestant</option>
+      <option value="Pentecostal">Pentecostal</option>
+      <option value="Baptist">Baptist</option>
+      <option value="CSI / CNI">CSI / CNI</option>
+      <option value="Methodist">Methodist</option>
+      <option value="Orthodox">Orthodox</option>
+      <option value="Mar Thoma">Mar Thoma</option>
+      <option value="Brethren">Brethren</option>
+      <option value="Lutheran">Lutheran</option>
+      <option value="Shaivism">Shaivism</option>
+      <option value="Vaishnavism">Vaishnavism</option>
+      <option value="Sunni">Sunni</option>
+      <option value="Shia">Shia</option>
+      <option value="Amritdhari">Amritdhari</option>
+      <option value="Digambara">Digambara</option>
+      <option value="Theravada">Theravada</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">Preferred City</label>
+    <input class="field" id="fPC" placeholder="Any"/>
+  </div>
+</div>
 
       <p id="sErr" style="color:var(--red);font-size:12px;text-align:center;margin:12px 0;display:none;"></p>
       <div style="display:flex;gap:12px;margin-top:20px;">
