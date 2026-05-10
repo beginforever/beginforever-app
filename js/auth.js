@@ -22,11 +22,14 @@ async function doLogin() {
       errEl.style.display = 'block'; return;
     }
     U = r.data.user;
+    _loadingProfile = true;
     await loadP();
+    _loadingProfile = false;
   } catch(e) {
     btn.disabled = false; btn.textContent = origText; btn.style.opacity = '1';
     errEl.textContent = e.message || 'Connection error. Please check your internet.';
     errEl.style.display = 'block';
+    _loadingProfile = false;
   }
 }
 
@@ -55,8 +58,7 @@ async function doRegister() {
     }
 
     U = res.data.user;
-     console.log('User after signup:', U);        // ← ADD
-    console.log('Session:', res.data.session);   // ← ADD
+
     if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
     // Welcome email
@@ -71,14 +73,18 @@ async function doRegister() {
     // Save referral if any
     if (U) { try { await saveReferral(U.id, em); } catch(x) {} }
 
-    // Flag as fresh registration so loadP() routes to setup wizard
+    // Set flag BEFORE loadP so onAuthStateChange SIGNED_IN doesn't race
     _justRegistered = true;
+    _loadingProfile = true;
     await loadP();
+    _loadingProfile = false;
 
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Create Account ✦';
     err.textContent = e.message || 'Something went wrong. Please try again.';
     err.style.display = 'block';
+    _loadingProfile = false;
+    _justRegistered = false;
   }
 }
 
