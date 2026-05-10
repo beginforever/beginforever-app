@@ -49,16 +49,22 @@ async function doRegister() {
   var btn = document.getElementById('rBtn');
   btn.disabled = true; btn.textContent = 'Creating account…';
 
+  // Set flags BEFORE signUp so auth event is blocked immediately
+  _justRegistered = true;
+  _loadingProfile = true;
+
   try {
     var res = await sb.auth.signUp({email: em, password: pw});
     btn.disabled = false; btn.textContent = 'Create Account ✦';
 
     if (res.error) {
+      _justRegistered = false; _loadingProfile = false;
       err.textContent = res.error.message; err.style.display = 'block'; return;
     }
 
     var newUser = res.data && res.data.user;
     if (!newUser) {
+      _justRegistered = false; _loadingProfile = false;
       err.textContent = 'Account creation failed. Please try again.';
       err.style.display = 'block'; return;
     }
@@ -67,7 +73,7 @@ async function doRegister() {
 
     if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
-    // Welcome email (fire-and-forget)
+    // Fire and forget — no await
     try {
       fetch(SB_URL + '/functions/v1/smart-function', {
         method: 'POST',
@@ -76,14 +82,12 @@ async function doRegister() {
       });
     } catch(x) {}
 
-    // Save referral
-    if (U) { try { await saveReferral(U.id, em); } catch(x) {} }
+    // Non-blocking
+    if (U) { saveReferral(U.id, em).catch(function(){}); }
 
-    // Block onAuthStateChange SIGNED_IN from calling loadP() a second time
-    _justRegistered = true;
-    _loadingProfile = true;
     await loadP();
     _loadingProfile = false;
+    _justRegistered = false;
 
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Create Account ✦';
