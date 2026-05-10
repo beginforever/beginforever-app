@@ -13,8 +13,9 @@ sb.auth.onAuthStateChange(function(ev, sess) {
     if (sess && sess.user) { U = sess.user; loadP(); }
     else { showScr('loginScreen'); }
   } else if (ev === 'SIGNED_IN') {
-    if (_loadingProfile || _justRegistered) return;  // block both
-    if (U && U.id === sess.user.id && P) return;
+    // If doRegister() is already handling this, do nothing
+    if (_justRegistered || _loadingProfile) return;
+    if (U && sess && U.id === sess.user.id && P) return;
     U = sess.user;
     loadP();
   } else if (ev === 'SIGNED_OUT') {
