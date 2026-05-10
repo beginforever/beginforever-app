@@ -1,15 +1,18 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
+// ═══════════════════════════════════════════ LOAD PROFILE
+// REPLACE your entire loadP() function with this
 async function loadP() {
-  // If registration is in progress never redirect
+  // Re-fetch session if U is null
   if (!U) {
-    if (!_justRegistered && !_loadingProfile) {
-      var sess = await sb.auth.getSession();
-      if (sess.data && sess.data.session && sess.data.session.user) {
-        U = sess.data.session.user;
+    if (_justRegistered || _loadingProfile) return; // registration in progress, wait
+    try {
+      var sessRes = await sb.auth.getSession();
+      if (sessRes.data && sessRes.data.session && sessRes.data.session.user) {
+        U = sessRes.data.session.user;
       } else {
         showScr('loginScreen'); return;
       }
-    } else { return; }
+    } catch(x) { showScr('loginScreen'); return; }
   }
 
   var profileData = null;
@@ -17,11 +20,16 @@ async function loadP() {
     var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r.error) throw r.error;
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
-  } catch(x) { return; }
+  } catch(x) {
+    // Don't redirect during registration
+    if (!_justRegistered && !_loadingProfile) showScr('loginScreen');
+    return;
+  }
 
   P = profileData;
 
   if (!P) {
+    // New user — go to setup
     showScr('setupScreen'); step = 1; updUI(); return;
   }
 
@@ -45,7 +53,8 @@ async function loadP() {
 
   showScr('mainApp'); goTab('home'); checkNotifs();
 }
-// ═══════════════════════════════════════════ SETUP WIZARD — 5 steps
+
+// ═══════════════════════════════════════════ SETUP WIZARD
 function toggleDenom() {
   var r      = document.getElementById('fReligion').value;
   var denoms = DENOM_MAP[r] || [];
@@ -56,6 +65,25 @@ function toggleDenom() {
     dd.innerHTML = '<option value="">Select denomination</option>' +
       denoms.map(function(d){ return '<option>'+d+'</option>'; }).join('');
   } else { dg.style.display = 'none'; }
+}
+
+function filterPrefDenoms() {
+  var rel = document.getElementById('fPR');
+  var den = document.getElementById('fPD');
+  if (!rel || !den) return;
+  var map = {
+    Christian: ['Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],
+    Hindu:     ['Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],
+    Muslim:    ['Sunni','Shia','Sufi','Ahmadiyya','Ismaili'],
+    Sikh:      ['Amritdhari','Sahajdhari','Nanakpanthi'],
+    Jain:      ['Digambara','Shvetambara'],
+    Buddhist:  ['Theravada','Mahayana','Vajrayana','Zen'],
+    Jewish:    ['Orthodox','Conservative','Reform'],
+    Parsi:     ['Zoroastrian']
+  };
+  var options = map[rel.value] || [];
+  den.innerHTML = '<option value="Any">Any Denomination</option>' +
+    options.map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
 }
 
 function fillC() {
@@ -100,7 +128,7 @@ function updUI() {
   var st=document.getElementById('sTitle'); if(st) st.textContent=titles[step-1];
   var sl=document.getElementById('sLabel'); if(sl) sl.textContent='Step '+step+' of 5';
   document.querySelectorAll('#sDots .step-dot').forEach(function(d,i){d.classList.toggle('active',i<step);});
-for(var i=1;i<=5;i++){var el=document.getElementById('s'+i);if(el)el.style.display=(i===step)?'':'none';}
+  for(var i=1;i<=5;i++){var el=document.getElementById('s'+i);if(el)el.style.display=(i===step)?'':'none';}
   var bk=document.getElementById('bkBtn'); if(bk) bk.style.display=step>1?'':'none';
   var nx=document.getElementById('nxBtn'); if(nx) nx.textContent=step<5?'Next →':'Submit for Review ✦';
   var se=document.getElementById('sErr'); if(se) se.style.display='none';
@@ -131,10 +159,28 @@ async function goNext(){
     }
     step++;updUI();return;
   }
-  // Step 5 — submit
+
+  // ── Step 5 — Submit ──
   var btn=document.getElementById('nxBtn');
   btn.disabled=true;
   btn.innerHTML='<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
+
+  // Re-fetch U from session if null
+  if (!U) {
+    try {
+      var sessRes = await sb.auth.getSession();
+      if (sessRes.data && sessRes.data.session && sessRes.data.session.user) {
+        U = sessRes.data.session.user;
+      } else {
+        if(e){e.textContent='Session expired. Please sign in again.';e.style.display='block';}
+        btn.disabled=false; btn.textContent='Submit for Review ✦'; return;
+      }
+    } catch(x) {
+      if(e){e.textContent='Session error. Please try again.';e.style.display='block';}
+      btn.disabled=false; btn.textContent='Submit for Review ✦'; return;
+    }
+  }
+
   try{
     var urls=['','','','',''];
     for(var i=0;i<5;i++){
@@ -159,21 +205,14 @@ async function goNext(){
         }catch(y){}
       }
     }
+
     var countRes=await sb.from('profiles').select('id',{count:'exact',head:true});
     var foundingNum=(countRes.count||0)+1;
     var allFaithKeys=JSON.stringify(FAITHS.map(function(f){return f.key;}));
-if (!U) {
-  var sess = await sb.auth.getSession();
-  if (sess.data && sess.data.session && sess.data.session.user) {
-    U = sess.data.session.user;
-  } else {
-    if(e){e.textContent='Session expired. Please sign in again.';e.style.display='block';}
-    btn.disabled=false; btn.textContent='Submit for Review ✦'; return;
-  }
-}
     var isResubmit=P&&P.status==='resubmitting';
+
     var pd={
-      id:U.id,email:U.email,
+      id:U.id, email:U.email,
       full_name:document.getElementById('fName').value.trim(),
       age:parseInt(document.getElementById('fAge').value),
       gender:document.getElementById('fGender').value,
@@ -188,44 +227,52 @@ if (!U) {
       height_cm:document.getElementById('fHt').value?parseInt(document.getElementById('fHt').value):null,
       mother_tongue:document.getElementById('fMT').value.trim(),
       marital_status:document.getElementById('fMS').value,
-      photo_url:urls[0],photo_2_url:urls[1],photo_3_url:urls[2],photo_4_url:urls[3],photo_5_url:urls[4],
+      photo_url:urls[0], photo_2_url:urls[1], photo_3_url:urls[2], photo_4_url:urls[3], photo_5_url:urls[4],
       id_proof_type:document.getElementById('fIdT').value,
       id_proof_url:idUrl,
       pref_age_min:parseInt(document.getElementById('fPMin').value)||18,
       pref_age_max:parseInt(document.getElementById('fPMax').value)||70,
-      pref_denomination:document.getElementById('fPD').value,
+      pref_religion:document.getElementById('fPR')?document.getElementById('fPR').value:'Any',
+      pref_denomination:document.getElementById('fPD').value||'Any',
       pref_city:document.getElementById('fPC').value.trim()||'Any',
-      pref_religion: document.getElementById('fPR') ? document.getElementById('fPR').value : 'Any',
       faith_browse: P&&P.faith_browse ? P.faith_browse : allFaithKeys,
-      faith_receive:P&&P.faith_receive? P.faith_receive: allFaithKeys,
+      faith_receive: P&&P.faith_receive ? P.faith_receive : allFaithKeys,
       founding_number:isResubmit?undefined:foundingNum,
       is_founding_member:isResubmit?undefined:true,
       referred_by:isResubmit?undefined:(getReferrerId()||null),
       status:'pending'
     };
+
     Object.keys(pd).forEach(function(k){if(pd[k]===undefined)delete pd[k];});
+
     var res=await sb.from('profiles').upsert(pd,{onConflict:'id'});
     if(res.error) throw res.error;
+
+    // Fire and forget notification
     try{
-      await fetch(SB_URL+'/functions/v1/smart-function',{
-        method:'POST',headers:{'Content-Type':'application/json'},
+      fetch(SB_URL+'/functions/v1/smart-function',{
+        method:'POST', headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           type:isResubmit?'resubmitted':'pending',
-          full_name:pd.full_name,email:pd.email,phone:pd.phone,
-          city:pd.city,state:pd.state,religion:pd.religion,
-          denomination:pd.denomination||pd.religion,gender:pd.gender,founding_number:foundingNum
+          full_name:pd.full_name, email:pd.email, phone:pd.phone,
+          city:pd.city, state:pd.state, religion:pd.religion,
+          denomination:pd.denomination||pd.religion, gender:pd.gender,
+          founding_number:foundingNum
         })
       });
     }catch(x){}
-    P=pd; if(!isResubmit) clearReferrerId();
+
+    P=pd;
+    if(!isResubmit) clearReferrerId();
+    if(!isResubmit && typeof fbq !== 'undefined') fbq('track','CompleteRegistration');
+
     showScr('pendingScreen');
-    if (!isResubmit && typeof fbq !== 'undefined') fbq('track', 'CompleteRegistration');
+
   }catch(ex){
     if(e){e.textContent=ex.message||'Error. Please try again.';e.style.display='block';}
-    btn.disabled=false;btn.textContent='Submit for Review ✦';
+    btn.disabled=false; btn.textContent='Submit for Review ✦';
   }
 }
-
 // ═══════════════════════════════════════════ FAITH PREF CARD (profile tab)
 function renderFaithPrefCard(){
   var el=document.getElementById('profileFaithSummary'); if(!el) return;
