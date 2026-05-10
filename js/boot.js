@@ -1,4 +1,10 @@
 // ═══════════════════════════════════════════ BOOT
+// Clear any stale sessions on load
+try { 
+  if (!localStorage.getItem('bf_session_valid')) {
+    sb.auth.signOut();
+  }
+} catch(x) {}
 var _appReady = false;
 var _justRegistered = false;
 var _loadingProfile = false;
