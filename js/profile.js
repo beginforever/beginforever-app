@@ -229,7 +229,7 @@ async function goNext(){
       id_proof_url:idUrl,
       pref_age_min:parseInt(document.getElementById('fPMin').value)||18,
       pref_age_max:parseInt(document.getElementById('fPMax').value)||70,
-      pref_religion:document.getElementById('fPR')?document.getElementById('fPR').value:'Any',
+      pref_religion:(document.getElementById('fPR')?document.getElementById('fPR').value:'Any')||'Any',
       pref_denomination:document.getElementById('fPD').value||'Any',
       pref_city:document.getElementById('fPC').value.trim()||'Any',
       faith_browse: P&&P.faith_browse ? P.faith_browse : allFaithKeys,
