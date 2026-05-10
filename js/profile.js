@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
-  if (!U) { showScr('loginScreen'); return; }
+  if (!U) { if(!_justRegistered && !_loadingProfile) showScr('loginScreen'); return; }
 
   var profileData = null;
   try {
@@ -9,7 +9,6 @@ async function loadP() {
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
   } catch(x) {
     // Only go to login if NOT in registration flow
-    if (!_justRegistered) showScr('loginScreen');
     return;
   }
 
