@@ -34,6 +34,26 @@ async function loadP() {
   if (P.status === 'pending')      { showScr('pendingScreen'); return; }
   if (P.status === 'rejected')     { renderRejectedScreen(P); showScr('rejectedScreen'); return; }
   if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step=1; updUI(); return; }
+  if (P.status === 'deleted') {
+    alert('This account has been deleted. Please register again to use Begin Forever.');
+    await sb.auth.signOut(); U=null; P=null;
+    showScr('loginScreen'); return;
+  }
+  if (P.status === 'deactivated') {
+    if (confirm('Your account is deactivated. Reactivate it now?')) {
+      try {
+        await sb.from('profiles').update({status:'approved', deactivated_at:null}).eq('id', U.id);
+        P.status = 'approved';
+      } catch(x) {
+        alert('Could not reactivate. Please try again.');
+        await sb.auth.signOut(); U=null; P=null;
+        showScr('loginScreen'); return;
+      }
+    } else {
+      await sb.auth.signOut(); U=null; P=null;
+      showScr('loginScreen'); return;
+    }
+  }
 
   try { fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); } catch(x) { fpBrowse  = FAITHS.map(function(f){return f.key;}); }
   try { fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); } catch(x) { fpReceive = FAITHS.map(function(f){return f.key;}); }
@@ -202,8 +222,14 @@ async function goNext(){
       }
     }
 
-    var countRes=await sb.from('profiles').select('id',{count:'exact',head:true});
-    var foundingNum=(countRes.count||0)+1;
+    // FOUNDER CAP: only first 300 APPROVED users become founding members.
+    // Pending users get a provisional number, but admin approval determines final status.
+    var FOUNDER_CAP = 300;
+    var apprRes = await sb.from('profiles').select('id',{count:'exact',head:true}).eq('is_founding_member',true).eq('status','approved');
+    var apprCount = apprRes.count || 0;
+    var allCountRes = await sb.from('profiles').select('id',{count:'exact',head:true});
+    var foundingNum = (allCountRes.count || 0) + 1;
+    var qualifiesAsFounder = apprCount < FOUNDER_CAP;
     var allFaithKeys=JSON.stringify(FAITHS.map(function(f){return f.key;}));
     var isResubmit=P&&P.status==='resubmitting';
 
@@ -234,7 +260,7 @@ async function goNext(){
       faith_browse: P&&P.faith_browse ? P.faith_browse : allFaithKeys,
       faith_receive: P&&P.faith_receive ? P.faith_receive : allFaithKeys,
       founding_number:isResubmit?undefined:foundingNum,
-      is_founding_member:isResubmit?undefined:true,
+      is_founding_member:isResubmit?undefined:qualifiesAsFounder,
       referred_by:isResubmit?undefined:(getReferrerId()||null),
       status:'pending'
     };
@@ -608,6 +634,10 @@ async function viewProfile(id){
     if(dd.v) h+='<div style="margin-bottom:9px;"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">'+dd.l+'</p><p style="font-size:13px;margin-top:2px;color:var(--w80);">'+dd.v+'</p></div>';
   });
   h+='</div><p style="text-align:center;padding:14px;font-size:13px;color:var(--w40);">🔒 Interest &amp; messaging unlocks launch day</p>';
+  h+='<div style="display:flex;gap:8px;padding:0 4px 8px;">';
+  h+='<button class="btn btn-dark" style="flex:1;font-size:12px;padding:10px;" onclick="event.stopPropagation();openReportModal(\''+p.id+'\',\''+(p.full_name||'').replace(/[\\\'\"]/g,'')+'\')">🚩 Report</button>';
+  h+='<button class="btn btn-dark" style="flex:1;font-size:12px;padding:10px;color:#ff6b6b;" onclick="event.stopPropagation();openBlockModal(\''+p.id+'\',\''+(p.full_name||'').replace(/[\\\'\"]/g,'')+'\')">🚫 Block</button>';
+  h+='</div>';
   document.getElementById('pmC').innerHTML=h;
   document.getElementById('profileModal').classList.add('show');
 }

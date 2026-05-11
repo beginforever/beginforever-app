@@ -88,6 +88,14 @@ async function ldBrowse() {
     var l=document.getElementById('bList');if(l)l.innerHTML='<div style="text-align:center;padding:40px 20px"><div style="font-size:40px">🔒</div><p style="color:#FFD54F;font-size:14px;font-weight:700;margin-top:12px">Profile Under Review</p></div>';
     return;
   }
+  // PRE-LAUNCH LOCK: Discover stays locked until launch date. Existing banner above bList stays visible.
+  if (isPreLaunch()) {
+    var be0=document.getElementById('bEmpty');if(be0)be0.style.display='none';
+    var l0=document.getElementById('bList');if(l0)l0.innerHTML='';
+    return;
+  }
+  // refresh blocked list each browse load
+  if(typeof loadBlockedIds==='function') await loadBlockedIds();
   var g=P.gender==='Male'?'Female':'Male';
   var q=sb.from('profiles').select('*').eq('status','approved').eq('gender',g).neq('id',U.id);
   var browseFaiths=[];
@@ -95,6 +103,10 @@ async function ldBrowse() {
   if(browseFaiths.length>0&&browseFaiths.length<FAITHS.length)q=q.in('religion',browseFaiths);
   var r=await q.order('created_at',{ascending:false});
   var d=r.data||[];
+  // filter out blocked users (in either direction)
+  if(typeof BLOCKED_IDS!=='undefined'&&BLOCKED_IDS.length>0){
+    d=d.filter(function(p){return BLOCKED_IDS.indexOf(p.id)===-1;});
+  }
   var be=document.getElementById('bEmpty');if(be)be.style.display=d.length?'none':'';
   var l=document.getElementById('bList');if(!l)return;l.innerHTML='';
   d.forEach(function(p){
