@@ -3,8 +3,8 @@ var SB_URL = 'https://neftjxvovxocqabxjvme.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc';
 var sb = supabase.createClient(SB_URL, SB_KEY);
 
-// Launch date: 24 May 2026 00:00 IST
-var LAUNCH = new Date('2026-05-23T18:30:00Z');
+// Launch date: 7 June 2026 00:00 IST
+var LAUNCH = new Date('2026-06-06T18:30:00Z');
 
 function isPreLaunch() { return new Date() < LAUNCH; }
 
