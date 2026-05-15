@@ -35,6 +35,9 @@ function goTab(t) {
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x){
     var el=document.getElementById(x);if(el)el.style.display='none';
   });
+  if (t !== 'admin') {
+    var adL = document.getElementById('adList'); if (adL) adL.innerHTML = '';
+  }
   var key=t.charAt(0).toUpperCase()+t.slice(1);
   var target=document.getElementById('t'+key);
   if(target)target.style.display='';
