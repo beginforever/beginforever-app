@@ -35,6 +35,7 @@ function goTab(t) {
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x){
     var el=document.getElementById(x);if(el)el.style.display='none';
   });
+  // Clear admin list when leaving admin tab — prevents profile cards bleeding into other tabs
   if (t !== 'admin') {
     var adL = document.getElementById('adList'); if (adL) adL.innerHTML = '';
   }

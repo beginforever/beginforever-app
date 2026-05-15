@@ -461,11 +461,46 @@ select.field option { background: var(--dark2); color: var(--white); }
 
 <!-- PENDING SCREEN -->
 <div id="pendingScreen" class="screen" style="display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
-  <div style="font-size:48px;margin-bottom:16px;">⏳</div>
-  <h2 style="font-family:'Cinzel',serif;font-size:22px;color:var(--gold-bright);">Profile Under Review</h2>
-  <p style="color:var(--white70);font-size:14px;margin-top:8px;max-width:340px;line-height:1.6;">Your profile is being reviewed. You'll be notified once approved — usually within 24 hours.</p>
-  <p style="font-family:'EB Garamond',serif;font-style:italic;color:var(--gold);font-size:14px;margin-top:20px;">"Wait for the Lord; be strong, and let your heart take courage." — Psalm 27:14</p>
-  <div style="margin-top:32px;width:200px;"><button class="btn btn-dark" onclick="doSignOut()">Sign Out</button></div>
+  <div style="max-width:380px;width:100%;">
+    <div style="font-size:56px;margin-bottom:8px;">🙏</div>
+    <h2 style="font-family:'Cinzel',serif;font-size:26px;color:var(--gold-bright);margin-bottom:6px;">Thank You</h2>
+    <p style="color:var(--white70);font-size:14px;margin-top:8px;line-height:1.6;">Your profile has been submitted successfully. Our team is reviewing it now.</p>
+
+    <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:14px;padding:18px;margin-top:24px;text-align:left;">
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin:0 0 14px;">What happens next</p>
+
+      <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+        <div style="font-size:18px;line-height:1;">✅</div>
+        <div>
+          <p style="font-size:13px;color:#fff;font-weight:700;margin:0 0 2px;">Profile submitted</p>
+          <p style="font-size:11px;color:var(--white60);margin:0;line-height:1.4;">Just now</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+        <div style="font-size:18px;line-height:1;">⏳</div>
+        <div>
+          <p style="font-size:13px;color:#fff;font-weight:700;margin:0 0 2px;">Manual review by our team</p>
+          <p style="font-size:11px;color:var(--white60);margin:0;line-height:1.4;">Usually within 24 hours · Photos and ID verified</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-size:18px;line-height:1;">💌</div>
+        <div>
+          <p style="font-size:13px;color:#fff;font-weight:700;margin:0 0 2px;">You'll hear from us</p>
+          <p style="font-size:11px;color:var(--white60);margin:0;line-height:1.4;">Email and WhatsApp notification once approved</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-family:'EB Garamond',serif;font-style:italic;color:var(--gold);font-size:14px;margin-top:22px;line-height:1.5;">"Wait for the Lord; be strong, and let your heart take courage." — Psalm 27:14</p>
+
+    <div style="margin-top:24px;display:flex;gap:10px;justify-content:center;">
+      <a href="https://wa.me/919700025345" target="_blank" style="flex:1;padding:11px;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.3);border-radius:10px;color:#25d366;text-decoration:none;font-size:12px;font-weight:700;text-align:center;">💬 WhatsApp Us</a>
+      <button class="btn btn-dark" onclick="doSignOut()" style="flex:1;font-size:12px;padding:11px;">Sign Out</button>
+    </div>
+  </div>
 </div>
 
 <!-- REJECTED SCREEN -->
@@ -496,31 +531,29 @@ select.field option { background: var(--dark2); color: var(--white); }
 
 <!-- HAMBURGER MENU DRAWER -->
 <div id="menuDrawer" style="max-height:0;overflow:hidden;transition:max-height .35s ease;background:#130220;position:sticky;top:57px;z-index:49;border-bottom:0.5px solid rgba(255,255,255,.06);">
-  <div style="padding:12px 0 8px;">
+  <div style="padding:8px 0;">
 
-    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Account</p></div>
-    <a onclick="goTab('profile');toggleMenu();" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">👤 My Profile</a>
-    <a onclick="goTab('home');toggleMenu();" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">🏠 Home</a>
+    <div style="padding:4px 20px 2px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">My Account</p></div>
+    <a onclick="goTab('home');toggleMenu();" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">🏠 Home</a>
+    <a onclick="goTab('profile');toggleMenu();" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">👤 My Profile</a>
+    <a onclick="goTab('plans');toggleMenu();" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">✨ Subscription</a>
 
-    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
-    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Support</p></div>
-    <a href="https://wa.me/919700025345" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">💬 WhatsApp Support</a>
-    <a href="mailto:info@beginforever.in" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
+    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:6px 20px;"></div>
+    <div style="padding:4px 20px 2px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Help &amp; Info</p></div>
+    <a href="https://wa.me/919700025345" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">💬 WhatsApp Support</a>
+    <a href="mailto:info@beginforever.in" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
+    <a href="https://beginforever.in/safety.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">🛡️ Safety Guidelines</a>
+    <a href="https://beginforever.in/privacy.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">🔒 Privacy Policy</a>
+    <a href="https://beginforever.in/terms.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📄 Terms of Service</a>
 
-    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
-    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Legal</p></div>
-    <a href="https://beginforever.in/privacy.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🔒 Privacy Policy</a>
-    <a href="https://beginforever.in/terms.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">📄 Terms of Service</a>
-    <a href="https://beginforever.in/safety.html" target="_blank" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;">🛡️ Safety Guidelines</a>
+    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:6px 20px;"></div>
+    <div style="padding:4px 20px 2px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Manage Account</p></div>
+    <a onclick="toggleMenu();openDeactivateModal();" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">⏸️ Deactivate Account</a>
+    <a onclick="toggleMenu();openDeleteModal();" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:#ff6b6b;text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">🗑️ Delete Account</a>
 
-    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
-    <div style="padding:6px 20px 4px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Account Actions</p></div>
-    <a onclick="toggleMenu();openDeactivateModal();" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">⏸️ Deactivate Account</a>
-    <a onclick="toggleMenu();openDeleteModal();" style="display:flex;align-items:center;gap:12px;padding:11px 20px;color:#ff6b6b;text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;">🗑️ Delete Account</a>
-
-    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 20px;"></div>
-    <div style="padding:12px 20px 16px;">
-      <button onclick="doSignOut();toggleMenu();" style="width:100%;padding:11px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);border-radius:10px;color:#ff6b6b;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">Sign Out</button>
+    <div style="height:0.5px;background:rgba(255,255,255,.06);margin:6px 20px;"></div>
+    <div style="padding:8px 20px 12px;">
+      <button onclick="doSignOut();toggleMenu();" style="width:100%;padding:10px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3);border-radius:10px;color:#ff6b6b;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">Sign Out</button>
     </div>
 
   </div>
