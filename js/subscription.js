@@ -95,7 +95,7 @@ function showSub() {
 
     + '</div>';
 
-  document.getElementById('app').innerHTML = html;
+  document.getElementById('mainApp').innerHTML = html;
   if (preLaunch) startSubCountdown();
 }
 
