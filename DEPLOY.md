@@ -1,122 +1,43 @@
-# Begin Forever — Deploy Checklist
+# Deploy: Critical Fixes v2
 
-**Never skip this. Every deploy. No exceptions.**
+## What's fixed
+1. ✅ **Bleed bug** — admin profile list won't bleed into Home tab anymore
+2. ✅ **Hamburger redesign** — compact, "My Account" / "Help & Info" / "Manage Account" sections, includes Subscription link
+3. ✅ **Registration "Thank You" screen** — proper welcome flow with what-happens-next timeline
+4. ⚠️ **Email name bug** — needs Supabase Edge Function fix (see below)
 
----
+## Files in zip
+- `index.html` (hamburger + pending screen rewrite)
+- `js/ui.js` (bleed fix)
 
-## Before You Start
+## Deploy command block (copy-paste all at once)
 
-- [ ] Working on a `feature/xyz` branch (NOT `main`)
-- [ ] Latest `main` pulled: `git checkout main && git pull`
-- [ ] Branch created: `git checkout -b feature/short-description`
-
----
-
-## Code Safety Checks
-
-### Form Field IDs (DO NOT RENAME)
-- [ ] `waitlistForm`
-- [ ] `fullName`
-- [ ] `age`
-- [ ] `gender`
-- [ ] `religion`
-- [ ] `denomination`
-- [ ] `email`
-- [ ] `phone`
-- [ ] `state`
-- [ ] `city`
-- [ ] `registering_for`
-- [ ] `candidate_name`
-
-### Tracking & Analytics
-- [ ] Meta Pixel block still inside `<head>`
-- [ ] `fbq('track', 'Lead')` still fires inside `showSuccess()`
-- [ ] Meta Pixel ID present: `1618369042614620`
-
-### Script Loading Order
-- [ ] `app.js` loaded BEFORE any inline `<script>` that calls its functions
-- [ ] Cache-busting `?v=` parameter bumped on `app.js`
-
-### Critical Integrations
-- [ ] Supabase URL unchanged: `neftjxvovxocqabxjvme.supabase.co`
-- [ ] Supabase anon key unchanged
-- [ ] Razorpay key unchanged: `rzp_live_SausbldU6Vqpy0`
-- [ ] WhatsApp number unchanged: `+91 97000 25345`
-
----
-
-## Local Test
-
-- [ ] Open `index.html` locally in browser (incognito)
-- [ ] Page loads without console errors
-- [ ] No red errors in DevTools Console
-- [ ] No 404s in DevTools Network tab
-
----
-
-## Staging Test (BEFORE production merge)
-
-- [ ] Pushed branch: `git push origin feature/xyz`
-- [ ] Merged to `staging`: `git checkout staging && git merge feature/xyz && git push`
-- [ ] Opened staging URL in **incognito window**
-- [ ] Hard refresh: `Ctrl+Shift+R` (or `Cmd+Shift+R`)
-
-### Test these flows on staging:
-- [ ] Landing page loads
-- [ ] Waitlist form submits successfully
-- [ ] Phone OTP login works end-to-end
-- [ ] Discover screen loads profiles
-- [ ] Profile view opens
-- [ ] Send interest works
-- [ ] Messages screen loads
-- [ ] Admin panel accessible (if admin)
-- [ ] Razorpay test payment completes
-
----
-
-## Production Deploy
-
-- [ ] All staging tests passed
-- [ ] Run deploy script: `./deploy.sh "short description of change"`
-- [ ] Wait 60 seconds for GitHub Pages / host to rebuild
-- [ ] Open production URL in **incognito window**
-- [ ] Verify the change is live
-- [ ] Tag the release: `git tag v$(date +%Y.%m.%d.%H%M) && git push --tags`
-
----
-
-## If Something Breaks (Rollback)
+After extracting the zip and copying files into your repo folder:
 
 ```bash
-# Find last working tag
-git tag --sort=-creatordate | head -5
-
-# Revert to it
-git checkout main
-git reset --hard <tag-name>
-git push --force origin main
+cd ~/Documents/beginforever/beginforever-app && git checkout main && git pull origin main && git checkout -b fix/v2-critical && cp -r ~/Downloads/v2-fixes/* . && git add -A && git commit -m "fix: bleed bug + hamburger redesign + thank you screen" && git push -u origin fix/v2-critical && git checkout staging && git merge fix/v2-critical --no-edit && git push origin staging
 ```
 
-**Or revert just the last commit:**
+Wait 60 sec, test on Netlify staging URL.
+
+If good, push to production:
+
 ```bash
-git revert HEAD
-git push origin main
+git checkout main && git merge staging --no-edit && git push origin main
 ```
 
----
+## ⚠️ Email name bug — Supabase fix needed
 
-## Database Changes
+The frontend correctly sends `full_name` to your edge function. The bug is in the **Supabase edge function template** itself.
 
-- [ ] Snapshot taken: Supabase Dashboard → Database → Backups → "Take backup"
-- [ ] Migration file added to `supabase/migrations/`
-- [ ] Tested on a `_dev` schema or separate Supabase project first
-- [ ] Schema documented in `schema.sql`
+To fix:
+1. Supabase Dashboard → Edge Functions → `smart-function`
+2. Look in the function code for where email body is built — find where it says "Hi" without the name
+3. Change something like `"Hi,"` to `"Hi ${full_name},"` or `"Hi " + body.full_name + ","`
 
----
+If you paste the edge function code here, I can give you the exact fix.
 
-## Post-Deploy
-
-- [ ] Notify team in WhatsApp / Slack
-- [ ] Monitor Meta Pixel for `Lead` events firing
-- [ ] Check Supabase logs for errors (Dashboard → Logs)
-- [ ] Update `CHANGELOG.md` with what changed
+## Rollback if anything breaks
+```bash
+git reset --hard v-baseline-20260511 && git push --force origin main
+```
