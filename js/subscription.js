@@ -1,4 +1,4 @@
-// Begin Forever — Subscription v8 (side-by-side compare, new pricing)
+// Begin Forever — Subscription v9 (aligned heights, gold buttons)
 var SUB_CYCLE = 'monthly';
 
 var PLANS = {
@@ -70,7 +70,7 @@ function showSub() {
     + '</div>'
 
     + '<div style="position:relative;' + (preLaunch ? 'filter:blur(5px);pointer-events:none;user-select:none;' : '') + '">'
-    +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch;">'
     +     basicCard() + premiumCard()
     +   '</div>'
     +   '<div style="text-align:center;margin-top:14px;font-size:10px;color:#7B6BA0;">🔒 Secure payment via Razorpay · Cancel anytime</div>'
@@ -96,7 +96,7 @@ function basicCard() {
     return '<li style="padding:5px 0;font-size:11px;color:#3B0764;line-height:1.4;display:flex;gap:5px;"><span style="color:#D4A017;flex-shrink:0;">✓</span><span>'+f+'</span></li>';
   }).join('');
   return ''
-    + '<div style="background:#fff;border:1.5px solid #E8DCC4;border-radius:14px;padding:14px 10px;">'
+    + '<div style="background:#fff;border:1.5px solid #E8DCC4;border-radius:14px;padding:14px 10px;display:flex;flex-direction:column;">'
     +   '<div style="text-align:center;border-bottom:1px solid #F0E8D8;padding-bottom:10px;margin-bottom:10px;">'
     +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#3B0764;font-weight:600;letter-spacing:0.5px;">BASIC</div>'
     +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:#9B7BBA;font-size:10px;margin:2px 0 4px;">'+PLANS.basic.tag+'</div>'
@@ -104,8 +104,8 @@ function basicCard() {
     +     '<div style="font-size:10px;color:#7B6BA0;">'+c.per+'</div>'
     +     (c.save ? '<div style="display:inline-block;background:#FDF0D5;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
-    +   '<ul style="list-style:none;padding:0;margin:0;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#fff;color:#3B0764;border:1.5px solid #3B0764;border-radius:8px;padding:9px;font-weight:700;font-size:12px;cursor:pointer;">Choose Basic</button>'
+    +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
+    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;">Choose Basic</button>'
     + '</div>';
 }
 
@@ -116,7 +116,7 @@ function premiumCard() {
     return '<li style="padding:5px 0;font-size:11px;color:#fff;line-height:1.4;display:flex;gap:5px;'+(highlight?'background:rgba(245,200,66,0.15);margin:2px -3px;padding-left:5px;border-radius:4px;':'')+'"><span style="color:#F5C842;flex-shrink:0;">✓</span><span>'+f.replace('⭐ ','')+'</span></li>';
   }).join('');
   return ''
-    + '<div style="background:linear-gradient(160deg,#3B0764,#5B1A8F);border-radius:14px;padding:14px 10px;color:#fff;position:relative;box-shadow:0 4px 12px rgba(59,7,100,0.25);">'
+    + '<div style="background:linear-gradient(160deg,#3B0764,#5B1A8F);border-radius:14px;padding:14px 10px;color:#fff;position:relative;box-shadow:0 4px 12px rgba(59,7,100,0.25);display:flex;flex-direction:column;">'
     +   '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#F5C842;color:#3B0764;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:0.5px;white-space:nowrap;">★ RECOMMENDED</div>'
     +   '<div style="text-align:center;border-bottom:1px solid rgba(245,200,66,0.3);padding-bottom:10px;margin-bottom:10px;padding-top:4px;">'
     +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#F5C842;font-weight:600;letter-spacing:0.5px;">'+PLANS.premium.name+'</div>'
@@ -125,8 +125,8 @@ function premiumCard() {
     +     '<div style="font-size:10px;color:#F5C842;opacity:0.85;">'+c.per+'</div>'
     +     (c.save ? '<div style="display:inline-block;background:#F5C842;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
-    +   '<ul style="list-style:none;padding:0;margin:0;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:9px;font-weight:800;font-size:12px;cursor:pointer;">Choose Premium</button>'
+    +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
+    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;">Choose Premium</button>'
     + '</div>';
 }
 
