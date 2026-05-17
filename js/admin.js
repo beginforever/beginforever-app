@@ -9,7 +9,7 @@ async function loadAdminCounts(){
       sb.from('profiles').select('id',{count:'exact',head:true}).eq('status','rejected'),
       sb.from('profiles').select('id',{count:'exact',head:true}).eq('is_founding_member',true)
     ]);
-    function set(id,n){var el=document.getElementById(id);if(el)el.textContent=n>0?' ('+n+')'  :'';}
+    function set(id,n){var el=document.getElementById(id);if(el)el.textContent=n>0?' ('+n+')':'';}
     set('adCountPending',pR.count||0);set('adCountApproved',aR.count||0);
     set('adCountRejected',rR.count||0);set('adCountFounders',fR.count||0);
   }catch(x){}
@@ -56,18 +56,23 @@ async function ldAdmin(st){
       '<span><strong style="color:var(--w80);">City:</strong> '+p.city+', '+p.state+'</span>'+
       '<span><strong style="color:var(--w80);">Marital:</strong> '+(p.marital_status||'—')+'</span>'+
       '</div>';
+
     // Safe string escaping for onclick params
     var sn=(p.full_name||'').replace(/'/g,"\\'");
     var se=(p.email||'').replace(/'/g,"\\'");
     var sp=(p.phone||'').replace(/'/g,"\\'");
+    var pid=p.id; // FIX: was undefined in approved tab revoke button
+
     var act=st==='pending'
       ?'<div style="display:flex;gap:8px;margin-top:12px;">'+
-        '<button class="btn btn-grn btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="adAct(\''+p.id+'\',\'approved\',\''+sn+'\',\''+se+'\',\''+sp+'\')">✅ Approve</button>'+
-        '<button class="btn btn-red btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="openRejectModal(\''+p.id+'\',\''+sn+'\',\''+se+'\')">❌ Reject</button></div>'
+        '<button class="btn btn-grn btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="adAct(\''+pid+'\',\'approved\',\''+sn+'\',\''+se+'\',\''+sp+'\')">✅ Approve</button>'+
+        '<button class="btn btn-red btn-sm" style="flex:1;padding:12px;font-size:13px;" onclick="openRejectModal(\''+pid+'\',\''+sn+'\',\''+se+'\')">❌ Reject</button></div>'
       :st==='approved'
-        ?'<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+p.id+'\',\'pending\',\''+sn+'\',\''+se+'\',\''+sp+'\')">↩ Move back to Pending</button>'
+        // FIX: was referencing undefined `pid` variable — now correctly uses p.id via `pid`
+        ?'<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+pid+'\',\'pending\',\''+sn+'\',\''+se+'\',\''+sp+'\')">↩ Move back to Pending</button>'
         :st==='rejected'
-          ?'<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+p.id+'\',\'pending\',\''+sn+'\',\''+se+'\',\''+sp+'\')">🔄 Allow Resubmission</button>':'';
+          ?'<button class="btn btn-dark btn-sm" style="margin-top:10px;width:100%;opacity:.7;" onclick="adAct(\''+pid+'\',\'pending\',\''+sn+'\',\''+se+'\',\''+sp+'\')">🔄 Allow Resubmission</button>':'';
+
     var sc=st==='pending'?'rgba(232,184,48,.15)':st==='approved'?'rgba(39,174,96,.15)':'rgba(231,76,60,.15)';
     var tc=st==='pending'?'#FFD54F':st==='approved'?'#4ade80':'#ff6b6b';
     l.innerHTML+=
@@ -117,14 +122,14 @@ async function ldFounders(){
   });
 }
 
-// adAct called as: adAct(id, status, name, email, phone)
+// adAct: (id, status, name, email, phone)
 async function adAct(id,st,name,email,phone){
   await sb.from('profiles').update({status:st,approved_at:st==='approved'?new Date().toISOString():null}).eq('id',id);
   if(st==='approved'){
     try{await fetch(SB_URL+'/functions/v1/smart-function',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'approved',full_name:name||'',email:email||'',phone:phone||''})});}catch(x){}
     try{await markReferralApproved(id);}catch(x){}
   }
-  ldAdmin('pending');
+  ldAdmin(_currentAdminTab);
 }
 
 var _rejectId='',_rejectName='',_rejectEmail='';
