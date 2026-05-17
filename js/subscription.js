@@ -143,7 +143,7 @@ function premiumCard() {
 
 function overlay() {
   return ''
-    + '<div style="position:absolute;top:180px;left:12px;right:12px;background:rgba(253,250,244,0.96);border:2px solid #D4A017;border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,0.15);">'
+    + '<div style="position:absolute;top:320px;left:12px;right:12px;background:rgba(253,250,244,0.96);border:2px solid #D4A017;border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,0.15);">'
     +   '<div style="font-size:36px;margin-bottom:6px;">🔒</div>'
     +   '<h3 style="font-family:Cinzel,serif;color:#3B0764;font-size:17px;margin:0 0 6px;">Plans unlock at launch</h3>'
     +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:#5B1A8F;font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'
