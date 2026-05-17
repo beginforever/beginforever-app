@@ -46,26 +46,38 @@ function fmtCountdown(ms) {
 }
 
 function showSub() {
-  var profile = window.currentProfile || {};
+  var profile = window.currentProfile || P || {};
   var isFounding = profile.is_founding_member === true;
   var preLaunch = isPreLaunch();
-  var c = document.getElementById('mainApp') || document.body;
 
-  c.innerHTML = ''
-    + '<div style="min-height:100vh;background:#FDFAF4;padding:14px 12px 100px;font-family:Nunito,sans-serif;">'
+  // FIX: render into tPlans tab instead of replacing mainApp
+  // First show the plans tab via goTab
+  ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x){
+    var el=document.getElementById(x);if(el)el.style.display='none';
+  });
+  var planTab = document.getElementById('tPlans');
+  if (planTab) planTab.style.display = '';
+
+  // Update active tab button
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+
+  if (!planTab) return;
+
+  planTab.innerHTML = ''
+    + '<div style="padding:0 0 20px;">'
 
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
-    +   '<button onclick="goTab(\'profile\')" style="background:none;border:none;font-size:24px;color:#3B0764;cursor:pointer;padding:4px;">←</button>'
-    +   '<h2 style="font-family:Cinzel,serif;color:#3B0764;margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2>'
+    +   '<button onclick="goTab('home')" style="background:none;border:none;font-size:24px;color:var(--gold-bright);cursor:pointer;padding:4px;">←</button>'
+    +   '<h2 style="font-family:Cinzel,serif;color:var(--gold-bright);margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2>'
     + '</div>'
 
     + '<div style="text-align:center;margin-bottom:14px;">'
-    +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:#5B1A8F;margin:0;font-size:13px;">Choose your path to forever</p>'
+    +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:var(--w60);margin:0;font-size:13px;">Choose your path to forever</p>'
     + '</div>'
 
-    + (isFounding ? '<div style="background:linear-gradient(135deg,#F5C842,#D4A017);color:#3B0764;padding:10px 12px;border-radius:10px;margin-bottom:12px;font-weight:700;text-align:center;font-size:12px;">🌟 Founding Member #'+(profile.founding_number||'—')+' — Premium FREE for week 1</div>' : '')
+    + (isFounding ? '<div style="background:linear-gradient(135deg,rgba(232,184,48,.12),rgba(123,31,162,.12));border:1px solid rgba(232,184,48,.3);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;"><p style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">✦ Founding Member #'+(profile.founding_number||'—')+'</p><p style="font-size:13px;color:#fff;margin:0;line-height:1.5;">You get <strong style=\"color:var(--gold-bright)\">Premium free for 1 week</strong> automatically at launch.</p></div>' : '')
 
-    + '<div style="background:#fff;border-radius:10px;padding:4px;display:flex;margin-bottom:14px;border:1px solid #E8DCC4;">'
+    + '<div style="background:var(--w05);border-radius:14px;padding:4px;display:flex;margin-bottom:14px;border:1px solid var(--w10);">'
     +   tab('monthly','Monthly') + tab('quarterly','3 Months') + tab('halfyearly','6 Months')
     + '</div>'
 
@@ -73,7 +85,7 @@ function showSub() {
     +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch;">'
     +     basicCard() + premiumCard()
     +   '</div>'
-    +   '<div style="text-align:center;margin-top:14px;font-size:10px;color:#7B6BA0;">🔒 Secure payment via Razorpay · Cancel anytime</div>'
+    +   '<div style="text-align:center;margin-top:14px;font-size:10px;color:var(--w40);">🔒 Secure payment via Razorpay · Cancel anytime</div>'
     + '</div>'
 
     + (preLaunch ? overlay() : '')
@@ -85,7 +97,7 @@ function showSub() {
 
 function tab(cycle, label) {
   var on = SUB_CYCLE === cycle;
-  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;'+(on?'background:#3B0764;color:#fff;':'background:transparent;color:#3B0764;')+'">'+label+'</button>';
+  return '<button onclick="setCycle(''+cycle+'')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;'+(on?'background:var(--gold);color:#1a0a2e;':'background:transparent;color:var(--w70);')+'">'+label+'</button>';
 }
 
 function setCycle(c) { SUB_CYCLE = c; showSub(); }
@@ -93,19 +105,19 @@ function setCycle(c) { SUB_CYCLE = c; showSub(); }
 function basicCard() {
   var c = PLANS.basic[SUB_CYCLE];
   var feats = PLANS.basic.features.map(function(f){
-    return '<li style="padding:5px 0;font-size:11px;color:#3B0764;line-height:1.4;display:flex;gap:5px;"><span style="color:#D4A017;flex-shrink:0;">✓</span><span>'+f+'</span></li>';
+    return '<li style="padding:5px 0;font-size:11px;color:var(--w70);line-height:1.4;display:flex;gap:5px;"><span style="color:var(--gold);flex-shrink:0;">✓</span><span>'+f+'</span></li>';
   }).join('');
   return ''
-    + '<div style="background:#fff;border:1.5px solid #E8DCC4;border-radius:14px;padding:14px 10px;display:flex;flex-direction:column;">'
-    +   '<div style="text-align:center;border-bottom:1px solid #F0E8D8;padding-bottom:10px;margin-bottom:10px;">'
-    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#3B0764;font-weight:600;letter-spacing:0.5px;">BASIC</div>'
-    +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:#9B7BBA;font-size:10px;margin:2px 0 4px;">'+PLANS.basic.tag+'</div>'
-    +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#3B0764;">₹'+c.price.toLocaleString('en-IN')+'</div>'
-    +     '<div style="font-size:10px;color:#7B6BA0;">'+c.per+'</div>'
-    +     (c.save ? '<div style="display:inline-block;background:#FDF0D5;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
+    + '<div style="background:var(--w05);border:1.5px solid var(--w10);border-radius:14px;padding:14px 10px;display:flex;flex-direction:column;">'
+    +   '<div style="text-align:center;border-bottom:1px solid var(--w10);padding-bottom:10px;margin-bottom:10px;">'
+    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#fff;font-weight:600;">BASIC</div>'
+    +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:var(--w50);font-size:10px;margin:2px 0 4px;">'+PLANS.basic.tag+'</div>'
+    +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#fff;">₹'+c.price.toLocaleString('en-IN')+'</div>'
+    +     '<div style="font-size:10px;color:var(--w50);">'+c.per+'</div>'
+    +     (c.save ? '<div style="display:inline-block;background:rgba(212,160,23,.15);color:var(--gold);padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;">Choose Basic</button>'
+    +   '<button onclick="choosePlan('basic')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1a0a2e;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'
     + '</div>';
 }
 
@@ -116,28 +128,28 @@ function premiumCard() {
     return '<li style="padding:5px 0;font-size:11px;color:#fff;line-height:1.4;display:flex;gap:5px;'+(highlight?'background:rgba(245,200,66,0.15);margin:2px -3px;padding-left:5px;border-radius:4px;':'')+'"><span style="color:#F5C842;flex-shrink:0;">✓</span><span>'+f.replace('⭐ ','')+'</span></li>';
   }).join('');
   return ''
-    + '<div style="background:linear-gradient(160deg,#3B0764,#5B1A8F);border-radius:14px;padding:14px 10px;color:#fff;position:relative;box-shadow:0 4px 12px rgba(59,7,100,0.25);display:flex;flex-direction:column;">'
-    +   '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#F5C842;color:#3B0764;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:0.5px;white-space:nowrap;">★ RECOMMENDED</div>'
+    + '<div style="background:linear-gradient(160deg,#2d1655,#3B0764);border:1.5px solid rgba(212,160,23,.5);border-radius:14px;padding:14px 10px;color:#fff;position:relative;box-shadow:0 4px 12px rgba(59,7,100,0.25);display:flex;flex-direction:column;">'
+    +   '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1a0a2e;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:0.5px;white-space:nowrap;">★ RECOMMENDED</div>'
     +   '<div style="text-align:center;border-bottom:1px solid rgba(245,200,66,0.3);padding-bottom:10px;margin-bottom:10px;padding-top:4px;">'
-    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#F5C842;font-weight:600;letter-spacing:0.5px;">'+PLANS.premium.name+'</div>'
-    +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:#F5C842;opacity:0.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'
-    +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#fff;">₹'+c.price.toLocaleString('en-IN')+'</div>'
-    +     '<div style="font-size:10px;color:#F5C842;opacity:0.85;">'+c.per+'</div>'
-    +     (c.save ? '<div style="display:inline-block;background:#F5C842;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
+    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:var(--gold-bright);font-weight:600;">'+PLANS.premium.name+'</div>'
+    +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:var(--gold-bright);opacity:0.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'
+    +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:var(--gold-bright);">₹'+c.price.toLocaleString('en-IN')+'</div>'
+    +     '<div style="font-size:10px;color:var(--gold-bright);opacity:0.85;">'+c.per+'</div>'
+    +     (c.save ? '<div style="display:inline-block;background:var(--gold);color:#1A0830;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;">Choose Premium</button>'
+    +   '<button onclick="choosePlan('premium')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1A0830;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium ✦</button>'
     + '</div>';
 }
 
 function overlay() {
   return ''
-    + '<div style="position:absolute;top:180px;left:12px;right:12px;background:rgba(253,250,244,0.96);border:2px solid #D4A017;border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,0.15);">'
+    + '<div style="position:absolute;top:180px;left:12px;right:12px;background:rgba(13,1,24,.92);border:1.5px solid rgba(212,160,23,.4);border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,0.3);backdrop-filter:blur(4px);">'
     +   '<div style="font-size:36px;margin-bottom:6px;">🔒</div>'
-    +   '<h3 style="font-family:Cinzel,serif;color:#3B0764;font-size:17px;margin:0 0 6px;">Plans unlock at launch</h3>'
-    +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:#5B1A8F;font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'
-    +   '<div style="background:#3B0764;color:#F5C842;padding:11px 14px;border-radius:10px;font-family:Cinzel,serif;font-size:19px;font-weight:700;margin-bottom:4px;" id="subCountdown">—</div>'
-    +   '<div style="font-size:10px;color:#7B6BA0;letter-spacing:1px;">UNTIL 7 JUNE 2026</div>'
+    +   '<h3 style="font-family:Cinzel,serif;color:#fff;font-size:17px;margin:0 0 6px;">Plans unlock at launch</h3>'
+    +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:var(--gold);font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'
+    +   '<div style="background:#3B0764;color:var(--gold2);padding:11px 14px;border-radius:10px;font-family:Cinzel,serif;font-size:19px;font-weight:700;margin-bottom:4px;" id="subCountdown">—</div>'
+    +   '<div style="font-size:10px;color:var(--w40);letter-spacing:1px;">UNTIL 7 JUNE 2026</div>'
     + '</div>';
 }
 
@@ -154,13 +166,15 @@ function startCountdown() {
 
 function choosePlan(tier) {
   if (isPreLaunch()) { alert('Plans unlock on 7 June 2026. Founding members get Premium FREE for the first week!'); return; }
-  var u = window.currentUser; if (!u) { alert('Please log in first'); return; }
+  var u = U; if (!u) { alert('Please log in first'); return; }
   var p = PLANS[tier][SUB_CYCLE];
+  var cycleLabel = {monthly:'Monthly',quarterly:'3 Months',halfyearly:'6 Months'}[SUB_CYCLE]||SUB_CYCLE;
+  var planLabel = (tier==='premium'?'Premium ✦':'Basic') + ' · ' + cycleLabel;
   var options = {
     key: 'rzp_live_SausbldU6Vqpy0',
     amount: p.price * 100, currency: 'INR',
     name: 'Begin Forever',
-    description: PLANS[tier].name + ' — ' + SUB_CYCLE,
+    description: planLabel,
     image: 'https://beginforever.github.io/beginforever-app/logo.png',
     handler: async function(response) {
       try {
@@ -175,16 +189,16 @@ function choosePlan(tier) {
           is_premium: tier === 'premium', subscription_status: 'active',
           subscription_plan: tier + '_' + SUB_CYCLE, subscription_expires_at: exp
         }).eq('id', u.id);
-        alert('🎉 Subscription activated! Welcome to ' + PLANS[tier].name);
+        alert('🎉 ' + planLabel + ' activated!');
         window.location.reload();
       } catch (e) {
         alert('Payment received but activation failed. Contact info@beginforever.in');
       }
     },
     prefill: {
-      name: window.currentProfile?.full_name || '',
-      email: window.currentProfile?.email || '',
-      contact: window.currentProfile?.phone || ''
+      name: P ? P.full_name : '',
+      email: P ? P.email : '',
+      contact: P ? P.phone : ''
     },
     theme: { color: '#3B0764' }
   };
@@ -192,7 +206,7 @@ function choosePlan(tier) {
 }
 
 function showSubModal(featureName) {
-  var profile = window.currentProfile || {};
+  var profile = P || {};
   if (profile.is_founding_member || profile.is_premium) return false;
   var msg = featureName ? '"'+featureName+'" is a Premium feature.\n\nUpgrade to unlock it.' : 'Upgrade to Premium to unlock this feature.';
   if (confirm(msg + '\n\nView subscription plans?')) showSub();
