@@ -46,25 +46,34 @@ function fmtCountdown(ms) {
 }
 
 function showSub() {
-  var profile = window.currentProfile || P || {};
+  var profile = P || window.currentProfile || {};
   var isFounding = profile.is_founding_member === true;
   var preLaunch = isPreLaunch();
 
-  // FIX: render into tPlans tab instead of replacing mainApp
-  // First show the plans tab via goTab
-  ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x){
-    var el=document.getElementById(x);if(el)el.style.display='none';
+  // Hide all content tabs, show tPlans
+  var allTabs = ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'];
+  allTabs.forEach(function(x){
+    var el = document.getElementById(x);
+    if (el) el.style.display = 'none';
   });
+
+  // Make sure mainApp is visible
+  var ma = document.getElementById('mainApp');
+  if (ma) { ma.style.display = 'block'; }
+
   var planTab = document.getElementById('tPlans');
-  if (planTab) planTab.style.display = '';
+  if (!planTab) {
+    // Fallback: goTab profile if tPlans missing
+    if (typeof goTab === 'function') goTab('profile');
+    return;
+  }
+  planTab.style.display = 'block';
 
-  // Update active tab button
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-
-  if (!planTab) return;
+  // Remove active from all tab buttons
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
 
   planTab.innerHTML = ''
-    + '<div style="padding:0 0 20px;">'
+    + '<div style="padding:14px 12px 100px;font-family:Nunito,sans-serif;">'
 
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
     +   '<button onclick="goTab('home')" style="background:none;border:none;font-size:24px;color:var(--gold-bright);cursor:pointer;padding:4px;">←</button>'
@@ -75,7 +84,7 @@ function showSub() {
     +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:var(--w60);margin:0;font-size:13px;">Choose your path to forever</p>'
     + '</div>'
 
-    + (isFounding ? '<div style="background:linear-gradient(135deg,rgba(232,184,48,.12),rgba(123,31,162,.12));border:1px solid rgba(232,184,48,.3);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;"><p style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">✦ Founding Member #'+(profile.founding_number||'—')+'</p><p style="font-size:13px;color:#fff;margin:0;line-height:1.5;">You get <strong style=\"color:var(--gold-bright)\">Premium free for 1 week</strong> automatically at launch.</p></div>' : '')
+    + (isFounding ? '<div style="background:linear-gradient(135deg,rgba(232,184,48,.12),rgba(123,31,162,.12));border:1px solid rgba(232,184,48,.3);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;"><p style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">✦ Founding Member #'+(profile.founding_number||'—')+'</p><p style="font-size:13px;color:#fff;margin:0;line-height:1.5;">You get <strong style="color:var(--gold-bright)">Premium free for 1 week</strong> automatically at launch.</p></div>' : '')
 
     + '<div style="background:var(--w05);border-radius:14px;padding:4px;display:flex;margin-bottom:14px;border:1px solid var(--w10);">'
     +   tab('monthly','Monthly') + tab('quarterly','3 Months') + tab('halfyearly','6 Months')
