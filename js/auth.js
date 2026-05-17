@@ -1,136 +1,38 @@
 // ═══════════════════════════════════════════ AUTH
 
-// ── OTP STATE
-var _otpPhone = '';
-var _otpResendTimer = null;
-
-// ── SEND OTP
-async function sendOtp() {
-  var raw = document.getElementById('otpPhoneInput').value.trim();
-  if (!raw || raw.replace(/\D/g,'').length < 10) {
-    alert('Please enter a valid 10-digit mobile number.');
-    return;
+async function doLogin() {
+  var em    = document.getElementById('lEmail').value.trim();
+  var pw    = document.getElementById('lPass').value;
+  var errEl = document.getElementById('lErr');
+  errEl.style.display = 'none';
+  if (!em || !pw) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.style.display = 'block'; return;
   }
-  var btn = document.getElementById('otpSendBtn');
-  btn.disabled = true; btn.textContent = 'Sending…';
+  var btn = document.getElementById('lBtn');
+  var origText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Signing in…'; btn.style.opacity = '0.7';
   try {
-    var res = await fetch(SB_URL + '/functions/v1/send-otp', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone: raw, action: 'send'})
-    });
-    var data = await res.json();
-    if (data.error) { alert(data.error); btn.disabled = false; btn.textContent = 'Send Code →'; return; }
-    _otpPhone = raw;
-    var disp = document.getElementById('otpPhoneDisplay');
-    if (disp) disp.textContent = raw;
-    document.getElementById('otpPhoneEntry').style.display = 'none';
-    document.getElementById('otpCodeEntry').style.display = '';
-    _buildOtpBoxes();
-    _startResendTimer();
-  } catch(e) {
-    alert('Could not send OTP. Please check your connection.');
-    btn.disabled = false; btn.textContent = 'Send Code →';
-  }
-}
-
-function _buildOtpBoxes() {
-  var row = document.getElementById('otpBoxes'); if (!row) return;
-  row.innerHTML = '';
-  for (var i = 0; i < 6; i++) {
-    var inp = document.createElement('input');
-    inp.type = 'tel'; inp.maxLength = 1; inp.className = 'otp-box';
-    inp.dataset.idx = i;
-    inp.addEventListener('input', function(e) {
-      var v = e.target.value.replace(/\D/g,'');
-      e.target.value = v;
-      if (v && parseInt(e.target.dataset.idx) < 5) {
-        var next = row.querySelector('[data-idx="'+(parseInt(e.target.dataset.idx)+1)+'"]');
-        if (next) next.focus();
-      }
-      if (v) e.target.classList.add('filled'); else e.target.classList.remove('filled');
-    });
-    inp.addEventListener('keydown', function(e) {
-      if (e.key === 'Backspace' && !e.target.value && parseInt(e.target.dataset.idx) > 0) {
-        var prev = row.querySelector('[data-idx="'+(parseInt(e.target.dataset.idx)-1)+'"]');
-        if (prev) { prev.value = ''; prev.classList.remove('filled'); prev.focus(); }
-      }
-    });
-    row.appendChild(inp);
-  }
-  row.querySelector('[data-idx="0"]').focus();
-}
-
-function _startResendTimer() {
-  var secs = 42;
-  var btn = document.getElementById('resendBtn');
-  var timerEl = document.getElementById('resendTimer');
-  if (btn) btn.disabled = true;
-  if (_otpResendTimer) clearInterval(_otpResendTimer);
-  _otpResendTimer = setInterval(function() {
-    secs--;
-    var m = Math.floor(secs / 60);
-    var s = secs % 60;
-    if (timerEl) timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-    if (secs <= 0) {
-      clearInterval(_otpResendTimer);
-      if (btn) { btn.disabled = false; btn.innerHTML = 'Resend code'; }
+    var r = await sb.auth.signInWithPassword({email: em, password: pw});
+    btn.disabled = false; btn.textContent = origText; btn.style.opacity = '1';
+    if (r.error) {
+      errEl.textContent = r.error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password. Please try again.'
+        : r.error.message;
+      errEl.style.display = 'block'; return;
     }
-  }, 1000);
-}
-
-async function resendOtp() {
-  var btn = document.getElementById('resendBtn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-  try {
-    var res = await fetch(SB_URL + '/functions/v1/send-otp', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone: _otpPhone, action: 'send'})
-    });
-    var data = await res.json();
-    if (data.error) { alert(data.error); return; }
-    _buildOtpBoxes();
-    _startResendTimer();
+    U = r.data.user;
+    _loadingProfile = true;
+    await loadP();
+    _loadingProfile = false;
   } catch(e) {
-    alert('Could not resend. Please try again.');
+    btn.disabled = false; btn.textContent = origText; btn.style.opacity = '1';
+    errEl.textContent = e.message || 'Connection error. Please check your internet.';
+    errEl.style.display = 'block';
+    _loadingProfile = false;
   }
 }
 
-async function verifyOtp() {
-  var row = document.getElementById('otpBoxes'); if (!row) return;
-  var boxes = row.querySelectorAll('.otp-box');
-  var code = '';
-  boxes.forEach(function(b) { code += b.value; });
-  if (code.length < 6) {
-    var e = document.getElementById('otpErr');
-    if(e){e.textContent='Enter the 6-digit code.';e.style.display='block';}
-    return;
-  }
-  var btn = document.getElementById('otpVerifyBtn');
-  btn.disabled = true; btn.textContent = 'Verifying…';
-  try {
-    var res = await fetch(SB_URL + '/functions/v1/send-otp', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({phone: _otpPhone, action: 'verify', code: code})
-    });
-    var data = await res.json();
-    if (data.error) {
-      var e = document.getElementById('otpErr');
-      if(e){e.textContent=data.error;e.style.display='block';}
-      btn.disabled = false; btn.textContent = 'Verify & Continue';
-      return;
-    }
-    _doRegisterAfterOtp();
-  } catch(e) {
-    var err = document.getElementById('otpErr');
-    if(err){err.textContent='Verification failed. Please try again.';err.style.display='block';}
-    btn.disabled = false; btn.textContent = 'Verify & Continue';
-  }
-}
-
-// ── REGISTER — validate then show OTP screen
 async function doRegister() {
   var em    = document.getElementById('rEmail').value.trim();
   var pw    = document.getElementById('rPass').value;
@@ -346,7 +248,6 @@ async function _doRegisterAfterOtp() {
         body: JSON.stringify({type: 'registered', full_name: '', email: em})
       });
     } catch(x) {}
-
     if (U) { saveReferral(U.id, em).catch(function(){}); }
     await loadP();
     _loadingProfile = false;
