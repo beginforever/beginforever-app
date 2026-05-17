@@ -32,7 +32,6 @@ async function doLogin() {
     _loadingProfile = false;
   }
 }
-
 async function doRegister() {
   var em    = document.getElementById('rEmail').value.trim();
   var pw    = document.getElementById('rPass').value;
@@ -46,57 +45,14 @@ async function doRegister() {
   if (pw !== cf)     { err.textContent = 'Passwords do not match.'; err.style.display = 'block'; return; }
   if (!terms)        { err.textContent = 'Please agree to the Terms & conditions.'; err.style.display = 'block'; return; }
 
-  var btn = document.getElementById('rBtn');
-  btn.disabled = true; btn.textContent = 'Creating account…';
+  try { sessionStorage.setItem('bf_reg_em', em); sessionStorage.setItem('bf_reg_pw', pw); } catch(x) {}
 
-  // Set flags BEFORE signUp so auth event is blocked immediately
-  _justRegistered = true;
-  _loadingProfile = true;
+  var phoneInp = document.getElementById('otpPhoneInput');
+  if (phoneInp && (!phoneInp.value || phoneInp.value === '+91')) phoneInp.value = '+91';
 
-  try {
-    var res = await sb.auth.signUp({email: em, password: pw});
-    btn.disabled = false; btn.textContent = 'Create Account ✦';
-
-    if (res.error) {
-      _justRegistered = false; _loadingProfile = false;
-      err.textContent = res.error.message; err.style.display = 'block'; return;
-    }
-
-    var newUser = res.data && res.data.user;
-    if (!newUser) {
-      _justRegistered = false; _loadingProfile = false;
-      err.textContent = 'Account creation failed. Please try again.';
-      err.style.display = 'block'; return;
-    }
-
-    U = newUser;
-    try { sessionStorage.setItem('bf_uid', newUser.id); } catch(x) {}
-    if (typeof fbq !== 'undefined') fbq('track', 'Lead');
-
-    // Fire and forget — no await
-    try {
-      fetch(SB_URL + '/functions/v1/smart-function', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({type: 'registered', full_name: '', email: em})
-      });
-    } catch(x) {}
-
-    // Non-blocking referral save
-    if (U) { saveReferral(U.id, em).catch(function(){}); }
-
-    await loadP();
-    _loadingProfile = false;
-    _justRegistered = false;
-
-  } catch(e) {
-    btn.disabled = false; btn.textContent = 'Create Account ✦';
-    err.textContent = e.message || 'Something went wrong. Please try again.';
-    err.style.display = 'block';
-    _loadingProfile = false;
-    _justRegistered = false;
-  }
+  showScr('otpScreen');
 }
+
 
 async function doForgot() {
   var em  = document.getElementById('fgEmail').value.trim();
