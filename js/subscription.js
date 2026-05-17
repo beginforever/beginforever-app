@@ -76,7 +76,7 @@ function showSub() {
     + '<div style="padding:14px 12px 100px;font-family:Nunito,sans-serif;">'
 
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
-    +   '<button onclick="goTab('home')" style="background:none;border:none;font-size:24px;color:var(--gold-bright);cursor:pointer;padding:4px;">←</button>'
+    +   '<button onclick="goTab(\'home\')" style="background:none;border:none;font-size:24px;color:var(--gold-bright);cursor:pointer;padding:4px;">←</button>'
     +   '<h2 style="font-family:Cinzel,serif;color:var(--gold-bright);margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2>'
     + '</div>'
 
