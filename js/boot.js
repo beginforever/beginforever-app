@@ -21,9 +21,11 @@ sb.auth.onAuthStateChange(function(ev, sess) {
     } else {
       if (!_justRegistered && !_loadingProfile) showScr('loginScreen');
     }
-  } else if (ev === 'SIGNED_IN') {
+ } else if (ev === 'SIGNED_IN') {
     if (_justRegistered || _loadingProfile) return;
     if (U && sess && sess.user && U.id === sess.user.id && P) return;
+    var cur = document.querySelector('.screen.active');
+    if (cur && (cur.id === 'otpScreen' || cur.id === 'registerScreen')) return;
     U = sess.user;
     loadP();
   } else if (ev === 'SIGNED_OUT') {
