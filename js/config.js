@@ -8,7 +8,7 @@ var LAUNCH = new Date('2026-06-06T18:30:00Z');
 
 function isPreLaunch() { return new Date() < LAUNCH; }
 
-// Global state — use var not const to avoid redeclaration errors
+// Global state
 var U = null, P = null;
 var photos = [null,null,null,null,null];
 var idFile = null;
@@ -86,6 +86,79 @@ var CT = {
   'Other / Outside India':['Other']
 };
 
+// ═══ BATCH 2 CONSTANTS ═══
+var LOOKING_FOR_OPTIONS = [
+  { v:'marriage_soon',   l:'Marriage — Ready soon (within 6-12 months)' },
+  { v:'marriage_intime', l:'Marriage — In time (1-2 years)' },
+  { v:'long_term',       l:'Serious long-term relationship' },
+  { v:'companionship',   l:'Companionship' },
+  { v:'friendship',      l:'Friendship first, see where it goes' },
+  { v:'figuring_out',    l:'Still figuring it out' },
+  { v:'casual',          l:'Casual' },
+  { v:'dating',          l:'Dating' }
+];
+
+var PROFILE_FOR_OPTIONS = [
+  'Myself', 'My Son', 'My Daughter', 'My Brother', 'My Sister',
+  'My Friend', 'My Relative', 'Other'
+];
+
+var INCOME_BRACKETS = [
+  { v:'under_3l', l:'Under ₹3L per year' },
+  { v:'3_7l',     l:'₹3L – ₹7L per year' },
+  { v:'7_15l',    l:'₹7L – ₹15L per year' },
+  { v:'15_30l',   l:'₹15L – ₹30L per year' },
+  { v:'30l_plus', l:'₹30L+ per year' },
+  { v:'prefer_not', l:'Prefer not to say' }
+];
+
+var MARITAL_STATUSES = [
+  'Never Married', 'Divorced', 'Widowed', 'Annulled', 'Awaiting Divorce'
+];
+
+// Height options: 5'0" to 6'5" in 1-inch steps (60in = 152cm to 77in = 196cm)
+function buildHeightOptions() {
+  var arr = [];
+  for (var inches = 60; inches <= 77; inches++) {
+    var ft = Math.floor(inches / 12);
+    var inch = inches % 12;
+    var cm = Math.round(inches * 2.54);
+    arr.push({ in: inches, cm: cm, label: ft + "'" + inch + '" (' + cm + ' cm)' });
+  }
+  return arr;
+}
+var HEIGHT_OPTIONS = buildHeightOptions();
+
+// Age range buckets for partner preferences
+var AGE_RANGES = [
+  { v:'18-22', min:18, max:22 },
+  { v:'22-26', min:22, max:26 },
+  { v:'26-30', min:26, max:30 },
+  { v:'30-35', min:30, max:35 },
+  { v:'35-40', min:35, max:40 },
+  { v:'40-45', min:40, max:45 },
+  { v:'45-50', min:45, max:50 },
+  { v:'50_plus', min:50, max:99 }
+];
+
 function faithByKey(k) {
   return FAITHS.find(function(f){return f.key===k;}) || FAITHS[FAITHS.length-1];
+}
+
+function lookingForLabel(v) {
+  var o = LOOKING_FOR_OPTIONS.find(function(x){return x.v===v;});
+  return o ? o.l : '';
+}
+
+function incomeBracketLabel(v) {
+  var o = INCOME_BRACKETS.find(function(x){return x.v===v;});
+  return o ? o.l : '';
+}
+
+function cmToFtIn(cm) {
+  if (!cm) return '';
+  var totalIn = Math.round(cm / 2.54);
+  var ft = Math.floor(totalIn / 12);
+  var inch = totalIn % 12;
+  return ft + "'" + inch + '"';
 }
