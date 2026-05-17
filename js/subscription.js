@@ -1,4 +1,4 @@
-// Begin Forever — Subscription v9 (aligned heights, gold buttons)
+// Begin Forever — Subscription v10 (original hardcoded colors)
 var SUB_CYCLE = 'monthly';
 
 var PLANS = {
@@ -17,7 +17,7 @@ var PLANS = {
     ]
   },
   premium: {
-    name: 'Premium ✦',
+    name: 'Premium',
     tag: 'Find your forever, faster',
     monthly:    { price: 899,  per: '/month' },
     quarterly:  { price: 2157, per: '/3 months', save: '20% off' },
@@ -25,7 +25,7 @@ var PLANS = {
     features: [
       'Unlimited chat',
       'Unlimited interests',
-      '⭐ Faith filter — control who can send interests',
+      'Faith filter — control who can send interests',
       'See who liked you (names + photos)',
       'See profile viewers',
       'Read receipts on messages',
@@ -46,16 +46,27 @@ function fmtCountdown(ms) {
 }
 
 function showSub() {
-  var profile = window.currentProfile || {};
+  var profile = P || {};
   var isFounding = profile.is_founding_member === true;
   var preLaunch = isPreLaunch();
-  var c = document.getElementById('mainApp') || document.body;
 
-  c.innerHTML = ''
-    + '<div style="min-height:100vh;background:#FDFAF4;padding:14px 12px 100px;font-family:Nunito,sans-serif;">'
+  var allTabs = ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'];
+  allTabs.forEach(function(x){ var el=document.getElementById(x); if(el) el.style.display='none'; });
+
+  var ma = document.getElementById('mainApp');
+  if (ma) ma.style.display = 'block';
+
+  var planTab = document.getElementById('tPlans');
+  if (!planTab) { if (typeof goTab==='function') goTab('profile'); return; }
+  planTab.style.display = 'block';
+
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+
+  planTab.innerHTML = ''
+    + '<div style="padding:14px 12px 100px;font-family:Nunito,sans-serif;background:#FDFAF4;min-height:100vh;">'
 
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
-    +   '<button onclick="goTab(\'profile\')" style="background:none;border:none;font-size:24px;color:#3B0764;cursor:pointer;padding:4px;">←</button>'
+    +   '<button onclick="goTab(\'home\')" style="background:none;border:none;font-size:24px;color:#3B0764;cursor:pointer;padding:4px;">←</button>'
     +   '<h2 style="font-family:Cinzel,serif;color:#3B0764;margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2>'
     + '</div>'
 
@@ -85,7 +96,7 @@ function showSub() {
 
 function tab(cycle, label) {
   var on = SUB_CYCLE === cycle;
-  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;'+(on?'background:#3B0764;color:#fff;':'background:transparent;color:#3B0764;')+'">'+label+'</button>';
+  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;'+(on?'background:#3B0764;color:#fff;':'background:transparent;color:#3B0764;')+'">'+label+'</button>';
 }
 
 function setCycle(c) { SUB_CYCLE = c; showSub(); }
@@ -105,28 +116,28 @@ function basicCard() {
     +     (c.save ? '<div style="display:inline-block;background:#FDF0D5;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;">Choose Basic</button>'
+    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'
     + '</div>';
 }
 
 function premiumCard() {
   var c = PLANS.premium[SUB_CYCLE];
   var feats = PLANS.premium.features.map(function(f){
-    var highlight = f.indexOf('⭐') === 0;
-    return '<li style="padding:5px 0;font-size:11px;color:#fff;line-height:1.4;display:flex;gap:5px;'+(highlight?'background:rgba(245,200,66,0.15);margin:2px -3px;padding-left:5px;border-radius:4px;':'')+'"><span style="color:#F5C842;flex-shrink:0;">✓</span><span>'+f.replace('⭐ ','')+'</span></li>';
+    var highlight = f.indexOf('Faith filter') === 0;
+    return '<li style="padding:5px 0;font-size:11px;color:#fff;line-height:1.4;display:flex;gap:5px;'+(highlight?'background:rgba(245,200,66,0.15);margin:2px -3px;padding-left:5px;border-radius:4px;':'')+'"><span style="color:#F5C842;flex-shrink:0;">'+(highlight?'⭐':'✓')+'</span><span>'+f+'</span></li>';
   }).join('');
   return ''
     + '<div style="background:linear-gradient(160deg,#3B0764,#5B1A8F);border-radius:14px;padding:14px 10px;color:#fff;position:relative;box-shadow:0 4px 12px rgba(59,7,100,0.25);display:flex;flex-direction:column;">'
     +   '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#F5C842;color:#3B0764;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:0.5px;white-space:nowrap;">★ RECOMMENDED</div>'
     +   '<div style="text-align:center;border-bottom:1px solid rgba(245,200,66,0.3);padding-bottom:10px;margin-bottom:10px;padding-top:4px;">'
-    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#F5C842;font-weight:600;letter-spacing:0.5px;">'+PLANS.premium.name+'</div>'
+    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#F5C842;font-weight:600;letter-spacing:0.5px;">PREMIUM ✦</div>'
     +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:#F5C842;opacity:0.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'
     +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#fff;">₹'+c.price.toLocaleString('en-IN')+'</div>'
     +     '<div style="font-size:10px;color:#F5C842;opacity:0.85;">'+c.per+'</div>'
     +     (c.save ? '<div style="display:inline-block;background:#F5C842;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;">Choose Premium</button>'
+    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium</button>'
     + '</div>';
 }
 
@@ -154,13 +165,15 @@ function startCountdown() {
 
 function choosePlan(tier) {
   if (isPreLaunch()) { alert('Plans unlock on 7 June 2026. Founding members get Premium FREE for the first week!'); return; }
-  var u = window.currentUser; if (!u) { alert('Please log in first'); return; }
+  var u = U; if (!u) { alert('Please log in first'); return; }
   var p = PLANS[tier][SUB_CYCLE];
+  var cycleLabel = {monthly:'Monthly',quarterly:'3 Months',halfyearly:'6 Months'}[SUB_CYCLE]||SUB_CYCLE;
+  var planLabel = (tier==='premium'?'Premium ✦':'Basic') + ' · ' + cycleLabel;
   var options = {
     key: 'rzp_live_SausbldU6Vqpy0',
     amount: p.price * 100, currency: 'INR',
     name: 'Begin Forever',
-    description: PLANS[tier].name + ' — ' + SUB_CYCLE,
+    description: planLabel,
     image: 'https://beginforever.github.io/beginforever-app/logo.png',
     handler: async function(response) {
       try {
@@ -175,16 +188,16 @@ function choosePlan(tier) {
           is_premium: tier === 'premium', subscription_status: 'active',
           subscription_plan: tier + '_' + SUB_CYCLE, subscription_expires_at: exp
         }).eq('id', u.id);
-        alert('🎉 Subscription activated! Welcome to ' + PLANS[tier].name);
+        alert('🎉 ' + planLabel + ' activated!');
         window.location.reload();
       } catch (e) {
         alert('Payment received but activation failed. Contact info@beginforever.in');
       }
     },
     prefill: {
-      name: window.currentProfile?.full_name || '',
-      email: window.currentProfile?.email || '',
-      contact: window.currentProfile?.phone || ''
+      name: P ? P.full_name : '',
+      email: P ? P.email : '',
+      contact: P ? P.phone : ''
     },
     theme: { color: '#3B0764' }
   };
@@ -192,7 +205,7 @@ function choosePlan(tier) {
 }
 
 function showSubModal(featureName) {
-  var profile = window.currentProfile || {};
+  var profile = P || {};
   if (profile.is_founding_member || profile.is_premium) return false;
   var msg = featureName ? '"'+featureName+'" is a Premium feature.\n\nUpgrade to unlock it.' : 'Upgrade to Premium to unlock this feature.';
   if (confirm(msg + '\n\nView subscription plans?')) showSub();

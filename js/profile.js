@@ -1,7 +1,6 @@
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
   if (!U) {
-    // First try getUser()
     try {
       var sessRes2 = await sb.auth.getUser();
       if (sessRes2.data && sessRes2.data.user) U = sessRes2.data.user;
@@ -19,7 +18,6 @@ async function loadP() {
     if (r.error) throw r.error;
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
   } catch(x) {
-    // Don't redirect during registration
     if (!_justRegistered && !_loadingProfile) showScr('loginScreen');
     return;
   }
@@ -27,7 +25,6 @@ async function loadP() {
   P = profileData;
 
   if (!P) {
-    // New user — go to setup
     showScr('setupScreen'); step = 1; updUI(); return;
   }
 
@@ -70,6 +67,23 @@ async function loadP() {
   }
 
   showScr('mainApp'); goTab('home'); checkNotifs();
+}
+
+// ═══════════════════════════════════════════ PREMIUM CHECK HELPER
+function isPremiumUser() {
+  if (!P) return false;
+  if (P.is_admin) return true;
+  if (P.is_premium === true) return true;
+  if (P.subscription_status === 'active') return true;
+  // Founding members get premium free in launch week
+  if (P.is_founding_member) {
+    try {
+      var launchPlus7 = new Date(LAUNCH.getTime() + 7*24*60*60*1000);
+      var now = new Date();
+      if (now >= LAUNCH && now < launchPlus7) return true;
+    } catch(x) {}
+  }
+  return false;
 }
 
 // ═══════════════════════════════════════════ SETUP WIZARD
@@ -177,12 +191,10 @@ async function goNext(){
     step++;updUI();return;
   }
 
-  // ── Step 5 — Submit ──
   var btn=document.getElementById('nxBtn');
   btn.disabled=true;
   btn.innerHTML='<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
 
-  // Re-fetch U from session if null
  if (!U) {
     try {
       var sessRes = await sb.auth.getUser();
@@ -222,8 +234,6 @@ async function goNext(){
       }
     }
 
-    // FOUNDER CAP: only first 300 APPROVED users become founding members.
-    // Pending users get a provisional number, but admin approval determines final status.
     var FOUNDER_CAP = 300;
     var apprRes = await sb.from('profiles').select('id',{count:'exact',head:true}).eq('is_founding_member',true).eq('status','approved');
     var apprCount = apprRes.count || 0;
@@ -270,7 +280,6 @@ async function goNext(){
     var res=await sb.from('profiles').upsert(pd,{onConflict:'id'});
     if(res.error) throw res.error;
 
-    // Fire and forget notification
     try{
       fetch(SB_URL+'/functions/v1/smart-function',{
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -298,21 +307,29 @@ async function goNext(){
 // ═══════════════════════════════════════════ FAITH PREF CARD (profile tab)
 function renderFaithPrefCard(){
   var el=document.getElementById('profileFaithSummary'); if(!el) return;
+  var premium = isPremiumUser();
+  var lockBadge = premium ? '' : '<span style="background:#F5C842;color:#3B0764;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:6px;letter-spacing:.5px;">✦ PREMIUM</span>';
+  var editBtn = premium
+    ? '<button onclick="openFaithPrefs()" style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">Edit ✦</button>'
+    : '<button onclick="showSubModal(\'Faith filter\')" style="background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.4);color:#F5C842;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">🔒 Unlock</button>';
+
   el.innerHTML=
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'+
       '<div>'+
-        '<p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Faith Preferences</p>'+
+        '<p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Faith Preferences'+lockBadge+'</p>'+
         '<p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Who you see &amp; who can reach you</p>'+
       '</div>'+
-      '<button onclick="openFaithPrefs()" style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">Edit ✦</button>'+
+      editBtn+
     '</div>'+
-    '<div style="margin-bottom:10px;">'+
-      '<p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browsing profiles from</p>'+
-      '<div id="fpBrowsePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div>'+
-    '</div>'+
-    '<div>'+
-      '<p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receiving interest from</p>'+
-      '<div id="fpReceivePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div>'+
+    '<div style="'+(premium?'':'opacity:.45;filter:grayscale(.4);')+'">'+
+      '<div style="margin-bottom:10px;">'+
+        '<p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browsing profiles from</p>'+
+        '<div id="fpBrowsePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div>'+
+      '</div>'+
+      '<div>'+
+        '<p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receiving interest from</p>'+
+        '<div id="fpReceivePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div>'+
+      '</div>'+
     '</div>';
   renderFpPills('fpBrowsePills',fpBrowse);
   renderFpPills('fpReceivePills',fpReceive);
@@ -343,6 +360,11 @@ var FP_DENOM_MAP = {
 };
 
 function openFaithPrefs() {
+  // Gate: premium only (except pre-launch when nothing is locked yet)
+  if (!isPreLaunch() && !isPremiumUser()) {
+    if (typeof showSubModal === 'function') showSubModal('Faith filter');
+    return;
+  }
   var f = faithByKey(P && P.religion ? P.religion : 'Other');
   var iconEl  = document.getElementById('fpMyFaithIcon');
   var nameEl  = document.getElementById('fpMyFaithName');
@@ -544,13 +566,18 @@ function renP() {
     '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
     (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'');
   var h = '';
-  [{l:'Email',v:P.email?P.email.replace(/(.{2}).+(@.+)/,'$1***$2'):''},
-   {l:'Phone',v:P.phone?P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2'):''},
+  var premium = isPremiumUser();
+  var contactRows = [
+    {l:'Email',v:P.email?P.email.replace(/(.{2}).+(@.+)/,'$1***$2'):'', isContact:true},
+    {l:'Phone',v:P.phone?P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2'):'', isContact:true}
+  ];
+  var otherRows = [
    {l:'Age',v:P.age},{l:'Religion',v:P.religion},{l:'Denomination',v:P.denomination},
    {l:'Education',v:P.education},{l:'Occupation',v:P.occupation},
    {l:'Mother Tongue',v:P.mother_tongue},{l:'Marital Status',v:P.marital_status},
    {l:'Height',v:P.height_cm?P.height_cm+' cm':''}
-  ].forEach(function(d){
+  ];
+  contactRows.concat(otherRows).forEach(function(d){
     if (d.v) h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);">'+
       '<span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span>'+
       '<span style="font-size:13px;color:var(--w80);font-weight:600;">'+d.v+'</span></div>';
@@ -621,6 +648,7 @@ async function viewProfile(id){
   if(!r.data||!r.data.length) return;
   var p=r.data[0]; var f=faithByKey(p.religion||'Other');
   var ap=[p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean);
+  var premium = isPremiumUser();
   var h='<div style="text-align:center;padding-top:8px">';
   if(ap.length) h+='<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">'+
     ap.map(function(u){return '<div style="width:70px;height:70px;border-radius:12px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>';}).join('')+'</div>';
@@ -633,7 +661,23 @@ async function viewProfile(id){
    {l:'Height',v:p.height_cm?p.height_cm+' cm':''}].forEach(function(dd){
     if(dd.v) h+='<div style="margin-bottom:9px;"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;">'+dd.l+'</p><p style="font-size:13px;margin-top:2px;color:var(--w80);">'+dd.v+'</p></div>';
   });
-  h+='</div><p style="text-align:center;padding:14px;font-size:13px;color:var(--w40);">🔒 Interest &amp; messaging unlocks launch day</p>';
+  h+='</div>';
+  // Contact reveal — Premium only
+  if (!isPreLaunch()) {
+    if (premium && (p.phone || p.email)) {
+      h+='<div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:12px;padding:13px;margin-top:10px;">';
+      h+='<p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">✦ Contact Details</p>';
+      if (p.phone) h+='<p style="font-size:13px;color:#fff;margin:4px 0;">📱 '+p.phone+'</p>';
+      if (p.email) h+='<p style="font-size:13px;color:#fff;margin:4px 0;">✉️ '+p.email+'</p>';
+      h+='</div>';
+    } else if (!premium && (p.phone || p.email)) {
+      h+='<div onclick="event.stopPropagation();showSubModal(\'Contact reveal\')" style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:12px;padding:13px;margin-top:10px;cursor:pointer;text-align:center;">';
+      h+='<p style="font-size:11px;color:#F5C842;font-weight:700;margin:0 0 4px;">🔒 ✦ PREMIUM</p>';
+      h+='<p style="font-size:13px;color:#fff;margin:0;">Tap to unlock contact details</p>';
+      h+='</div>';
+    }
+  }
+  h+='<p style="text-align:center;padding:14px;font-size:13px;color:var(--w40);">🔒 Interest &amp; messaging unlocks launch day</p>';
   h+='<div style="display:flex;gap:8px;padding:0 4px 8px;">';
   h+='<button class="btn btn-dark" style="flex:1;font-size:12px;padding:10px;" onclick="event.stopPropagation();openReportModal(\''+p.id+'\',\''+(p.full_name||'').replace(/[\\\'\"]/g,'')+'\')">🚩 Report</button>';
   h+='<button class="btn btn-dark" style="flex:1;font-size:12px;padding:10px;color:#ff6b6b;" onclick="event.stopPropagation();openBlockModal(\''+p.id+'\',\''+(p.full_name||'').replace(/[\\\'\"]/g,'')+'\')">🚫 Block</button>';
