@@ -1,4 +1,4 @@
-// Begin Forever — Subscription v9 (aligned heights, gold buttons)
+// Begin Forever — Subscription v10 (original hardcoded colors)
 var SUB_CYCLE = 'monthly';
 
 var PLANS = {
@@ -17,7 +17,7 @@ var PLANS = {
     ]
   },
   premium: {
-    name: 'Premium ✦',
+    name: 'Premium',
     tag: 'Find your forever, faster',
     monthly:    { price: 899,  per: '/month' },
     quarterly:  { price: 2157, per: '/3 months', save: '20% off' },
@@ -25,7 +25,7 @@ var PLANS = {
     features: [
       'Unlimited chat',
       'Unlimited interests',
-      '⭐ Faith filter — control who can send interests',
+      'Faith filter — control who can send interests',
       'See who liked you (names + photos)',
       'See profile viewers',
       'Read receipts on messages',
@@ -46,38 +46,28 @@ function fmtCountdown(ms) {
 }
 
 function showSub() {
-  var profile = P || window.currentProfile || {};
+  var profile = P || {};
   var isFounding = profile.is_founding_member === true;
   var preLaunch = isPreLaunch();
 
-  // Hide all content tabs, show tPlans
   var allTabs = ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'];
-  allTabs.forEach(function(x){
-    var el = document.getElementById(x);
-    if (el) el.style.display = 'none';
-  });
+  allTabs.forEach(function(x){ var el=document.getElementById(x); if(el) el.style.display='none'; });
 
-  // Make sure mainApp is visible
   var ma = document.getElementById('mainApp');
-  if (ma) { ma.style.display = 'block'; }
+  if (ma) ma.style.display = 'block';
 
   var planTab = document.getElementById('tPlans');
-  if (!planTab) {
-    // Fallback: goTab profile if tPlans missing
-    if (typeof goTab === 'function') goTab('profile');
-    return;
-  }
+  if (!planTab) { if (typeof goTab==='function') goTab('profile'); return; }
   planTab.style.display = 'block';
 
-  // Remove active from all tab buttons
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
 
   planTab.innerHTML = ''
-    + '<div style="padding:14px 12px 100px;font-family:Nunito,sans-serif;">'
+    + '<div style="padding:14px 12px 100px;font-family:Nunito,sans-serif;background:#FDFAF4;min-height:100vh;">'
 
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
-    +   '<button onclick="goTab(\'home\')" style="background:none;border:none;font-size:24px;color:var(--gold-bright);cursor:pointer;padding:4px;">←</button>'
-    +   '<h2 style="font-family:Cinzel,serif;color:var(--gold-bright);margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2>'
+    +   '<button onclick="goTab(\'home\')" style="background:none;border:none;font-size:24px;color:#3B0764;cursor:pointer;padding:4px;">←</button>'
+    +   '<h2 style="font-family:Cinzel,serif;color:#3B0764;margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2>'
     + '</div>'
 
     + '<div style="text-align:center;margin-bottom:14px;">'
@@ -106,7 +96,7 @@ function showSub() {
 
 function tab(cycle, label) {
   var on = SUB_CYCLE === cycle;
-  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;'+(on?'background:var(--gold);color:#1a0a2e;':'background:transparent;color:var(--w70);')+'">'+label+'</button>';
+  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;'+(on?'background:#3B0764;color:#fff;':'background:transparent;color:#3B0764;')+'">'+label+'</button>';
 }
 
 function setCycle(c) { SUB_CYCLE = c; showSub(); }
@@ -126,34 +116,34 @@ function basicCard() {
     +     (c.save ? '<div style="display:inline-block;background:rgba(212,160,23,.15);color:var(--gold);padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1a0a2e;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'
+    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'
     + '</div>';
 }
 
 function premiumCard() {
   var c = PLANS.premium[SUB_CYCLE];
   var feats = PLANS.premium.features.map(function(f){
-    var highlight = f.indexOf('⭐') === 0;
-    return '<li style="padding:5px 0;font-size:11px;color:#fff;line-height:1.4;display:flex;gap:5px;'+(highlight?'background:rgba(245,200,66,0.15);margin:2px -3px;padding-left:5px;border-radius:4px;':'')+'"><span style="color:#F5C842;flex-shrink:0;">✓</span><span>'+f.replace('⭐ ','')+'</span></li>';
+    var highlight = f.indexOf('Faith filter') === 0;
+    return '<li style="padding:5px 0;font-size:11px;color:#fff;line-height:1.4;display:flex;gap:5px;'+(highlight?'background:rgba(245,200,66,0.15);margin:2px -3px;padding-left:5px;border-radius:4px;':'')+'"><span style="color:#F5C842;flex-shrink:0;">'+(highlight?'⭐':'✓')+'</span><span>'+f+'</span></li>';
   }).join('');
   return ''
     + '<div style="background:linear-gradient(160deg,#2d1655,#3B0764);border:1.5px solid rgba(212,160,23,.5);border-radius:14px;padding:14px 10px;color:#fff;position:relative;box-shadow:0 4px 12px rgba(59,7,100,0.25);display:flex;flex-direction:column;">'
     +   '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1a0a2e;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:0.5px;white-space:nowrap;">★ RECOMMENDED</div>'
     +   '<div style="text-align:center;border-bottom:1px solid rgba(245,200,66,0.3);padding-bottom:10px;margin-bottom:10px;padding-top:4px;">'
-    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:var(--gold-bright);font-weight:600;">'+PLANS.premium.name+'</div>'
-    +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:var(--gold-bright);opacity:0.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'
-    +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:var(--gold-bright);">₹'+c.price.toLocaleString('en-IN')+'</div>'
-    +     '<div style="font-size:10px;color:var(--gold-bright);opacity:0.85;">'+c.per+'</div>'
-    +     (c.save ? '<div style="display:inline-block;background:var(--gold);color:#1A0830;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
+    +     '<div style="font-family:Cinzel,serif;font-size:15px;color:#F5C842;font-weight:600;letter-spacing:0.5px;">PREMIUM ✦</div>'
+    +     '<div style="font-family:EB Garamond,serif;font-style:italic;color:#F5C842;opacity:0.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'
+    +     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#fff;">₹'+c.price.toLocaleString('en-IN')+'</div>'
+    +     '<div style="font-size:10px;color:#F5C842;opacity:0.85;">'+c.per+'</div>'
+    +     (c.save ? '<div style="display:inline-block;background:#F5C842;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1A0830;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium ✦</button>'
+    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium</button>'
     + '</div>';
 }
 
 function overlay() {
   return ''
-    + '<div style="position:absolute;top:180px;left:12px;right:12px;background:rgba(13,1,24,.92);border:1.5px solid rgba(212,160,23,.4);border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,0.3);backdrop-filter:blur(4px);">'
+    + '<div style="position:absolute;top:320px;left:12px;right:12px;background:rgba(253,250,244,0.96);border:2px solid #D4A017;border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,0.15);">'
     +   '<div style="font-size:36px;margin-bottom:6px;">🔒</div>'
     +   '<h3 style="font-family:Cinzel,serif;color:#fff;font-size:17px;margin:0 0 6px;">Plans unlock at launch</h3>'
     +   '<p style="font-family:EB Garamond,serif;font-style:italic;color:var(--gold);font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'
