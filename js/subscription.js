@@ -106,7 +106,7 @@ function showSub() {
 
 function tab(cycle, label) {
   var on = SUB_CYCLE === cycle;
-  return '<button onclick="setCycle(''+cycle+'')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;'+(on?'background:var(--gold);color:#1a0a2e;':'background:transparent;color:var(--w70);')+'">'+label+'</button>';
+  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;'+(on?'background:var(--gold);color:#1a0a2e;':'background:transparent;color:var(--w70);')+'">'+label+'</button>';
 }
 
 function setCycle(c) { SUB_CYCLE = c; showSub(); }
@@ -126,7 +126,7 @@ function basicCard() {
     +     (c.save ? '<div style="display:inline-block;background:rgba(212,160,23,.15);color:var(--gold);padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan('basic')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1a0a2e;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'
+    +   '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1a0a2e;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'
     + '</div>';
 }
 
@@ -147,7 +147,7 @@ function premiumCard() {
     +     (c.save ? '<div style="display:inline-block;background:var(--gold);color:#1A0830;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')
     +   '</div>'
     +   '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+feats+'</ul>'
-    +   '<button onclick="choosePlan('premium')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1A0830;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium ✦</button>'
+    +   '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#1A0830;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium ✦</button>'
     + '</div>';
 }
 
