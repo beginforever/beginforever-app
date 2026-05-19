@@ -240,10 +240,10 @@ select.field option { background: var(--dark2); color: var(--white); }
     <p class="auth-tagline"><em>Where love begins to last.</em></p>
     <div class="auth-card">
       <h2 class="auth-card-title">Welcome Back</h2>
-      <div class="af-fg"><label class="af-label">Email *</label><input type="email" class="af-input" id="lEmail" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <div class="af-fg"><label class="af-label">Email *</label><input type="email" class="af-input" id="lEmail" placeholder="your@email.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/></div>
       <div class="af-fg">
         <label class="af-label">Password *</label>
-        <div class="pw-wrap"><input type="password" class="af-input" id="lPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/><button class="pw-show" onclick="togglePw('lPass',this)">Show</button></div>
+        <div class="pw-wrap"><input type="password" class="af-input" id="lPass" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"/><button class="pw-show" onclick="togglePw('lPass',this)">Show</button></div>
       </div>
       <p id="lErr" class="af-err"></p>
       <button class="af-btn af-btn-gold" id="lBtn" onclick="doLogin()" style="background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-weight:800;font-size:16px;padding:15px;border-radius:12px;letter-spacing:.3px;">Sign In</button>
@@ -374,7 +374,7 @@ select.field option { background: var(--dark2); color: var(--white); }
           <div class="field-group"><label class="field-label">State *</label><select class="field" id="fState" onchange="fillC()"><option value="">Select state</option><option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Delhi</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Other / Outside India</option></select></div>
           <div class="field-group"><label class="field-label">City *</label><select class="field" id="fCity"><option value="">Select</option></select></div>
         </div>
-        <div class="field-group"><label class="field-label">Phone *</label><input class="field" id="fPhone" placeholder="+91 XXXXX XXXXX"/></div>
+        <div class="field-group" id="fPhoneGroup"><label class="field-label">Phone *</label><input class="field" id="fPhone" placeholder="+91 XXXXX XXXXX"/></div>
         <div class="field-group"><label class="field-label">Registering for</label><select class="field" id="fRegFor"><option value="Myself">Myself</option><option>My Son</option><option>My Daughter</option><option>My Brother</option><option>My Sister</option><option>Other Relative</option></select></div>
       </div>
       <!-- Step 2 -->
