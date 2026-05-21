@@ -1,7 +1,9 @@
-// Begin Forever — UI v14b
-// - Chat tab + openChat() + sendMsg() gated on canChat() (requires subscription)
-// - Unsubscribed users see upgrade prompt instead of chat
-// - ldChats() shows coming-soon pre-launch, upgrade prompt if no sub, list if subscribed
+// Begin Forever — UI v14c
+// Fixes:
+// - blink keyframe injected at runtime (was missing from CSS)
+// - goTab('chatWin') back-nav: chat window hides itself and restores mainApp properly
+// - loadStats() debounced — no duplicate Supabase calls on rapid tab switches
+// - Chat gated on canChat() (subscription required)
 
 // ═══ SCREEN MANAGEMENT
 function showScr(id) {
@@ -11,6 +13,16 @@ function showScr(id) {
   el.style.display = (id === 'mainApp') ? 'block' : 'flex';
 }
 function show(id) { showScr(id); }
+
+// Inject blink keyframe if missing
+(function() {
+  if (!document.getElementById('bf-blink-style')) {
+    var s = document.createElement('style');
+    s.id = 'bf-blink-style';
+    s.textContent = '@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}';
+    document.head.appendChild(s);
+  }
+})();
 
 // ═══ COUNTDOWN
 function updateCountdown() {
@@ -35,6 +47,15 @@ function goTab(t) {
     if (P.status === 'pending')      { showScr('pendingScreen'); return; }
     if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step = 1; updUI(); return; }
   }
+
+  // Hide chat window if open — fix: ensure mainApp stays visible
+  var cw = document.getElementById('tChatWin');
+  if (cw) cw.style.display = 'none';
+  var ma = document.getElementById('mainApp');
+  if (ma) { ma.style.display = 'block'; ma.classList.add('active'); }
+  // Hide onboarding screen if somehow visible
+  var obs = document.getElementById('onboardingScreen'); if (obs) { obs.style.display = 'none'; obs.classList.remove('active'); }
+
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x) {
     var el = document.getElementById(x); if (el) el.style.display = 'none';
   });
@@ -54,8 +75,14 @@ function goTab(t) {
   if (t === 'interests') ldInt('received');
   if (t === 'chat')      ldChats();
   if (t === 'views')     ldViews();
-  if (t === 'profile')   renP();
-  if (t === 'admin')     ldAdmin('pending');
+  if (t === 'profile')   { if (typeof _editMode !== 'undefined') _editMode = false; renP(); }
+  if (t === 'admin') {
+    if (!P || !P.is_admin) { goTab('home'); return; } // non-admins blocked
+    ldAdmin('pending');
+  }
+  // Hide admin tab button from non-admins
+  var adTabEl = document.getElementById('adTab');
+  if (adTabEl) adTabEl.style.display = (P && P.is_admin) ? '' : 'none';
 }
 
 // ═══ HOME
@@ -74,7 +101,14 @@ function renderHome() {
   loadStats();
 }
 
-async function loadStats() {
+// Debounced loadStats — max once per 3 seconds
+var _statsTimer = null;
+function loadStats() {
+  if (_statsTimer) return;
+  _statsTimer = setTimeout(function() { _statsTimer = null; }, 3000);
+  _doLoadStats();
+}
+async function _doLoadStats() {
   try {
     var [v, i, m] = await Promise.all([
       sb.from('profile_views').select('id', { count: 'exact', head: true }).eq('viewed_id', U.id),
@@ -149,9 +183,8 @@ async function actInt(id, st) { await sb.from('interests').update({ status: st }
 
 // ═══ CHAT LIST — gated on subscription
 async function ldChats() {
-  if (isPreLaunch()) return; // HTML coming-soon banner handles pre-launch
+  if (isPreLaunch()) return;
 
-  // Subscription gate
   if (!canChat()) {
     var tChat = document.getElementById('tChat'); if (!tChat) return;
     tChat.innerHTML =
@@ -251,10 +284,15 @@ async function openChat(pid) {
   var cn = document.getElementById('cwNm'); if (cn) cn.textContent = p.full_name;
   var ci = document.getElementById('cwIn'); if (ci) ci.textContent = (p.denomination || p.religion || '') + ' · ' + p.city;
   var ca = document.getElementById('cwAv'); if (ca && p.photo_url) ca.style.backgroundImage = 'url(' + p.photo_url + ')';
+
+  // Hide all tabs but keep mainApp visible — fix back-nav
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x) {
     var el = document.getElementById(x); if (el) el.style.display = 'none';
   });
+  var ma = document.getElementById('mainApp');
+  if (ma) { ma.style.display = 'block'; ma.classList.add('active'); }
   var cw = document.getElementById('tChatWin'); if (cw) cw.style.display = 'flex';
+
   await ldMsgs();
   _subscribeChatRealtime(pid);
 }

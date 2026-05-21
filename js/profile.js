@@ -54,7 +54,24 @@ async function loadP() {
   try { if (typeof activateFoundingPremium === 'function') await activateFoundingPremium(); } catch(x) {}
   if (typeof needsOnboarding === 'function' && needsOnboarding()) { startOnboarding(); return; }
 
-  showScr('mainApp'); goTab('home'); checkNotifs();
+  showScr('mainApp');
+  // Post-approval prompt: if key profile fields are missing, go to profile tab with prompt
+  if (P && P.status === 'approved' && P.onboarding_completed === true) {
+    var _needsProfileFill = !P.bio || !P.looking_for_intent || !P.hobbies || P.hobbies === '[]';
+    if (_needsProfileFill && !sessionStorage.getItem('bf_profile_prompted')) {
+      sessionStorage.setItem('bf_profile_prompted', '1');
+      goTab('home');
+      setTimeout(function() {
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.4);color:#F5C842;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:9999;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+        toast.innerHTML = '✨ Complete your profile to get better matches!<br/><button onclick="goTab('profile');openEdit();this.closest('div').remove();" style="margin-top:8px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:6px 16px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;">Complete Now →</button><button onclick="this.closest('div').remove();" style="margin-top:8px;margin-left:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:Nunito,sans-serif;font-size:11px;">Later</button>';
+        document.body.appendChild(toast);
+      }, 1500);
+      checkNotifs();
+      return;
+    }
+  }
+  goTab('home'); checkNotifs();
 }
 
 // ═══════════════════════════════════════════ PREMIUM CHECK (fallback — subscription.js is authoritative)
@@ -147,6 +164,39 @@ function updUI() {
   var nx = document.getElementById('nxBtn'); if (nx) nx.textContent = step < 5 ? 'Next →' : 'Submit for Review ✦';
   var se = document.getElementById('sErr'); if (se) se.style.display = 'none';
   if (step === 3) initPG();
+
+  // Step 5: init religion multi-select chips
+  if (step === 5) {
+    setTimeout(function() {
+      var chipsEl = document.getElementById('fPRChips');
+      if (!chipsEl) return;
+      var ALL_REL = ['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
+      if (typeof _setupPrefReligions === 'undefined') window._setupPrefReligions = [];
+      chipsEl.innerHTML = '';
+      ALL_REL.forEach(function(r) {
+        var on = _setupPrefReligions.indexOf(r) > -1;
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.textContent = r;
+        btn.style.cssText = 'padding:8px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:Nunito,sans-serif;border:1px solid '+(on?'var(--gold)':'rgba(255,255,255,.2)')+';background:'+(on?'rgba(212,160,23,.2)':'rgba(255,255,255,.05)')+';color:'+(on?'#F5C842':'rgba(255,255,255,.6)')+';margin-bottom:4px;transition:all .15s;';
+        btn.onclick = function() {
+          var ix = _setupPrefReligions.indexOf(r);
+          if (ix > -1) _setupPrefReligions.splice(ix,1); else _setupPrefReligions.push(r);
+          // Update hidden input
+          var fpr = document.getElementById('fPR');
+          if (fpr) fpr.value = _setupPrefReligions.length ? _setupPrefReligions[0] : 'Any';
+          var parent = this.closest ? this.closest('[id]') : chipsEl;
+          // Re-render
+          if (chipsEl) chipsEl.querySelectorAll('button').forEach(function(b){
+            var sel = _setupPrefReligions.indexOf(b.textContent) > -1;
+            b.style.borderColor = sel ? 'var(--gold)' : 'rgba(255,255,255,.2)';
+            b.style.background  = sel ? 'rgba(212,160,23,.2)' : 'rgba(255,255,255,.05)';
+            b.style.color       = sel ? '#F5C842' : 'rgba(255,255,255,.6)';
+          });
+        };
+        chipsEl.appendChild(btn);
+      });
+    }, 50);
+  }
 
   // Step 1: hide phone if already OTP-verified this session
   if (step === 1) {
@@ -268,7 +318,8 @@ async function goNext() {
       id_proof_url: idUrl,
       pref_age_min: parseInt(document.getElementById('fPMin').value) || 18,
       pref_age_max: parseInt(document.getElementById('fPMax').value) || 70,
-      pref_religion: (document.getElementById('fPR') ? document.getElementById('fPR').value : 'Any') || 'Any',
+      pref_religion: (_setupPrefReligions && _setupPrefReligions.length) ? _setupPrefReligions[0] : 'Any',
+      pref_religions: JSON.stringify(typeof _setupPrefReligions !== 'undefined' && _setupPrefReligions.length ? _setupPrefReligions : ['Any']),
       pref_denomination: document.getElementById('fPD').value || 'Any',
       pref_city: document.getElementById('fPC').value.trim() || 'Any',
       faith_browse: P && P.faith_browse ? P.faith_browse : allFaithKeys,
