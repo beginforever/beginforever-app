@@ -1,11 +1,12 @@
-// Begin Forever — Profile v14b
+// Begin Forever — Profile v15
 // Fixes:
-//   - Cancel button no longer shows "saving" — properly separated from save flow
-//   - Save button disabled only during actual save, re-enabled on error
-//   - Phone field hidden + verified badge shown when OTP verified in session
-//   - Subscription status strip on profile hero
-//   - Phone shows ✅ Verified badge in profile view
-//   - All edit mode functions intact
+//   BUG-A: goNext() step 5 now reads setupBrowse/setupReceive arrays (not missing selects)
+//   BUG-B: renPEditMode() now renders Cancel button alongside Save
+//   BUG-C: _setupPrefReligions declared at top scope, not inside fragile setTimeout
+//   BUG-D: prefillSetupWizard correctly resets _setupPrefReligions on resubmit
+
+// ── BUG-C FIX: declare at module scope, not inside setTimeout
+var _setupPrefReligions = [];
 
 // ═══════════════════════════════════════════ LOAD PROFILE
 async function loadP() {
@@ -55,7 +56,7 @@ async function loadP() {
   if (typeof needsOnboarding === 'function' && needsOnboarding()) { startOnboarding(); return; }
 
   showScr('mainApp');
-  // Post-approval prompt: if key profile fields are missing, go to profile tab with prompt
+
   if (P && P.status === 'approved' && P.onboarding_completed === true) {
     var _needsProfileFill = !P.bio || !P.looking_for_intent || !P.hobbies || P.hobbies === '[]';
     if (_needsProfileFill && !sessionStorage.getItem('bf_profile_prompted')) {
@@ -64,7 +65,7 @@ async function loadP() {
       setTimeout(function() {
         var toast = document.createElement('div');
         toast.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.4);color:#F5C842;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:9999;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.4);';
-        toast.innerHTML = '✨ Complete your profile to get better matches!<br/><button onclick="goTab('profile');openEdit();this.closest('div').remove();" style="margin-top:8px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:6px 16px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;">Complete Now →</button><button onclick="this.closest('div').remove();" style="margin-top:8px;margin-left:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:Nunito,sans-serif;font-size:11px;">Later</button>';
+        toast.innerHTML = '✨ Complete your profile to get better matches!<br/><button onclick="goTab(\'profile\');openEdit();this.closest(\'div\').remove();" style="margin-top:8px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:6px 16px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;">Complete Now →</button><button onclick="this.closest(\'div\').remove();" style="margin-top:8px;margin-left:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:Nunito,sans-serif;font-size:11px;">Later</button>';
         document.body.appendChild(toast);
       }, 1500);
       checkNotifs();
@@ -74,7 +75,7 @@ async function loadP() {
   goTab('home'); checkNotifs();
 }
 
-// ═══════════════════════════════════════════ PREMIUM CHECK (fallback — subscription.js is authoritative)
+// ═══ PREMIUM CHECK
 function isPremiumUser() {
   if (!P) return false;
   if (P.is_admin) return true;
@@ -92,7 +93,7 @@ function isPremiumUser() {
   return false;
 }
 
-// ═══════════════════════════════════════════ SETUP WIZARD
+// ═══ SETUP WIZARD
 function toggleDenom() {
   var r = document.getElementById('fReligion').value;
   var denoms = DENOM_MAP[r] || [];
@@ -165,13 +166,12 @@ function updUI() {
   var se = document.getElementById('sErr'); if (se) se.style.display = 'none';
   if (step === 3) initPG();
 
-  // Step 5: init religion multi-select chips
+  // Step 5: religion chip selector — BUG-C FIX: _setupPrefReligions already declared at top
   if (step === 5) {
     setTimeout(function() {
       var chipsEl = document.getElementById('fPRChips');
       if (!chipsEl) return;
       var ALL_REL = ['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
-      if (typeof _setupPrefReligions === 'undefined') window._setupPrefReligions = [];
       chipsEl.innerHTML = '';
       ALL_REL.forEach(function(r) {
         var on = _setupPrefReligions.indexOf(r) > -1;
@@ -180,13 +180,10 @@ function updUI() {
         btn.style.cssText = 'padding:8px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:Nunito,sans-serif;border:1px solid '+(on?'var(--gold)':'rgba(255,255,255,.2)')+';background:'+(on?'rgba(212,160,23,.2)':'rgba(255,255,255,.05)')+';color:'+(on?'#F5C842':'rgba(255,255,255,.6)')+';margin-bottom:4px;transition:all .15s;';
         btn.onclick = function() {
           var ix = _setupPrefReligions.indexOf(r);
-          if (ix > -1) _setupPrefReligions.splice(ix,1); else _setupPrefReligions.push(r);
-          // Update hidden input
+          if (ix > -1) _setupPrefReligions.splice(ix, 1); else _setupPrefReligions.push(r);
           var fpr = document.getElementById('fPR');
           if (fpr) fpr.value = _setupPrefReligions.length ? _setupPrefReligions[0] : 'Any';
-          var parent = this.closest ? this.closest('[id]') : chipsEl;
-          // Re-render
-          if (chipsEl) chipsEl.querySelectorAll('button').forEach(function(b){
+          if (chipsEl) chipsEl.querySelectorAll('button').forEach(function(b) {
             var sel = _setupPrefReligions.indexOf(b.textContent) > -1;
             b.style.borderColor = sel ? 'var(--gold)' : 'rgba(255,255,255,.2)';
             b.style.background  = sel ? 'rgba(212,160,23,.2)' : 'rgba(255,255,255,.05)';
@@ -198,17 +195,15 @@ function updUI() {
     }, 50);
   }
 
-  // Step 1: hide phone if already OTP-verified this session
+  // Step 1: phone OTP badge
   if (step === 1) {
-    var verifiedPhone = '';
-    try { verifiedPhone = sessionStorage.getItem('bf_verified_phone') || ''; } catch(x) {}
+    var verifiedPhone = ''; try { verifiedPhone = sessionStorage.getItem('bf_verified_phone') || ''; } catch(x) {}
     if (verifiedPhone) {
       setTimeout(function() {
         var phoneGroup = document.getElementById('fPhoneGroup');
         if (phoneGroup) {
           phoneGroup.style.display = 'none';
-          var existing = document.getElementById('phoneVerifiedBadge');
-          if (!existing) {
+          if (!document.getElementById('phoneVerifiedBadge')) {
             var badge = document.createElement('div');
             badge.id = 'phoneVerifiedBadge';
             badge.style.cssText = 'background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;';
@@ -225,6 +220,7 @@ function goBack() { if (step > 1) { step--; updUI(); } }
 
 async function goNext() {
   var e = document.getElementById('sErr'); if (e) e.style.display = 'none';
+
   if (step === 1) {
     var verifiedPhone = ''; try { verifiedPhone = sessionStorage.getItem('bf_verified_phone') || ''; } catch(x) {}
     var phoneVal = verifiedPhone || (document.getElementById('fPhone') ? document.getElementById('fPhone').value.trim() : '');
@@ -247,6 +243,7 @@ async function goNext() {
     step++; updUI(); return;
   }
 
+  // Step 5 — submit
   var btn = document.getElementById('nxBtn');
   btn.disabled = true;
   btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
@@ -293,7 +290,12 @@ async function goNext() {
     var allCountRes = await sb.from('profiles').select('id', { count: 'exact', head: true });
     var foundingNum = (allCountRes.count || 0) + 1;
     var qualifiesAsFounder = apprCount < FOUNDER_CAP;
+
+    // BUG-A FIX: read from setupBrowse/setupReceive arrays directly, NOT from non-existent selects
     var allFaithKeys = JSON.stringify(FAITHS.map(function(f) { return f.key; }));
+    var browseVal  = setupBrowse.length  > 0 ? JSON.stringify(setupBrowse)  : allFaithKeys;
+    var receiveVal = setupReceive.length > 0 ? JSON.stringify(setupReceive) : allFaithKeys;
+
     var isResubmit = P && P.status === 'resubmitting';
 
     var pd = {
@@ -318,16 +320,18 @@ async function goNext() {
       id_proof_url: idUrl,
       pref_age_min: parseInt(document.getElementById('fPMin').value) || 18,
       pref_age_max: parseInt(document.getElementById('fPMax').value) || 70,
-      pref_religion: (_setupPrefReligions && _setupPrefReligions.length) ? _setupPrefReligions[0] : 'Any',
-      pref_religions: JSON.stringify(typeof _setupPrefReligions !== 'undefined' && _setupPrefReligions.length ? _setupPrefReligions : ['Any']),
+      // BUG-A FIX: use _setupPrefReligions array (already module-scope)
+      pref_religion: (_setupPrefReligions.length > 0) ? _setupPrefReligions[0] : 'Any',
+      pref_religions: JSON.stringify(_setupPrefReligions.length > 0 ? _setupPrefReligions : ['Any']),
       pref_denomination: document.getElementById('fPD').value || 'Any',
       pref_city: document.getElementById('fPC').value.trim() || 'Any',
-      faith_browse: P && P.faith_browse ? P.faith_browse : allFaithKeys,
-      faith_receive: P && P.faith_receive ? P.faith_receive : allFaithKeys,
+      faith_browse: browseVal,
+      faith_receive: receiveVal,
       founding_number: isResubmit ? undefined : foundingNum,
       is_founding_member: isResubmit ? undefined : qualifiesAsFounder,
       referred_by: isResubmit ? undefined : (getReferrerId() || null),
-      onboarding_completed: false, status: 'pending'
+      onboarding_completed: false,
+      status: 'pending'
     };
     Object.keys(pd).forEach(function(k) { if (pd[k] === undefined) delete pd[k]; });
 
@@ -357,7 +361,7 @@ async function goNext() {
   }
 }
 
-// ═══════════════════════════════════════════ PROFILE VIEW
+// ═══ PROFILE VIEW
 function renP() {
   if (!P) return;
   if (_editMode) { renPEditMode(); return; }
@@ -374,7 +378,6 @@ function renP() {
     '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:' + (P.status === 'approved' ? 'var(--green)' : 'var(--gold)') + ';color:' + (P.status === 'approved' ? '#fff' : '#1A0830') + ';">' + (P.status === 'approved' ? '✅ Verified Member' : '⏳ Pending Review') + '</span>' +
     (P.founding_number ? '<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #' + P.founding_number + '</p>' : '');
 
-  // Subscription strip
   var subStrip = '';
   if (isPremiumUser()) {
     var expStr = P.subscription_expires_at ? ' · Expires ' + new Date(P.subscription_expires_at).toLocaleDateString('en-IN') : '';
@@ -399,14 +402,11 @@ function renP() {
     { l: 'Marital Status', v: P.marital_status }
   ];
   rows.forEach(function(d) {
-    if (d.v) h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);">' +
-      '<span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">' + d.l + '</span>' +
-      '<span style="font-size:13px;color:var(--w80);font-weight:600;text-align:right;">' + d.v + '</span></div>';
+    if (d.v) h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">' + d.l + '</span><span style="font-size:13px;color:var(--w80);font-weight:600;text-align:right;">' + d.v + '</span></div>';
   });
   if (P.bio) h += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--w08);"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">About Me</p><p style="font-size:13px;color:var(--w70);line-height:1.7;">' + P.bio + '</p></div>';
   var mi = document.getElementById('mInfo'); if (mi) mi.innerHTML = h;
 
-  // Hobbies
   var hobbies = []; try { hobbies = JSON.parse(P.hobbies || '[]'); } catch(e) {}
   var hobEl = document.getElementById('profileHobbies');
   if (hobEl) {
@@ -559,11 +559,7 @@ async function saveFaithPrefs() {
   if (btn) { btn.disabled = false; btn.textContent = 'Save Preferences ✦'; }
 }
 
-// ═══════════════════════════════════════════ EDIT MODE
-// _editMode flag controls renP() rendering
-// openEdit() → sets flag, calls renP() → renders inline edit form
-// closeEditInline() → clears flag, calls renP() → back to view mode  ← FIX: was wired to modal
-// saveEditInline() → saves, then clears flag and re-renders
+// ═══ EDIT MODE
 var _editMode = false;
 var _editHobbies = [], _editAgeRanges = [], _editMaritalStatuses = [];
 var editPhotos = [null, null, null, null, null];
@@ -578,23 +574,18 @@ function openEdit() {
   setTimeout(function() { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 100);
 }
 
-// ── FIX: Cancel cleanly exits edit mode without triggering save
+// BUG-B FIX: clean cancel that never triggers save
 function closeEditInline() {
   _editMode = false;
   renP();
 }
-
-// closeEdit() alias for any old modal references
 function closeEdit() {
   var m = document.getElementById('editModal'); if (m) m.classList.remove('show');
   _editMode = false; renP();
 }
 
 async function saveEditInline() {
-  // Get the save button immediately to control its state
   var btn = document.getElementById('eSaveBtn');
-
-  // Guard: prevent double-click
   if (btn && btn.disabled) return;
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
 
@@ -606,21 +597,20 @@ async function saveEditInline() {
 
   try {
     var upd = {
-      bio:            (document.getElementById('e_bio')            || {}).value || P.bio,
-      education:      (document.getElementById('e_edu')            || {}).value || P.education,
-      occupation:     (document.getElementById('e_occ')            || {}).value || P.occupation,
-      looking_for:    (document.getElementById('e_lookingForText') || {}).value || P.looking_for,
-      diet:           (document.getElementById('e_diet')           || {}).value || null,
-      smoking:        (document.getElementById('e_smoking')        || {}).value || null,
-      drinking:       (document.getElementById('e_drinking')       || {}).value || null,
-      home_church:    (document.getElementById('e_church')         || {}).value || null,
-      faith_importance: (document.getElementById('e_faithImportance') || {}).value || null,
-      scripture:      (document.getElementById('e_scripture')      || {}).value || null,
-      hobbies:        JSON.stringify(_editHobbies),
-      pref_city:      (document.getElementById('e_prefCity')       || {}).value || P.pref_city
+      bio:              (document.getElementById('e_bio')            || {}).value || P.bio,
+      education:        (document.getElementById('e_edu')            || {}).value || P.education,
+      occupation:       (document.getElementById('e_occ')            || {}).value || P.occupation,
+      looking_for:      (document.getElementById('e_lookingForText') || {}).value || P.looking_for,
+      diet:             (document.getElementById('e_diet')           || {}).value || null,
+      smoking:          (document.getElementById('e_smoking')        || {}).value || null,
+      drinking:         (document.getElementById('e_drinking')       || {}).value || null,
+      home_church:      (document.getElementById('e_church')         || {}).value || null,
+      faith_importance: (document.getElementById('e_faithImportance')|| {}).value || null,
+      scripture:        (document.getElementById('e_scripture')      || {}).value || null,
+      hobbies:          JSON.stringify(_editHobbies),
+      pref_city:        (document.getElementById('e_prefCity')       || {}).value || P.pref_city
     };
 
-    // Upload any new photos
     for (var i = 0; i < 5; i++) {
       if (editPhotos[i]) {
         var ext = editPhotos[i].name.split('.').pop();
@@ -635,16 +625,12 @@ async function saveEditInline() {
     }
 
     await sb.from('profiles').update(upd).eq('id', U.id);
-
-    // Refresh local profile
     var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r2.data && r2.data.length) P = r2.data[0];
 
-    // Reset button BEFORE re-rendering so it doesn't persist
     if (btn) { btn.disabled = false; btn.textContent = 'Save Changes ✦'; }
     _editMode = false;
     renP();
-    // Brief success toast
     var toast = document.createElement('div');
     toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;';
     toast.textContent = '✅ Profile updated';
@@ -655,8 +641,6 @@ async function saveEditInline() {
     if (btn) { btn.disabled = false; btn.textContent = 'Save Changes ✦'; }
   }
 }
-
-// saveEdit() alias (modal used this)
 async function saveEdit() { await saveEditInline(); }
 
 // ═══ VIEW PROFILE MODAL
@@ -725,6 +709,12 @@ async function startResubmit() {
 }
 
 function prefillSetupWizard(p) {
+  // BUG-C FIX: reset _setupPrefReligions on resubmit so it reflects existing profile
+  try {
+    var existing = JSON.parse(p.pref_religions || '[]');
+    _setupPrefReligions = existing.length ? existing : (p.pref_religion && p.pref_religion !== 'Any' ? [p.pref_religion] : []);
+  } catch(x) { _setupPrefReligions = []; }
+
   setTimeout(function() {
     var fn = document.getElementById('fName'); if (fn) fn.value = p.full_name || '';
     var fa = document.getElementById('fAge'); if (fa) fa.value = p.age || '';
@@ -799,7 +789,7 @@ async function savePrivacySettings() {
   if (btn) { btn.disabled = false; btn.textContent = 'Save Privacy Settings'; }
 }
 
-// ═══════════════════════════════════════════ INLINE EDIT RENDERER
+// ═══ INLINE EDIT RENDERER
 function renPEditMode() {
   var heroEl = document.getElementById('profileHero');
   if (heroEl) heroEl.innerHTML =
@@ -848,19 +838,29 @@ function renPEditMode() {
 
   var fb = document.getElementById('profileFaithSummary'); if (fb) fb.style.display = 'none';
 
-  // Buttons — appended to mi's parent, NOT as part of mi (so Cancel never triggers save)
+  // BUG-B FIX: remove any old button block first, then add BOTH Save and Cancel
   var existing = document.getElementById('profileButtonsBlock');
   if (existing) existing.remove();
+
   var btnBlock = document.createElement('div');
   btnBlock.id = 'profileButtonsBlock';
   btnBlock.style.cssText = 'margin-top:16px;';
-  // Save button
+
   var saveBtn = document.createElement('button');
   saveBtn.id = 'eSaveBtn';
   saveBtn.className = 'btn btn-gold';
   saveBtn.style.marginBottom = '10px';
   saveBtn.textContent = 'Save Changes ✦';
   saveBtn.onclick = function() { saveEditInline(); };
+
+  // BUG-B FIX: Cancel button — calls closeEditInline(), NOT saveEditInline()
+  var cancelBtn = document.createElement('button');
+  cancelBtn.id = 'eCancelBtn';
+  cancelBtn.className = 'btn btn-dark';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = function() { closeEditInline(); };
+
   btnBlock.appendChild(saveBtn);
+  btnBlock.appendChild(cancelBtn);
   mi.parentNode.appendChild(btnBlock);
 }
