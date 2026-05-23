@@ -168,19 +168,4 @@ async function submitReject() {
   if (btn) { btn.disabled = false; btn.textContent = 'Confirm Rejection & Send Email'; }
 }
 
-// ── Account management (hamburger menu)
-function openDeactivateModal() {
-  if (confirm('Deactivate your account? You can reactivate anytime by logging back in.')) {
-    sb.from('profiles').update({ status: 'deactivated', deactivated_at: new Date().toISOString() }).eq('id', U.id)
-      .then(function() { doSignOut(); });
-  }
-}
-
-function openDeleteModal() {
-  if (confirm('Permanently delete your account? This cannot be undone.')) {
-    if (confirm('Are you absolutely sure? All your data will be removed.')) {
-      sb.from('profiles').update({ status: 'deleted', deleted_at: new Date().toISOString() }).eq('id', U.id)
-        .then(function() { doSignOut(); });
-    }
-  }
-}
+// openDeactivateModal() and openDeleteModal() handled by safety.js

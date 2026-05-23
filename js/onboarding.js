@@ -130,8 +130,19 @@ function _collectStep(){
 
 function _validateStep(){
   var s=ONB_STEPS[_onbStep];
-  if(s==='partner_prefs'&&!_onbData.pref_religions.length){alert('Please select at least one preferred religion.');return false;}
-  if(s==='hobbies'&&_onbData.hobbies.length<3){alert('Please select at least 3 hobbies.');return false;}
+  if(s==='partner_prefs'){
+    if(!_onbData.pref_religions.length){alert('Please select at least one preferred religion you are open to matching with.');return false;}
+    var ageMin=parseInt((document.getElementById('onbAgeMin')||{}).value||0);
+    var ageMax=parseInt((document.getElementById('onbAgeMax')||{}).value||0);
+    if(!ageMin||!ageMax||ageMin<18||ageMax<18){alert('Please enter a valid age range (minimum 18).');return false;}
+    if(ageMin>ageMax){alert('Minimum age cannot be greater than maximum age.');return false;}
+    _onbData.pref_age_min=ageMin;_onbData.pref_age_max=ageMax;
+  }
+  if(s==='hobbies'&&_onbData.hobbies.length<3){alert('Please select at least 3 hobbies — this helps us find you better matches.');return false;}
+  if(s==='faith_prefs'){
+    if(!_onbData.faith_browse.length){alert('Please select at least one faith to browse profiles from.');return false;}
+    if(!_onbData.faith_receive.length){alert('Please select at least one faith to receive interests from.');return false;}
+  }
   return true;
 }
 
