@@ -47,7 +47,6 @@ function goTab(t) {
     if (P.status === 'pending')      { showScr('pendingScreen'); return; }
     if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step = 1; updUI(); return; }
   }
-
   // Hide chat window if open — fix: ensure mainApp stays visible
   var cw = document.getElementById('tChatWin');
   if (cw) cw.style.display = 'none';
@@ -84,9 +83,6 @@ function goTab(t) {
   var adTabEl = document.getElementById('adTab');
   if (adTabEl) adTabEl.style.display = (P && P.is_admin) ? '' : 'none';
 }
-
-REPLACE WITH (adds ONE line before the closing brace):
-
   if (t === 'profile')   { if (typeof _editMode !== 'undefined') _editMode = false; renP(); }
   if (t === 'admin') {
     if (!P || !P.is_admin) { goTab('home'); return; } // non-admins blocked
@@ -98,7 +94,6 @@ REPLACE WITH (adds ONE line before the closing brace):
   // Handle profile completion toast visibility per tab
   if (typeof _handleToastOnTabChange === 'function') _handleToastOnTabChange(t);
 }
-
 // ═══ HOME
 function renderHome() {
   if (!P || P.status === 'rejected' || P.status === 'pending') return;
