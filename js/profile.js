@@ -242,6 +242,11 @@ async function goNext(){
   if(step===1){
     var verifiedPhone=''; try{verifiedPhone=sessionStorage.getItem('bf_verified_phone')||'';}catch(x){}
     var phoneVal=verifiedPhone||(document.getElementById('fPhone')?document.getElementById('fPhone').value.trim():'');
+    var ageVal = parseInt(document.getElementById('fAge').value);
+if(!ageVal || ageVal < 18){
+  if(e){e.textContent='You must be at least 18 years old to register.';e.style.display='block';}
+  return;
+}
     if(!document.getElementById('fName').value.trim()||!document.getElementById('fAge').value||!document.getElementById('fGender').value||!document.getElementById('fReligion').value||!document.getElementById('fState').value||!document.getElementById('fCity').value||!phoneVal){
       if(e){e.textContent='Please fill all required fields.';e.style.display='block';} return;
     }
