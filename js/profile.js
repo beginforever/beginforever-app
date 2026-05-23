@@ -24,7 +24,7 @@ function showProfileToast() {
 
   var toast = document.createElement('div');
   toast.id = 'profileCompletionToast';
-  toast.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.5);color:#F5C842;padding:14px 40px 14px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:9998;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
+  toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.5);color:#F5C842;padding:14px 40px 14px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:9998;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
   // Build toast with DOM methods to avoid quote escaping issues
   var closeBtn = document.createElement('button');
   closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
@@ -566,7 +566,6 @@ async function saveEditInline(){
       exercise:(document.getElementById('e_exercise')||{}).value||null,
       home_church:(document.getElementById('e_church')||{}).value||null,
       faith_importance:faithImp,
-      church_attendance:(document.getElementById('e_churchAttendance')||{}).value||null,
       scripture:(document.getElementById('e_scripture')||{}).value||null,
       hobbies:JSON.stringify(_editHobbies),
       pref_age_min:parseInt((document.getElementById('e_prefAgeMin')||{}).value)||P.pref_age_min||18,
@@ -779,8 +778,6 @@ function renPEditMode(){
 
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Faith &amp; Beliefs</p>'+
     '<div class="field-group"><label class="field-label">Faith Importance <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_faithImportance"><option value="">Select</option>'+sel(P.faith_importance,['Very important','Important','Somewhat important','Not important'])+'</select></div>'+
-    '<div class="field-group"><label class="field-label">Church / Place of Worship</label>'+inp('e_church',P.home_church,'e.g. CSI St. Thomas Church')+'</div>'+
-    '<div class="field-group"><label class="field-label">Church Attendance</label><select class="field" id="e_churchAttendance"><option value="">Select</option>'+sel(P.church_attendance,['Weekly','Fortnightly','Occasionally','Online only','Rarely'])+'</select></div>'+
     '<div class="field-group"><label class="field-label">Favourite Scripture / Verse</label>'+inp('e_scripture',P.scripture,'e.g. Jeremiah 29:11')+'</div>'+
 
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Lifestyle</p>'+
