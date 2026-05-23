@@ -75,6 +75,18 @@ function goTab(t) {
   if (t === 'interests') ldInt('received');
   if (t === 'chat')      ldChats();
   if (t === 'views')     ldViews();
+   if (t === 'profile')   { if (typeof _editMode !== 'undefined') _editMode = false; renP(); }
+  if (t === 'admin') {
+    if (!P || !P.is_admin) { goTab('home'); return; } // non-admins blocked
+    ldAdmin('pending');
+  }
+  // Hide admin tab button from non-admins
+  var adTabEl = document.getElementById('adTab');
+  if (adTabEl) adTabEl.style.display = (P && P.is_admin) ? '' : 'none';
+}
+
+REPLACE WITH (adds ONE line before the closing brace):
+
   if (t === 'profile')   { if (typeof _editMode !== 'undefined') _editMode = false; renP(); }
   if (t === 'admin') {
     if (!P || !P.is_admin) { goTab('home'); return; } // non-admins blocked
@@ -83,6 +95,8 @@ function goTab(t) {
   // Hide admin tab button from non-admins
   var adTabEl = document.getElementById('adTab');
   if (adTabEl) adTabEl.style.display = (P && P.is_admin) ? '' : 'none';
+  // Handle profile completion toast visibility per tab
+  if (typeof _handleToastOnTabChange === 'function') _handleToastOnTabChange(t);
 }
 
 // ═══ HOME
