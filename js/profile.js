@@ -25,10 +25,23 @@ function showProfileToast() {
   var toast = document.createElement('div');
   toast.id = 'profileCompletionToast';
   toast.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.5);color:#F5C842;padding:14px 40px 14px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:9998;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
-  toast.innerHTML =
-    '<button onclick="_dismissProfileToast()" style="position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;">✕</button>' +
-    '✨ Complete your profile to attract better matches!<br/>' +
-    '<button onclick="goTab(\'profile\');openEdit();_dismissProfileToast();" style="margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;">Complete Now →</button>';
+  // Build toast with DOM methods to avoid quote escaping issues
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
+  closeBtn.textContent = '✕';
+  closeBtn.onclick = function(){_dismissProfileToast();};
+
+  var msg = document.createElement('span');
+  msg.innerHTML = '✨ Complete your profile to attract better matches!<br/>';
+
+  var completeBtn = document.createElement('button');
+  completeBtn.style.cssText = 'margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
+  completeBtn.textContent = 'Complete Now →';
+  completeBtn.onclick = function(){goTab('profile');openEdit();_dismissProfileToast();};
+
+  toast.appendChild(closeBtn);
+  toast.appendChild(msg);
+  toast.appendChild(completeBtn);
   document.body.appendChild(toast);
 
   // Auto-hide after 8 seconds, then reappear after 5 mins

@@ -323,7 +323,14 @@ async function _onbComplete(){
   setTimeout(function(){
     var toast=document.createElement('div');
     toast.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.4);color:#F5C842;padding:14px 20px;border-radius:14px;font-size:13px;font-weight:700;z-index:9999;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
-    toast.innerHTML='✨ Almost done! Add your bio, lifestyle &amp; hobbies to attract better matches.<br/><button onclick="openEdit();this.closest(\'div\').remove();" style="margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;">Complete Profile →</button>';
+    var onbMsg = document.createElement('span');
+    onbMsg.innerHTML = '✨ Almost done! Add your bio, lifestyle &amp; hobbies to attract better matches.<br/>';
+    var onbBtn = document.createElement('button');
+    onbBtn.style.cssText = 'margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
+    onbBtn.textContent = 'Complete Profile →';
+    onbBtn.onclick = function(){openEdit();var t=document.getElementById('profileCompletionToast');if(t)t.remove();};
+    toast.appendChild(onbMsg);
+    toast.appendChild(onbBtn);
     document.body.appendChild(toast);
   },600);
 }
