@@ -256,7 +256,11 @@ async function _activateSubscription(tier, cycle, days, razorpayPaymentId, gpbPu
     var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r2.data && r2.data.length) P = r2.data[0];
 
+<<<<<<< Updated upstream
     // ── Notify user via email + WhatsApp
+=======
+// ── Notify user via email + WhatsApp
+>>>>>>> Stashed changes
     try {
       await fetch(SB_URL + '/functions/v1/smart-function', {
         method: 'POST',
@@ -272,10 +276,15 @@ async function _activateSubscription(tier, cycle, days, razorpayPaymentId, gpbPu
         })
       });
     } catch(notifyErr) {
+<<<<<<< Updated upstream
       // Non-fatal — activation already succeeded, just log
       console.warn('smart-function notify failed:', notifyErr);
     }
 
+=======
+      console.warn('smart-function notify failed:', notifyErr);
+    }
+>>>>>>> Stashed changes
     alert('🎉 ' + planLabel + ' activated!\nExpires: ' + expiresAt.toLocaleDateString('en-IN') +
       (referralDays > 0 ? '\n(+' + referralDays + ' referral bonus days)' : ''));
     showSub();
