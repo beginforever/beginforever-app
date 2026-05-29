@@ -255,6 +255,24 @@ async function _activateSubscription(tier, cycle, days, razorpayPaymentId, gpbPu
     var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r2.data && r2.data.length) P = r2.data[0];
 
+// ── Notify user via email + WhatsApp
+    try {
+      await fetch(SB_URL + '/functions/v1/smart-function', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+        body: JSON.stringify({
+          type: 'subscription_activated',
+          email: P.email || (U && U.email) || '',
+          full_name: P.full_name || '',
+          phone: P.phone || '',
+          plan_name: tier === 'premium' ? 'Premium' : 'Basic',
+          plan_duration: cycleLabel,
+          expiry_date: expiresAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+        })
+      });
+    } catch(notifyErr) {
+      console.warn('smart-function notify failed:', notifyErr);
+    }
     alert('🎉 ' + planLabel + ' activated!\nExpires: ' + expiresAt.toLocaleDateString('en-IN') +
       (referralDays > 0 ? '\n(+' + referralDays + ' referral bonus days)' : ''));
     showSub();
