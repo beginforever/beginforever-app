@@ -1,7 +1,7 @@
-// Begin Forever — Admin v15
-// Fix: pid → p.id bug in approved-tab revoke button
-// Fix: adAct() now always receives (id, status) string args, not a button element
+// Begin Forever — Admin v16
+// Fix: adAct() and submitReject() now fetch full profile before calling smart-function
 // Fix: tab highlight logic corrected
+// Fix: pid → p.id bug in approved-tab revoke button
 
 async function ldAdmin(filter) {
   ['pending','approved','rejected','founders'].forEach(function(f) {
@@ -39,7 +39,6 @@ async function ldAdmin(filter) {
 
     var statusColor = { approved: '#27ae60', pending: '#F5C842', rejected: '#e74c3c', resubmitting: '#9B59B6' }[p.status] || 'var(--w50)';
 
-    // FIXED: use p.id directly in onclick, not pid (was undefined)
     card.innerHTML =
       '<div style="display:flex;gap:12px;align-items:flex-start;">'+
         photoHtml+
@@ -55,12 +54,11 @@ async function ldAdmin(filter) {
           (p.education ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+p.education+' · '+(p.occupation||'')+'</p>' : '')+
         '</div>'+
       '</div>'+
-      (p.id_proof_url ? '<div style="margin-top:10px;"><a href="'+p.id_proof_url+'" target="_blank" style="font-size:11px;color:var(--gold);text-decoration:none;">🪪 View ID: '+(p.id_proof_type||'Document')+'</a></div>' : '')+
+      (p.id_proof_url ? '<div style="margin-top:10px;"><a href="'+p.id_proof_url+'" target="_blank" style="font-size:11px;color:var(--gold);text-decoration:none;">🪪 View ID: '+(p.id_proof_type||'Document')+'</a></div>' : '<div style="margin-top:8px;font-size:11px;color:#e74c3c;">⚠️ No ID uploaded</div>')+
       (p.photo_url ? '<div style="display:flex;gap:6px;margin-top:10px;overflow-x:auto;">'+
         [p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean).map(function(u){
           return '<img src="'+u+'" style="width:60px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;" onclick="window.open(\''+u+'\',\'_blank\')"/>';
         }).join('')+'</div>' : '')+
-      // FIXED: p.id used correctly throughout — no `pid` reference
       '<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;">'+
         (p.status !== 'approved'  ? '<button class="btn btn-grn btn-sm" onclick="adAct(\''+p.id+'\',\'approved\')">✅ Approve</button>' : '')+
         (p.status !== 'pending'   ? '<button class="btn btn-dark btn-sm" onclick="adAct(\''+p.id+'\',\'pending\')">⏳ Pending</button>' : '')+
@@ -72,7 +70,7 @@ async function ldAdmin(filter) {
   });
 }
 
-// FIXED: always (id, status) strings — never a button element
+// FIXED: fetch full profile before calling smart-function so notifications have all data
 async function adAct(id, status) {
   if (status === 'deleted' && !confirm('Permanently delete this profile?')) return;
 
@@ -89,13 +87,27 @@ async function adAct(id, status) {
     var r = await sb.from('profiles').update(updates).eq('id', id);
     if (r.error) throw r.error;
 
-    if (status === 'approved' || status === 'rejected') {
+    // Fetch full profile for notification data
+    if (status === 'approved') {
       try {
-        fetch(SB_URL + '/functions/v1/smart-function', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: status, user_id: id })
-        });
+        var pr = await sb.from('profiles').select('*').eq('id', id).limit(1);
+        var profile = pr.data && pr.data[0];
+        if (profile) {
+          fetch(SB_URL + '/functions/v1/smart-function', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'approved',
+              full_name: profile.full_name || '',
+              email: profile.email || '',
+              phone: profile.phone || '',
+              religion: profile.religion || '',
+              denomination: profile.denomination || '',
+              city: profile.city || '',
+              state: profile.state || ''
+            })
+          });
+        }
       } catch(x) {}
     }
 
@@ -131,6 +143,7 @@ function setRejectReason(text) {
   var ra = document.getElementById('rejectReason'); if (ra) ra.value = text;
 }
 
+// FIXED: fetch full profile before calling smart-function
 async function submitReject() {
   var reason = (document.getElementById('rejectReason') || {}).value || '';
   if (!reason.trim()) {
@@ -151,12 +164,23 @@ async function submitReject() {
     }).eq('id', _rejectTargetId);
     if (r.error) throw r.error;
 
+    // Fetch full profile for notification
     try {
-      fetch(SB_URL + '/functions/v1/smart-function', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'rejected', user_id: _rejectTargetId, rejection_reason: reason })
-      });
+      var pr = await sb.from('profiles').select('*').eq('id', _rejectTargetId).limit(1);
+      var profile = pr.data && pr.data[0];
+      if (profile) {
+        fetch(SB_URL + '/functions/v1/smart-function', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'rejected',
+            full_name: profile.full_name || '',
+            email: profile.email || '',
+            phone: profile.phone || '',
+            rejection_reason: reason
+          })
+        });
+      }
     } catch(x) {}
 
     closeRejectModal();

@@ -46,6 +46,10 @@ src="https://www.facebook.com/tr?id=1618369042614620&ev=PageView&noscript=1"/></
   --w70: rgba(255,255,255,0.70); --w80: rgba(255,255,255,0.80);
   --w30: rgba(255,255,255,0.30); --w40: rgba(255,255,255,0.40);
   --gold2: #F5C842;
+--rose: #E8728A;
+    --emerald: #3DBE8A;
+    --warm-card: #FDFAF4;
+    --card-border: rgba(59,7,100,0.10);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
@@ -90,13 +94,13 @@ select.field option { background: var(--dark2); color: var(--white); }
 /* screen.active handled per-screen ID below */
 .app-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--dark1); border-bottom: 1px solid var(--white08); position: sticky; top: 0; z-index: 50; }
 .app-header h1 { font-family: 'Cinzel', serif; font-size: 16px; color: var(--gold-bright); margin: 0; }
-.tab-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark1); border-top: 1px solid var(--white08); padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 100; }
+.tab-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, #1a0535, #120228); box-shadow: 0 -1px 0 rgba(212,160,23,0.15), 0 -4px 20px rgba(0,0,0,0.4); padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 100; }
 .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 0; color: var(--white40); transition: color 0.2s; position: relative; }
-.tab-btn.active { color: var(--gold-bright); }
+.tab-btn.active { color: var(--gold-bright); text-shadow: 0 0 12px rgba(245,200,66,0.6); }
 .tab-btn .tab-icon { font-size: 20px; }
 .tab-btn .tab-label { font-size: 10px; font-weight: 600; }
 .content-area { padding: 20px; padding-bottom: 100px; }
-.card { background: var(--white08); border-radius: 16px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--w10); }
+..card { background: var(--warm-card); border-radius: 16px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--card-border); }
 .avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--dark3); border: 2px solid var(--gold); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .avatar-lg { width: 80px; height: 80px; }
 .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
@@ -220,8 +224,211 @@ select.field option { background: var(--dark2); color: var(--white); }
 .pricing-teaser-wrap { position:relative; }
 .pricing-blur { filter:blur(5px);pointer-events:none;user-select:none;opacity:.7; }
 .pricing-teaser-overlay { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;text-align:center;padding:20px; }
+/* PWA Install Prompt */
+#pwaInstallBanner{position:fixed;bottom:0;left:0;right:0;z-index:8000;background:linear-gradient(135deg,#1C0530,#280840);border-top:1.5px solid rgba(212,160,23,0.4);padding:16px 18px 20px;box-shadow:0 -8px 32px rgba(0,0,0,0.6);transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);}
+#pwaInstallBanner.show{transform:translateY(0);}
+.pwa-banner-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.pwa-app-icon{width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,0.4);}
+.pwa-app-icon img{width:36px;height:36px;object-fit:contain;border-radius:8px;}
+.pwa-banner-title{font-family:'Cinzel',serif;font-size:14px;color:#F5C842;font-weight:700;margin-bottom:2px;}
+.pwa-banner-sub{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.4;}
+.pwa-btn-row{display:flex;gap:8px;}
+.pwa-btn-install{flex:2;padding:10px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-size:12px;font-weight:700;border:none;border-radius:10px;cursor:pointer;}
+.pwa-btn-dismiss{flex:1;padding:10px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,0.12);border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;}
+#pwaIosModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,0.85);display:none;align-items:flex-end;justify-content:center;}
+#pwaIosModal.show{display:flex;}
+.pwa-ios-sheet{background:#1C0530;border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:480px;border-top:1.5px solid rgba(212,160,23,0.3);}
+.pwa-ios-title{font-family:'Cinzel',serif;color:#F5C842;font-size:16px;margin-bottom:6px;text-align:center;}
+.pwa-ios-sub{font-size:12px;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:20px;line-height:1.5;}
+.pwa-ios-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.pwa-ios-step{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,0.05);border-radius:10px;padding:10px 12px;}
+.pwa-ios-num{width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,0.2);border:1px solid rgba(212,160,23,0.4);color:#F5C842;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pwa-ios-step-txt{font-size:12px;color:rgba(255,255,255,0.7);line-height:1.5;}
+.pwa-ios-step-txt strong{color:#fff;}
+.faith-multiselect{position:relative;width:100%;}
+.faith-ms-trigger{width:100%;padding:12px 14px;border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:13px;color:#fff;background:rgba(255,255,255,0.07);outline:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'Nunito',sans-serif;}
+.faith-ms-trigger:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,160,23,0.1);}
+.faith-ms-value{flex:1;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.faith-ms-arrow{flex-shrink:0;font-size:12px;color:rgba(212,160,23,0.8);transition:transform .2s;}
+.faith-ms-arrow.open{transform:rotate(180deg);}
+.faith-ms-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1C0530;border:1.5px solid rgba(212,160,23,0.3);border-radius:12px;z-index:500;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.6);display:none;}
+.faith-ms-dropdown.open{display:block;}
+.faith-ms-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .15s;}
+.faith-ms-item:hover{background:rgba(255,255,255,0.06);}
+.faith-ms-item input[type=checkbox]{width:16px;height:16px;accent-color:#D4A017;cursor:pointer;flex-shrink:0;}
+.faith-ms-item-label{font-size:13px;color:rgba(255,255,255,0.85);display:flex;align-items:center;gap:6px;}
+.faith-ms-item.checked{background:rgba(212,160,23,0.08);}
+.faith-ms-actions{display:flex;gap:6px;padding:8px 14px;border-top:1px solid rgba(255,255,255,0.08);}
+.faith-ms-action{flex:1;padding:7px;font-size:11px;font-weight:700;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Nunito',sans-serif;}
+.faith-ms-action.primary{background:rgba(212,160,23,0.15);border-color:rgba(212,160,23,0.35);color:#F5C842;}
 </style>
 </head>
+<!-- PWA Install Banner (Android/Chrome) -->
+<div id="pwaInstallBanner">
+  <div class="pwa-banner-row">
+    <div class="pwa-app-icon"><img src="logo.png" alt="Begin Forever" onerror="this.style.display='none'"/></div>
+    <div class="pwa-banner-text">
+      <p class="pwa-banner-title">Add to Home Screen</p>
+      <p class="pwa-banner-sub">Get the full app experience — works offline &amp; opens instantly</p>
+    </div>
+  </div>
+  <div class="pwa-btn-row">
+    <button class="pwa-btn-install" onclick="pwaDoInstall()">Install Begin Forever</button>
+    <button class="pwa-btn-dismiss" onclick="pwaDismiss()">Maybe later</button>
+  </div>
+</div>
+
+<!-- iOS Install Instructions Modal -->
+<div id="pwaIosModal" onclick="pwaCloseiOS()">
+  <div class="pwa-ios-sheet" onclick="event.stopPropagation()">
+    <p class="pwa-ios-title">Add to Home Screen</p>
+    <p class="pwa-ios-sub">Install Begin Forever for the full app experience</p>
+    <div class="pwa-ios-steps">
+      <div class="pwa-ios-step">
+        <div class="pwa-ios-num">1</div>
+        <div class="pwa-ios-step-txt">Tap the <strong>Share button</strong> <span style="font-size:14px;">⎙</span> at the bottom of your Safari browser</div>
+      </div>
+      <div class="pwa-ios-step">
+        <div class="pwa-ios-num">2</div>
+        <div class="pwa-ios-step-txt">Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+      </div>
+      <div class="pwa-ios-step">
+        <div class="pwa-ios-num">3</div>
+        <div class="pwa-ios-step-txt">Tap <strong>"Add"</strong> — Begin Forever will appear on your home screen</div>
+      </div>
+    </div>
+    <button style="width:100%;padding:12px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-size:13px;font-weight:700;border:none;border-radius:10px;cursor:pointer;" onclick="pwaCloseiOS()">Got it!</button>
+  </div>
+</div>
+
+<script>
+var _pwaPrompt = null;
+var _pwaIsIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var _pwaIsStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _pwaPrompt = e;
+  var dismissed = localStorage.getItem('bf_pwa_dismissed');
+  var dismissedAt = dismissed ? parseInt(dismissed) : 0;
+  var daysSince = (Date.now() - dismissedAt) / (1000 * 60 * 60 * 24);
+  if (!_pwaIsStandalone && daysSince > 3) {
+    setTimeout(function() { pwaShowBanner(); }, 2000);
+  }
+});
+
+window.addEventListener('appinstalled', function() {
+  localStorage.setItem('bf_installed', '1');
+  pwaHideBanner();
+});
+
+function pwaShowBanner() {
+  if (_pwaIsStandalone) return;
+  if (localStorage.getItem('bf_installed')) return;
+  var banner = document.getElementById('pwaInstallBanner');
+  if (banner) banner.classList.add('show');
+}
+
+function pwaHideBanner() {
+  var banner = document.getElementById('pwaInstallBanner');
+  if (banner) banner.classList.remove('show');
+}
+
+function pwaDismiss() {
+  localStorage.setItem('bf_pwa_dismissed', Date.now().toString());
+  pwaHideBanner();
+}
+
+async function pwaDoInstall() {
+  if (_pwaPrompt) {
+    pwaHideBanner();
+    _pwaPrompt.prompt();
+    var result = await _pwaPrompt.userChoice;
+    if (result.outcome === 'accepted') localStorage.setItem('bf_installed', '1');
+    _pwaPrompt = null;
+  } else if (_pwaIsIOS) {
+    pwaHideBanner();
+    var m = document.getElementById('pwaIosModal');
+    if (m) m.classList.add('show');
+  }
+}
+
+function pwaCloseiOS() {
+  var m = document.getElementById('pwaIosModal');
+  if (m) m.classList.remove('show');
+  localStorage.setItem('bf_pwa_dismissed', Date.now().toString());
+}
+
+function pwaPromptAfterRegister() {
+  if (_pwaIsStandalone) return;
+  if (localStorage.getItem('bf_installed')) return;
+  if (_pwaIsIOS) {
+    setTimeout(function() { var m = document.getElementById('pwaIosModal'); if (m) m.classList.add('show'); }, 1500);
+  } else if (_pwaPrompt) {
+    setTimeout(pwaShowBanner, 1500);
+  }
+}
+
+function createFaithMultiSelect(containerId, selectedArr, onChange, placeholder) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var faithList = typeof FAITHS !== 'undefined' ? FAITHS : [
+    {key:'Christian',icon:'✝️'},{key:'Hindu',icon:'🕉️'},{key:'Muslim',icon:'☪️'},
+    {key:'Sikh',icon:'☬'},{key:'Jain',icon:'🕊️'},{key:'Buddhist',icon:'☸️'},
+    {key:'Parsi',icon:'🔥'},{key:'Jewish',icon:'✡️'},{key:'Spiritual',icon:'🌱'},{key:'Other',icon:'🌐'}
+  ];
+  placeholder = placeholder || 'Select faiths...';
+  function getLabel() {
+    if (!selectedArr.length) return placeholder;
+    if (selectedArr.length === faithList.length) return 'All faiths';
+    if (selectedArr.length === 1) { var f = faithList.find(function(x){return x.key===selectedArr[0];}); return f ? f.icon+' '+f.key : selectedArr[0]; }
+    return selectedArr.length+' faiths selected';
+  }
+  function render() {
+    var open = container.dataset.open === '1';
+    container.innerHTML =
+      '<div class="faith-multiselect">'+
+        '<button type="button" class="faith-ms-trigger" onclick="faithMsToggle(\''+containerId+'\')">'+
+          '<span class="faith-ms-value">'+getLabel()+'</span>'+
+          '<span class="faith-ms-arrow'+(open?' open':'')+'"">▼</span>'+
+        '</button>'+
+        '<div class="faith-ms-dropdown'+(open?' open':'')+'"">'+
+          faithList.map(function(f){
+            var checked = selectedArr.indexOf(f.key)>-1;
+            return '<div class="faith-ms-item'+(checked?' checked':'')+'" onclick="faithMsToggleItem(\''+containerId+'\',\''+f.key+'\')">'+
+              '<input type="checkbox" '+(checked?'checked':'')+' onclick="event.stopPropagation();faithMsToggleItem(\''+containerId+'\',\''+f.key+'\')" />'+
+              '<span class="faith-ms-item-label">'+f.icon+' '+f.key+'</span>'+
+            '</div>';
+          }).join('')+
+          '<div class="faith-ms-actions">'+
+            '<button class="faith-ms-action primary" onclick="faithMsSelectAll(\''+containerId+'\')">All</button>'+
+            '<button class="faith-ms-action" onclick="faithMsClear(\''+containerId+'\')">Clear</button>'+
+            '<button class="faith-ms-action primary" onclick="faithMsClose(\''+containerId+'\')">Done</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    container._faithArr = selectedArr;
+    container._faithOnChange = onChange;
+    container._faithList = faithList;
+  }
+  render();
+  container._render = render;
+}
+
+function faithMsToggle(cid){var c=document.getElementById(cid);if(!c)return;c.dataset.open=c.dataset.open==='1'?'0':'1';c._render();}
+function faithMsClose(cid){var c=document.getElementById(cid);if(!c)return;c.dataset.open='0';c._render();}
+function faithMsToggleItem(cid,key){var c=document.getElementById(cid);if(!c||!c._faithArr)return;var arr=c._faithArr;var ix=arr.indexOf(key);if(ix>-1)arr.splice(ix,1);else arr.push(key);c._render();if(c._faithOnChange)c._faithOnChange(arr);}
+function faithMsSelectAll(cid){var c=document.getElementById(cid);if(!c||!c._faithArr||!c._faithList)return;c._faithArr.length=0;c._faithList.forEach(function(f){c._faithArr.push(f.key);});c._render();if(c._faithOnChange)c._faithOnChange(c._faithArr);}
+function faithMsClear(cid){var c=document.getElementById(cid);if(!c||!c._faithArr)return;c._faithArr.length=0;c._render();if(c._faithOnChange)c._faithOnChange(c._faithArr);}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.faith-multiselect')) {
+    document.querySelectorAll('[id]').forEach(function(el){
+      if (el.dataset.open==='1'&&el._render){el.dataset.open='0';el._render();}
+    });
+  }
+});
+</script>
 <body>
 <div class="ambient"><div class="glow g1"></div><div class="glow g2"></div></div>
 
@@ -600,7 +807,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     </div>
 
     <!-- ── HOME HERO (matches website homepage) ── -->
-    <div style="background:linear-gradient(160deg,#1C0530,#130220);padding:28px 20px 22px;text-align:center;position:relative;overflow:hidden;">
+    <div style="background:linear-gradient(160deg,#2A0845,#150328,#0D0118);padding:28px 20px 22px;text-align:center;position:relative;overflow:hidden;">
       <!-- ambient glow -->
       <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.10),transparent 70%);pointer-events:none;"></div>
       <div style="position:absolute;bottom:-60px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(91,26,138,.25),transparent 70%);pointer-events:none;"></div>
@@ -636,15 +843,15 @@ select.field option { background: var(--dark2); color: var(--white); }
 
       <!-- Stats row -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06);margin-top:16px;position:relative;z-index:1;">
-        <div style="background:#140226;padding:12px 8px;text-align:center;">
+        <div style="background:rgba(42,8,69,0.8);padding:12px 8px;text-align:center;">
           <div id="statViews" style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold2);">—</div>
           <div style="font-size:9px;color:var(--w40);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Views</div>
         </div>
-        <div style="background:#140226;padding:12px 8px;text-align:center;border-left:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.06);">
+        <div style="background:rgba(42,8,69,0.8);padding:12px 8px;text-align:center;border-left:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.06);">
           <div id="statInt" style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold2);">—</div>
           <div style="font-size:9px;color:var(--w40);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Interests</div>
         </div>
-        <div style="background:#140226;padding:12px 8px;text-align:center;">
+        <div style="background:rgba(42,8,69,0.8);padding:12px 8px;text-align:center;">
           <div id="statMsg" style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold2);">—</div>
           <div style="font-size:9px;color:var(--w40);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Messages</div>
         </div>
@@ -782,7 +989,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 <!-- ═══ BROWSE TAB ═══ -->
   <div id="tBrowse" class="content-area" style="display:none;">
     <!-- COMING SOON — Regal Dark -->
-    <div style="background:#140226;border-radius:18px;padding:20px;margin-bottom:14px;border:1px solid rgba(212,160,23,.25);position:relative;overflow:hidden;">
+    <div style="background:rgba(42,8,69,0.8);border-radius:18px;padding:20px;margin-bottom:14px;border:1px solid rgba(212,160,23,.25);position:relative;overflow:hidden;">
       <div style="position:absolute;top:-50px;right:-50px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.12),transparent 70%);pointer-events:none;"></div>
       <div style="position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(155,89,182,.1),transparent 70%);pointer-events:none;"></div>
       <div style="position:relative;z-index:1;">
@@ -963,7 +1170,6 @@ select.field option { background: var(--dark2); color: var(--white); }
     <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);margin-bottom:4px;">Admin Dashboard</h2>
     <p style="font-size:12px;color:var(--white40);margin-bottom:16px;">Manage member profiles</p>
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;"> <button id="adTabPending" class="btn btn-gold btn-sm" onclick="ldAdmin('pending')">⏳ Pending<span id="adCountPending"></span></button> <button id="adTabApproved" class="btn btn-dark btn-sm" onclick="ldAdmin('approved')">✅ Approved<span id="adCountApproved"></span></button> <button id="adTabRejected" class="btn btn-dark btn-sm" onclick="ldAdmin('rejected')">❌ Rejected<span id="adCountRejected"></span></button> <button id="adTabFounders" class="btn btn-dark btn-sm" onclick="ldAdmin('founders')">✦ Founders<span id="adCountFounders"></span></button> </div>
-    </div>
     <div id="adEmpty" style="text-align:center;padding:40px 0;display:none;"><p style="color:var(--white40);">No profiles</p></div>
     <div id="adList"></div>
   </div>
@@ -1345,45 +1551,15 @@ select.field option { background: var(--dark2); color: var(--white); }
       <!-- Browse Religion -->
       <div style="margin-bottom:20px;">
         <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🔍 I want to browse profiles from</p>
-        <select id="fpBrowseReligion" class="field" onchange="fpSyncDenom('browse')" style="margin-bottom:10px;">
-          <option value="all">All Faiths</option>
-          <option value="Christian">✝️ Christian</option>
-          <option value="Hindu">🕉️ Hindu</option>
-          <option value="Muslim">☪️ Muslim</option>
-          <option value="Sikh">☬ Sikh</option>
-          <option value="Jain">🕊️ Jain</option>
-          <option value="Buddhist">☸️ Buddhist</option>
-          <option value="Parsi">🔥 Parsi</option>
-          <option value="Jewish">✡️ Jewish</option>
-          <option value="Spiritual">🌱 Spiritual / No Religion</option>
-          <option value="Other">🌐 Other</option>
-        </select>
-        <div id="fpBrowseDenomWrap" style="display:none;">
-          <p style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px;">Specific denomination (optional)</p>
-          <div id="fpBrowseChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
-        </div>
+        <div id="fpBrowseSelectWrap"></div>
+        <p style="font-size:10px;color:rgba(255,255,255,.35);margin-top:6px;">Select one or more faiths. "All" means you'll see everyone.</p>
       </div>
 
       <!-- Receive Religion -->
       <div style="margin-bottom:24px;">
         <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💌 I want to receive interest from</p>
-        <select id="fpReceiveReligion" class="field" onchange="fpSyncDenom('receive')" style="margin-bottom:10px;">
-          <option value="all">All Faiths</option>
-          <option value="Christian">✝️ Christian</option>
-          <option value="Hindu">🕉️ Hindu</option>
-          <option value="Muslim">☪️ Muslim</option>
-          <option value="Sikh">☬ Sikh</option>
-          <option value="Jain">🕊️ Jain</option>
-          <option value="Buddhist">☸️ Buddhist</option>
-          <option value="Parsi">🔥 Parsi</option>
-          <option value="Jewish">✡️ Jewish</option>
-          <option value="Spiritual">🌱 Spiritual / No Religion</option>
-          <option value="Other">🌐 Other</option>
-        </select>
-        <div id="fpReceiveDenomWrap" style="display:none;">
-          <p style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px;">Specific denomination (optional)</p>
-          <div id="fpReceiveChips" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
-        </div>
+        <div id="fpReceiveSelectWrap"></div>
+        <p style="font-size:10px;color:rgba(255,255,255,.35);margin-top:6px;">Select which faiths can send you interest requests.</p>
       </div>
 
       <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.15);border-radius:10px;padding:10px 12px;margin-bottom:18px;font-size:11px;color:rgba(255,255,255,.45);line-height:1.6;">

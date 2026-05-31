@@ -252,6 +252,7 @@ async function _doRegisterAfterOtp() {
     await loadP();
     _loadingProfile = false;
     _justRegistered = false;
+if (typeof pwaPromptAfterRegister === 'function') pwaPromptAfterRegister();
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Verify & Continue';
     _loadingProfile = false; _justRegistered = false;
