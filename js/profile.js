@@ -242,11 +242,6 @@ async function goNext(){
   if(step===1){
     var verifiedPhone=''; try{verifiedPhone=sessionStorage.getItem('bf_verified_phone')||'';}catch(x){}
     var phoneVal=verifiedPhone||(document.getElementById('fPhone')?document.getElementById('fPhone').value.trim():'');
-    var ageVal = parseInt(document.getElementById('fAge').value);
-if(!ageVal || ageVal < 18){
-  if(e){e.textContent='You must be at least 18 years old to register.';e.style.display='block';}
-  return;
-}
     if(!document.getElementById('fName').value.trim()||!document.getElementById('fAge').value||!document.getElementById('fGender').value||!document.getElementById('fReligion').value||!document.getElementById('fState').value||!document.getElementById('fCity').value||!phoneVal){
       if(e){e.textContent='Please fill all required fields.';e.style.display='block';} return;
     }
@@ -466,21 +461,14 @@ function openFaithPrefs(){
   if(iconEl)iconEl.textContent=f.icon||'🌐';
   if(nameEl)nameEl.textContent=(P&&P.religion)||'Not set';
   if(denomEl)denomEl.textContent=(P&&P.denomination)||'';
-
-  var savedBrowse=[]; try{savedBrowse=JSON.parse((P&&P.faith_browse)||'[]');}catch(e){}
-  var savedReceive=[]; try{savedReceive=JSON.parse((P&&P.faith_receive)||'[]');}catch(e){}
-  if(!savedBrowse.length) savedBrowse=FAITHS.map(function(f){return f.key;});
-  if(!savedReceive.length) savedReceive=FAITHS.map(function(f){return f.key;});
-  fpBrowse=savedBrowse.slice(); fpReceive=savedReceive.slice();
-
-  var browseWrap=document.getElementById('fpBrowseSelectWrap');
-  var receiveWrap=document.getElementById('fpReceiveSelectWrap');
-  if(browseWrap&&typeof createFaithMultiSelect==='function'){
-    createFaithMultiSelect('fpBrowseSelectWrap',fpBrowse,null,'Select faiths to browse...');
-  }
-  if(receiveWrap&&typeof createFaithMultiSelect==='function'){
-    createFaithMultiSelect('fpReceiveSelectWrap',fpReceive,null,'Select faiths to receive from...');
-  }
+  var savedBrowse=[];try{savedBrowse=JSON.parse((P&&P.faith_browse)||'[]');}catch(e){}
+  var bRel=(savedBrowse.length===1)?savedBrowse[0]:'all';
+  var bRelSel=document.getElementById('fpBrowseReligion');if(bRelSel)bRelSel.value=bRel;
+  fpBrowseDenoms=[];_buildFpChips('browse',bRel,fpBrowseDenoms);
+  var savedReceive=[];try{savedReceive=JSON.parse((P&&P.faith_receive)||'[]');}catch(e){}
+  var rRel=(savedReceive.length===1)?savedReceive[0]:'all';
+  var rRelSel=document.getElementById('fpReceiveReligion');if(rRelSel)rRelSel.value=rRel;
+  fpReceiveDenoms=[];_buildFpChips('receive',rRel,fpReceiveDenoms);
   var m=document.getElementById('faithModal');if(m)m.classList.add('show');
 }
 function closeFaithPrefs(){var m=document.getElementById('faithModal');if(m)m.classList.remove('show');}
@@ -511,17 +499,19 @@ function _buildFpChips(type,religion,selectedDenoms){
 }
 
 async function saveFaithPrefs(){
-  async function saveFaithPrefs(){
-  if(!fpBrowse.length){alert('Please select at least one faith to browse.');return;}
-  if(!fpReceive.length){alert('Please select at least one faith to receive interests from.');return;}
+  var bRel=document.getElementById('fpBrowseReligion').value;
+  var rRel=document.getElementById('fpReceiveReligion').value;
+  var allFaiths=['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
+  var fpBrowseNew=bRel==='all'?allFaiths:[bRel];
+  var fpReceiveNew=rRel==='all'?allFaiths:[rRel];
   var btn=document.getElementById('fpSaveBtn');
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
   try{
-    await sb.from('profiles').update({faith_browse:JSON.stringify(fpBrowse),faith_receive:JSON.stringify(fpReceive)}).eq('id',U.id);
-    if(P){P.faith_browse=JSON.stringify(fpBrowse);P.faith_receive=JSON.stringify(fpReceive);}
+    await sb.from('profiles').update({faith_browse:JSON.stringify(fpBrowseNew),faith_receive:JSON.stringify(fpReceiveNew)}).eq('id',U.id);
+    if(P){P.faith_browse=JSON.stringify(fpBrowseNew);P.faith_receive=JSON.stringify(fpReceiveNew);}
+    fpBrowse=fpBrowseNew;fpReceive=fpReceiveNew;
     closeFaithPrefs();
     if(typeof renderFaithPrefCard==='function')renderFaithPrefCard();
-    if(typeof renderFpPills==='function'){renderFpPills('fpBrowsePills',fpBrowse);renderFpPills('fpReceivePills',fpReceive);}
   }catch(x){alert('Could not save preferences.');}
   if(btn){btn.disabled=false;btn.textContent='Save Preferences ✦';}
 }
