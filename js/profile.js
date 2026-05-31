@@ -459,7 +459,7 @@ function renderFpPills(containerId,arr){
 var fpBrowseDenoms=[],fpReceiveDenoms=[];
 var FP_DENOM_MAP={Christian:['Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','SDA','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],Hindu:['Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],Muslim:['Sunni','Shia','Sufi','Ahmadiyya','Ismaili'],Sikh:['Amritdhari','Sahajdhari','Nanakpanthi'],Jain:['Digambara','Shvetambara'],Buddhist:['Theravada','Mahayana','Vajrayana','Zen'],Jewish:['Orthodox','Conservative','Reform']};
 
- function openFaithPrefs(){
+function openFaithPrefs(){
   if(!isPreLaunch()&&!isPremiumUser()){if(typeof showSubModal==='function')showSubModal('Faith filter');return;}
   var f=faithByKey(P&&P.religion?P.religion:'Other');
   var iconEl=document.getElementById('fpMyFaithIcon'),nameEl=document.getElementById('fpMyFaithName'),denomEl=document.getElementById('fpMyFaithDenom');
