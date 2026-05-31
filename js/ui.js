@@ -1,9 +1,16 @@
-// Begin Forever — UI v14c
-// Fixes:
-// - blink keyframe injected at runtime (was missing from CSS)
-// - goTab('chatWin') back-nav: chat window hides itself and restores mainApp properly
-// - loadStats() debounced — no duplicate Supabase calls on rapid tab switches
-// - Chat gated on canChat() (subscription required)
+// Begin Forever — UI v16
+// Changes from v15:
+// - canSendInterest() now requires subscription (not just approved status)
+// - sendInt() checks subscription before inserting interest
+// - viewProfile() interest button shows paywall if no subscription
+// - ldViews() gated on Premium
+// - ldBrowse() calls renderBrowseChips() and applies age + marital filters
+// - actInt() fires interest_accepted notification (3-arg signature)
+// - sendInt() fires interest_received notification
+// - _appendMsg() shows read receipt ticks for Premium users
+// - checkNotifs() properly hides dot when count = 0
+// - Launch auto-detection: polls isPreLaunch() and refreshes UI at exact launch moment
+// - blink keyframe injected at runtime
 
 // ═══ SCREEN MANAGEMENT
 function showScr(id) {
@@ -23,6 +30,28 @@ function show(id) { showScr(id); }
     document.head.appendChild(s);
   }
 })();
+
+// ═══ LAUNCH AUTO-DETECTION
+// Polls every 30s while in pre-launch; at exact launch moment refreshes current tab
+var _wasPreLaunch = isPreLaunch ? isPreLaunch() : true;
+var _launchPollInterval = setInterval(function() {
+  if (!_wasPreLaunch) { clearInterval(_launchPollInterval); return; }
+  var nowPreLaunch = (typeof isPreLaunch === 'function') ? isPreLaunch() : true;
+  if (_wasPreLaunch && !nowPreLaunch) {
+    _wasPreLaunch = false;
+    clearInterval(_launchPollInterval);
+    // Refresh to home — all tabs now unlock
+    if (typeof goTab === 'function' && P && P.status === 'approved') {
+      goTab('home');
+      // Small toast to let user know
+      var t = document.createElement('div');
+      t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:800;z-index:9999;box-shadow:0 6px 24px rgba(212,160,23,0.5);';
+      t.textContent = '🎉 Begin Forever is LIVE! Discover your matches now.';
+      document.body.appendChild(t);
+      setTimeout(function() { if (document.body.contains(t)) t.remove(); }, 6000);
+    }
+  }
+}, 30000);
 
 // ═══ COUNTDOWN
 function updateCountdown() {
@@ -48,12 +77,10 @@ function goTab(t) {
     if (P.status === 'resubmitting') { prefillSetupWizard(P); showScr('setupScreen'); step = 1; updUI(); return; }
   }
 
-  // Hide chat window if open — fix: ensure mainApp stays visible
   var cw = document.getElementById('tChatWin');
   if (cw) cw.style.display = 'none';
   var ma = document.getElementById('mainApp');
   if (ma) { ma.style.display = 'block'; ma.classList.add('active'); }
-  // Hide onboarding screen if somehow visible
   var obs = document.getElementById('onboardingScreen'); if (obs) { obs.style.display = 'none'; obs.classList.remove('active'); }
 
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x) {
@@ -61,6 +88,8 @@ function goTab(t) {
   });
   if (t !== 'admin') { var adL = document.getElementById('adList'); if (adL) adL.innerHTML = ''; }
   if (t !== 'chatWin') _destroyChatRealtime();
+
+  if (typeof _editMode !== 'undefined' && _editMode) { _editMode = false; }
 
   var key = t.charAt(0).toUpperCase() + t.slice(1);
   var target = document.getElementById('t' + key);
@@ -77,12 +106,13 @@ function goTab(t) {
   if (t === 'views')     ldViews();
   if (t === 'profile')   { if (typeof _editMode !== 'undefined') _editMode = false; renP(); }
   if (t === 'admin') {
-    if (!P || !P.is_admin) { goTab('home'); return; } // non-admins blocked
+    if (!P || !P.is_admin) { goTab('home'); return; }
     ldAdmin('pending');
   }
-  // Hide admin tab button from non-admins
   var adTabEl = document.getElementById('adTab');
   if (adTabEl) adTabEl.style.display = (P && P.is_admin) ? '' : 'none';
+
+  if (typeof _handleToastOnTabChange === 'function') _handleToastOnTabChange(t);
 }
 
 // ═══ HOME
@@ -101,7 +131,6 @@ function renderHome() {
   loadStats();
 }
 
-// Debounced loadStats — max once per 3 seconds
 var _statsTimer = null;
 function loadStats() {
   if (_statsTimer) return;
@@ -121,7 +150,7 @@ async function _doLoadStats() {
   } catch(x) {}
 }
 
-// ═══ BROWSE
+// ═══ BROWSE — applies partner pref filters + renders faith chips
 async function ldBrowse() {
   if (!P) return;
   if (P.status === 'pending') {
@@ -131,13 +160,34 @@ async function ldBrowse() {
   }
   if (isPreLaunch()) { var l0 = document.getElementById('bList'); if (l0) l0.innerHTML = ''; return; }
   if (typeof loadBlockedIds === 'function') await loadBlockedIds();
+
+  // Render faith filter chips
+  renderBrowseChips();
+
   var g = P.gender === 'Male' ? 'Female' : 'Male';
   var q = sb.from('profiles').select('*').eq('status', 'approved').eq('gender', g).neq('id', U.id);
+
+  // Faith filter from profile preferences
   var browseFaiths = []; try { browseFaiths = JSON.parse(P.faith_browse || '[]'); } catch(x) {}
-  if (browseFaiths.length > 0 && browseFaiths.length < FAITHS.length) q = q.in('religion', browseFaiths);
+  if (quickFaithFilter !== 'All') {
+    q = q.eq('religion', quickFaithFilter);
+  } else if (browseFaiths.length > 0 && browseFaiths.length < FAITHS.length) {
+    q = q.in('religion', browseFaiths);
+  }
+
+  // Age filter from partner preferences
+  if (P.pref_age_min && P.pref_age_min > 18) q = q.gte('age', P.pref_age_min);
+  if (P.pref_age_max && P.pref_age_max < 70) q = q.lte('age', P.pref_age_max);
+
+  // Marital status filter
+  var prefMarital = [];
+  try { prefMarital = JSON.parse(P.pref_marital_statuses || '[]'); } catch(x) {}
+  if (prefMarital.length > 0) q = q.in('marital_status', prefMarital);
+
   var r = await q.order('created_at', { ascending: false });
   var d = r.data || [];
   if (typeof BLOCKED_IDS !== 'undefined' && BLOCKED_IDS.length > 0) d = d.filter(function(p) { return BLOCKED_IDS.indexOf(p.id) === -1; });
+
   var be = document.getElementById('bEmpty'); if (be) be.style.display = d.length ? 'none' : '';
   var l = document.getElementById('bList'); if (!l) return; l.innerHTML = '';
   d.forEach(function(p) {
@@ -174,17 +224,41 @@ async function ldInt(type) {
       '<div class="avatar" style="' + (p.photo_url ? 'background-image:url(' + p.photo_url + ');background-size:cover;background-position:center' : '') + ';border-color:' + f.color + '">' + (!p.photo_url ? '<span style="font-size:18px;opacity:.3">👤</span>' : '') + '</div>' +
       '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">' + p.full_name + ', ' + p.age + '</h3>' +
       '<p style="font-size:11px;color:' + f.color + '">' + f.icon + ' ' + (p.denomination || p.religion || '') + '<span style="color:var(--w50)"> · ' + p.city + '</span></p></div></div>' +
-      (type === 'received' ? '<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="actInt(\'' + i.id + '\',\'accepted\')">✅ Accept</button><button class="btn btn-red btn-sm" style="flex:1" onclick="actInt(\'' + i.id + '\',\'declined\')">✗ Decline</button></div>' : '') +
+      (type === 'received' ? '<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="actInt(\'' + i.id + '\',\'accepted\',\'' + (p.id||'') + '\')">✅ Accept</button><button class="btn btn-red btn-sm" style="flex:1" onclick="actInt(\'' + i.id + '\',\'declined\',\'\')">✗ Decline</button></div>' : '') +
       '</div>';
   });
 }
 function showInt(t) { ldInt(t); }
-async function actInt(id, st) { await sb.from('interests').update({ status: st }).eq('id', id); ldInt('received'); }
+
+// FIXED: fires interest_accepted notification; 3-arg signature
+async function actInt(id, st, fromUserId) {
+  await sb.from('interests').update({ status: st }).eq('id', id);
+  if (st === 'accepted' && fromUserId && P) {
+    try {
+      var senderRes = await sb.from('profiles').select('full_name,email,phone').eq('id', fromUserId).limit(1);
+      var sender = senderRes.data && senderRes.data[0];
+      if (sender) {
+        fetch(SB_URL + '/functions/v1/smart-function', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+          body: JSON.stringify({
+            type: 'interest_accepted',
+            sender_email: sender.email || '',
+            sender_name: sender.full_name || '',
+            sender_phone: sender.phone || '',
+            acceptor_name: P.full_name || '',
+            acceptor_faith: P.denomination || P.religion || ''
+          })
+        });
+      }
+    } catch(x) {}
+  }
+  ldInt('received');
+}
 
 // ═══ CHAT LIST — gated on subscription
 async function ldChats() {
   if (isPreLaunch()) return;
-
   if (!canChat()) {
     var tChat = document.getElementById('tChat'); if (!tChat) return;
     tChat.innerHTML =
@@ -196,13 +270,11 @@ async function ldChats() {
       '</div>';
     return;
   }
-
   var r = await sb.from('interests').select('*').or('from_user.eq.' + U.id + ',to_user.eq.' + U.id).eq('status', 'accepted');
   var d = r.data || [];
   var pids = [];
   d.forEach(function(i) { var pid = i.from_user === U.id ? i.to_user : i.from_user; if (pids.indexOf(pid) === -1) pids.push(pid); });
   var cl = document.getElementById('chatList');
-
   if (!pids.length) {
     if (cl) cl.innerHTML =
       '<div style="text-align:center;padding:40px 20px;">' +
@@ -212,11 +284,9 @@ async function ldChats() {
       '<button class="btn btn-gold" style="margin-top:16px;width:auto;padding:10px 24px;" onclick="goTab(\'interests\')">View Interests 💝</button></div>';
     return;
   }
-
   var pr = await sb.from('profiles').select('*').in('id', pids);
   var profiles = pr.data || [];
   if (cl) cl.innerHTML = '';
-
   var lastMsgs = {};
   try {
     var msgQ = await sb.from('messages').select('sender_id,receiver_id,content,created_at,is_read')
@@ -229,7 +299,6 @@ async function ldChats() {
       if (!lastMsgs[otherId]) lastMsgs[otherId] = m;
     });
   } catch(x) {}
-
   profiles.forEach(function(p) {
     var f = faithByKey(p.religion || 'Other');
     var last = lastMsgs[p.id];
@@ -284,15 +353,12 @@ async function openChat(pid) {
   var cn = document.getElementById('cwNm'); if (cn) cn.textContent = p.full_name;
   var ci = document.getElementById('cwIn'); if (ci) ci.textContent = (p.denomination || p.religion || '') + ' · ' + p.city;
   var ca = document.getElementById('cwAv'); if (ca && p.photo_url) ca.style.backgroundImage = 'url(' + p.photo_url + ')';
-
-  // Hide all tabs but keep mainApp visible — fix back-nav
   ['tHome','tBrowse','tInterests','tChat','tViews','tProfile','tPlans','tReviews','tAdmin'].forEach(function(x) {
     var el = document.getElementById(x); if (el) el.style.display = 'none';
   });
   var ma = document.getElementById('mainApp');
   if (ma) { ma.style.display = 'block'; ma.classList.add('active'); }
   var cw = document.getElementById('tChatWin'); if (cw) cw.style.display = 'flex';
-
   await ldMsgs();
   _subscribeChatRealtime(pid);
 }
@@ -308,11 +374,19 @@ function _subscribeChatRealtime(pid) {
     }).subscribe();
 }
 
+// FIXED: read receipts ✓/✓✓ for Premium users on sent messages
 function _appendMsg(m) {
   var c = document.getElementById('cwMs'); if (!c) return;
+  var isSent = m.sender_id === U.id;
+  var tick = '';
+  if (isSent && typeof isPremiumUser === 'function' && isPremiumUser()) {
+    tick = '<span style="font-size:10px;margin-left:4px;color:' + (m.is_read ? '#F5C842' : 'rgba(255,255,255,.35)') + ';">' + (m.is_read ? '✓✓' : '✓') + '</span>';
+  }
   var div = document.createElement('div');
-  div.className = 'msg-bubble ' + (m.sender_id === U.id ? 'msg-sent' : 'msg-recv');
-  div.innerHTML = m.content + '<div class="msg-time">' + new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</div>';
+  div.className = 'msg-bubble ' + (isSent ? 'msg-sent' : 'msg-recv');
+  div.dataset.msgId = m.id || '';
+  div.innerHTML = m.content +
+    '<div class="msg-time">' + new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + tick + '</div>';
   c.appendChild(div);
   c.scrollTop = c.scrollHeight;
 }
@@ -339,7 +413,7 @@ async function sendMsg() {
   var inp = document.getElementById('cwTx'); if (!inp) return;
   var txt = inp.value.trim(); if (!txt) return;
   inp.value = '';
-  var optimistic = { id: 'tmp', sender_id: U.id, receiver_id: chatPid, content: txt, created_at: new Date().toISOString() };
+  var optimistic = { id: 'tmp', sender_id: U.id, receiver_id: chatPid, content: txt, created_at: new Date().toISOString(), is_read: false };
   _appendMsg(optimistic);
   try {
     await sb.from('messages').insert({ sender_id: U.id, receiver_id: chatPid, content: txt });
@@ -350,16 +424,37 @@ async function sendMsg() {
   }
 }
 
-// ═══ WHO VIEWED
+// ═══ WHO VIEWED — GATED on Premium
 async function ldViews() {
+  var vl = document.getElementById('viewList');
+  var ve = document.getElementById('viewEmpty');
+  if (!isPreLaunch() && !isPremiumUser()) {
+    if (vl) vl.innerHTML = '';
+    if (ve) ve.style.display = 'none';
+    var container = document.getElementById('tViews'); if (!container) return;
+    if (!document.getElementById('viewsPaywall')) {
+      var pw = document.createElement('div');
+      pw.id = 'viewsPaywall';
+      pw.style.cssText = 'text-align:center;padding:40px 20px;';
+      pw.innerHTML =
+        '<div style="font-size:48px;margin-bottom:14px;">👁️</div>' +
+        '<h3 style="font-family:Cinzel,serif;color:#F5C842;font-size:17px;margin-bottom:8px;">See who viewed your profile</h3>' +
+        '<p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px;">Know who\'s interested before they send a request.<br/>This is a <strong style="color:#F5C842;">Premium</strong> feature.</p>' +
+        '<button class="btn btn-gold" style="width:auto;padding:12px 28px;" onclick="showSub()">Upgrade to Premium ✦</button>';
+      container.appendChild(pw);
+    }
+    return;
+  }
+  var existingPw = document.getElementById('viewsPaywall');
+  if (existingPw) existingPw.remove();
   var r = await sb.from('profile_views').select('*,profiles!profile_views_viewer_id_fkey(*)').eq('viewed_id', U.id).order('viewed_at', { ascending: false });
   var d = r.data || [];
-  var ve = document.getElementById('viewEmpty'); if (ve) ve.style.display = d.length ? 'none' : '';
-  var l = document.getElementById('viewList'); if (!l) return; l.innerHTML = '';
+  if (ve) ve.style.display = d.length ? 'none' : '';
+  if (!vl) return; vl.innerHTML = '';
   d.forEach(function(v) {
     var p = v.profiles; if (!p) return;
     var f = faithByKey(p.religion || 'Other');
-    l.innerHTML += '<div class="card" onclick="viewProfile(\'' + p.id + '\')">' +
+    vl.innerHTML += '<div class="card" onclick="viewProfile(\'' + p.id + '\')">' +
       '<div style="display:flex;gap:10px;align-items:center">' +
       '<div class="avatar" style="' + (p.photo_url ? 'background-image:url(' + p.photo_url + ');background-size:cover;background-position:center' : '') + ';border-color:' + f.color + '">' + (!p.photo_url ? '<span style="font-size:18px;opacity:.3">👤</span>' : '') + '</div>' +
       '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">' + p.full_name + ', ' + p.age + '</h3>' +
@@ -368,13 +463,18 @@ async function ldViews() {
   });
 }
 
-// ═══ NOTIFICATIONS
+// ═══ NOTIFICATIONS — FIXED: properly hides dots when count = 0
 async function checkNotifs() {
   if (!U) return;
   try {
     var r = await sb.from('interests').select('id', { count: 'exact', head: true }).eq('to_user', U.id).eq('status', 'pending');
-    var dot = document.getElementById('intDot'); if (dot && r.count > 0) dot.style.display = '';
-    var badge = document.getElementById('intBadge'); if (badge && r.count > 0) { badge.style.display = ''; badge.textContent = r.count; }
+    var dot = document.getElementById('intDot');
+    var badge = document.getElementById('intBadge');
+    if (dot) dot.style.display = (r.count > 0) ? '' : 'none';
+    if (badge) {
+      if (r.count > 0) { badge.style.display = ''; badge.textContent = r.count; }
+      else badge.style.display = 'none';
+    }
     var mr = await sb.from('messages').select('id', { count: 'exact', head: true }).eq('receiver_id', U.id).eq('is_read', false);
     var mdot = document.getElementById('msgDot'); if (mdot) mdot.style.display = mr.count > 0 ? '' : 'none';
   } catch(x) {}
@@ -428,10 +528,38 @@ async function openFaithPrefsGated() {
   if (isPremiumUser()) openFaithPrefs(); else showSubModal('Faith filter');
 }
 
-function payRzp(plan, amt) {
-  var tier = plan.toLowerCase().indexOf('premium') > -1 ? 'premium' : 'basic';
-  SUB_CYCLE = plan.indexOf('Quarterly') !== -1 ? 'quarterly' : plan.indexOf('Monthly') !== -1 ? 'monthly' : 'halfyearly';
-  choosePlan(tier);
+// FIXED: sendInt requires subscription; fires interest_received notification
+async function sendInt(to) {
+  // Subscription gate — post-launch only
+  if (!isPreLaunch() && !isSubscribed()) {
+    showChatSubModal();
+    return;
+  }
+  try {
+    await sb.from('interests').insert({ from_user: U.id, to_user: to, status: 'pending' });
+    closeModal();
+    // Notify receiver
+    try {
+      var receiverRes = await sb.from('profiles').select('full_name,email,phone').eq('id', to).limit(1);
+      var receiver = receiverRes.data && receiverRes.data[0];
+      if (receiver && P) {
+        fetch(SB_URL + '/functions/v1/smart-function', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+          body: JSON.stringify({
+            type: 'interest_received',
+            receiver_email: receiver.email || '',
+            receiver_name: receiver.full_name || '',
+            receiver_phone: receiver.phone || '',
+            sender_name: P.full_name || '',
+            sender_email: P.email || '',
+            sender_faith: P.denomination || P.religion || ''
+          })
+        });
+      }
+    } catch(x) {}
+    alert('Interest sent! 💝');
+  } catch(x) { alert(x.message || 'Already sent'); }
 }
 
 function updatePricingCountdown() {
@@ -454,13 +582,6 @@ function toggleMenu() {
   if (b3) b3.style.transform = _menuOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
 }
 
-async function sendInt(to) {
-  try {
-    await sb.from('interests').insert({ from_user: U.id, to_user: to, status: 'pending' });
-    closeModal(); alert('Interest sent! 💝');
-  } catch(x) { alert(x.message || 'Already sent'); }
-}
-
 var quickFaithFilter = 'All';
 function renderBrowseChips() {
   var chips = document.getElementById('browseChips'); if (!chips) return;
@@ -476,3 +597,8 @@ function renderBrowseChips() {
   });
 }
 function renderFaithPrefSummary() { if (typeof renderFaithPrefCard === 'function') renderFaithPrefCard(); }
+function payRzp(plan, amt) {
+  var tier = plan.toLowerCase().indexOf('premium') > -1 ? 'premium' : 'basic';
+  SUB_CYCLE = plan.indexOf('Quarterly') !== -1 ? 'quarterly' : plan.indexOf('Monthly') !== -1 ? 'monthly' : 'halfyearly';
+  choosePlan(tier);
+}

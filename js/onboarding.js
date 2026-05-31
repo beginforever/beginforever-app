@@ -203,7 +203,7 @@ function _onbPartnerPrefs(sc){
       '<div style="flex:1;"><label class="field-label">Max</label><input type="number" class="field" id="onbAgeMax" value="'+_onbData.pref_age_max+'" min="18" max="70"/></div>'+
     '</div>'+
     '<span class="onb-lbl">Preferred Religion * <span style="font-size:10px;color:#7A6090;text-transform:none;letter-spacing:0;">(select all that apply)</span></span>'+
-    '<div id="onbRelChips" style="margin-bottom:16px;"></div>'+
+    ''<div id="onbRelSelect" style="margin-bottom:16px;"></div>'+
     '<span class="onb-lbl">Preferred Marital Status</span>'+
     '<div id="onbMarChips" style="margin-bottom:16px;"></div>'+
     '<span class="onb-lbl">Preferred Location</span>'+
@@ -216,8 +216,10 @@ function _onbPartnerPrefs(sc){
     '<div class="field-group"><label class="field-label">What are you looking for? <span style="color:#9B8FAA;font-weight:400;">(optional)</span></label><textarea class="field" id="onbLookingFor" style="min-height:70px;resize:vertical;" placeholder="e.g. Someone who is family-oriented and shares my faith...">'+(_onbData.looking_for||'')+'</textarea></div>'+
     _onbFoot(true)+'</div>';
 
-  _onbChips('onbRelChips',ALL_RELIGIONS,_onbData.pref_religions,null,null,false);
-  _onbChips('onbMarChips',ALL_MARITAL,_onbData.pref_marital_statuses,null,null,false);
+ if(typeof createFaithMultiSelect==='function'){
+    createFaithMultiSelect('onbRelSelect',_onbData.pref_religions,null,'Select preferred religions...');
+  }
+  _onbChips('onbMarSelect',ALL_MARITAL,_onbData.pref_marital_statuses,null,null,false);
 }
 
 function _onbLoadCities(){
@@ -257,13 +259,15 @@ function _onbFaithPrefs(sc){
   sc.innerHTML='<div class="onb-card">'+_onbHdr('Faith Preferences',4,5)+
     '<p class="onb-sub">Control who you see and who can reach you. You can change this anytime.</p>'+
     '<span class="onb-lbl">🔍 Browse profiles from</span>'+
-    '<div id="onbBrowseChips" style="margin-bottom:20px;"></div>'+
+    '<div id="onbBrowseSelect" style="margin-bottom:20px;"></div>'+
     '<span class="onb-lbl">💌 Receive interests from</span>'+
-    '<div id="onbReceiveChips" style="margin-bottom:24px;"></div>'+
+    '<div id="onbReceiveSelect" style="margin-bottom:24px;"></div>'+
+    '<div style="background:rgba(59,7,100,.05);border:1px solid rgba(59,7,100,.12);border-radius:10px;padding:12px;margin-bottom:16px;font-size:11px;color:#5B3A7A;line-height:1.6;">🔒 These settings only affect your discovery feed and who can send you interest. Other members cannot see your preferences.</div>'+
     _onbFoot(true)+'</div>';
-  _onbChips('onbBrowseChips',ALL_RELIGIONS,_onbData.faith_browse,null,null,true);
-  _onbChips('onbReceiveChips',ALL_RELIGIONS,_onbData.faith_receive,null,null,true);
-}
+  if(typeof createFaithMultiSelect==='function'){
+    createFaithMultiSelect('onbBrowseSelect',_onbData.faith_browse,null,'Select faiths to browse...');
+    createFaithMultiSelect('onbReceiveSelect',_onbData.faith_receive,null,'Select faiths to receive from...');
+  }
 
 // STEP 5: PRIVACY
 function _onbPrivacy(sc){
