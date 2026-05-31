@@ -203,7 +203,7 @@ function _onbPartnerPrefs(sc){
       '<div style="flex:1;"><label class="field-label">Max</label><input type="number" class="field" id="onbAgeMax" value="'+_onbData.pref_age_max+'" min="18" max="70"/></div>'+
     '</div>'+
     '<span class="onb-lbl">Preferred Religion * <span style="font-size:10px;color:#7A6090;text-transform:none;letter-spacing:0;">(select all that apply)</span></span>'+
-    ''<div id="onbRelSelect" style="margin-bottom:16px;"></div>'+
+    '<div id="onbRelSelect" style="margin-bottom:16px;"></div>'+
     '<span class="onb-lbl">Preferred Marital Status</span>'+
     '<div id="onbMarChips" style="margin-bottom:16px;"></div>'+
     '<span class="onb-lbl">Preferred Location</span>'+
