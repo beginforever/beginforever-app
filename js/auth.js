@@ -250,6 +250,7 @@ async function _doRegisterAfterOtp() {
     } catch(x) {}
     if (U) { saveReferral(U.id, em).catch(function(){}); }
     await loadP();
+if (typeof window.showA2HSNudge === 'function') window.showA2HSNudge();
     _loadingProfile = false;
     _justRegistered = false;
     if (typeof pwaPromptAfterRegister === 'function') pwaPromptAfterRegister();
