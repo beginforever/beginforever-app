@@ -1387,11 +1387,11 @@ select.field option { background: var(--dark2); color: var(--white); }
       <h3 style="font-family:'Cinzel',serif;color:#F5C842;font-size:16px;margin:0;">⚙️ Faith Preferences</h3>
       <button onclick="closeFaithPrefs()" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
     </div>
-    <div style="padding:20px 18px 32px;">
+    <div style="padding:20px 18px 32px;" onclick="closeAllFpDropdowns()">
       <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.6;">Control who you see and who can reach you.</p>
 
       <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🔍 Browse profiles from</p>
-      <div id="fpBrowseDropdown" style="position:relative;margin-bottom:20px;">
+      <div id="fpBrowseDropdown" style="position:relative;margin-bottom:20px;" onclick="event.stopPropagation()">
         <button onclick="toggleFpDropdown('browse')" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;text-align:left;cursor:pointer;font-family:Nunito,sans-serif;display:flex;justify-content:space-between;align-items:center;">
           <span id="fpBrowseLabel">All Faiths</span><span>▾</span>
         </button>
@@ -1410,7 +1410,7 @@ select.field option { background: var(--dark2); color: var(--white); }
       </div>
 
       <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💌 Receive interests from</p>
-      <div id="fpReceiveDropdown" style="position:relative;margin-bottom:24px;">
+      <div id="fpReceiveDropdown" style="position:relative;margin-bottom:24px;" onclick="event.stopPropagation()">
         <button onclick="toggleFpDropdown('receive')" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;text-align:left;cursor:pointer;font-family:Nunito,sans-serif;display:flex;justify-content:space-between;align-items:center;">
           <span id="fpReceiveLabel">All Faiths</span><span>▾</span>
         </button>
