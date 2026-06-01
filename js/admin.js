@@ -11,7 +11,7 @@ async function ldAdmin(filter) {
   });
 
   var q = sb.from('profiles').select('*');
-  if (filter === 'founders') q = q.eq('is_founding_member', true).order('founding_number', { ascending: true });
+  if (filter === 'founders') q = q.eq('is_founding_member', true).eq('status', 'approved').order('founding_number', { ascending: true });
   else q = q.eq('status', filter).order('created_at', { ascending: false });
 
   var r = await q;
