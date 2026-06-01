@@ -1,11 +1,12 @@
-// Begin Forever — Admin v16
-// Fix: adAct() and submitReject() now fetch full profile before calling smart-function
+// Begin Forever — Admin v17
+// Fix: ALL smart-function calls now include Authorization: Bearer SB_KEY header
+// Fix: adAct() and submitReject() fetch full profile before calling smart-function
 // Fix: tab highlight logic corrected
-// Fix: pid → p.id bug in approved-tab revoke button
 
 async function ldAdmin(filter) {
   ['pending','approved','rejected','founders'].forEach(function(f) {
-    var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
+    var tabId = 'adTab' + f.charAt(0).toUpperCase() + f.slice(1);
+    var el = document.getElementById(tabId);
     if (el) el.className = 'btn btn-sm ' + (f === filter ? 'btn-gold' : 'btn-dark');
   });
 
@@ -70,7 +71,7 @@ async function ldAdmin(filter) {
   });
 }
 
-// FIXED: fetch full profile before calling smart-function so notifications have all data
+// All smart-function calls now include Authorization header
 async function adAct(id, status) {
   if (status === 'deleted' && !confirm('Permanently delete this profile?')) return;
 
@@ -95,7 +96,10 @@ async function adAct(id, status) {
         if (profile) {
           fetch(SB_URL + '/functions/v1/smart-function', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + SB_KEY
+            },
             body: JSON.stringify({
               type: 'approved',
               full_name: profile.full_name || '',
@@ -143,7 +147,7 @@ function setRejectReason(text) {
   var ra = document.getElementById('rejectReason'); if (ra) ra.value = text;
 }
 
-// FIXED: fetch full profile before calling smart-function
+// Authorization header added to reject notification call
 async function submitReject() {
   var reason = (document.getElementById('rejectReason') || {}).value || '';
   if (!reason.trim()) {
@@ -164,14 +168,17 @@ async function submitReject() {
     }).eq('id', _rejectTargetId);
     if (r.error) throw r.error;
 
-    // Fetch full profile for notification
+    // Fetch full profile for notification — WITH Authorization header
     try {
       var pr = await sb.from('profiles').select('*').eq('id', _rejectTargetId).limit(1);
       var profile = pr.data && pr.data[0];
       if (profile) {
         fetch(SB_URL + '/functions/v1/smart-function', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SB_KEY
+          },
           body: JSON.stringify({
             type: 'rejected',
             full_name: profile.full_name || '',
@@ -191,5 +198,3 @@ async function submitReject() {
 
   if (btn) { btn.disabled = false; btn.textContent = 'Confirm Rejection & Send Email'; }
 }
-
-// openDeactivateModal() and openDeleteModal() handled by safety.js
