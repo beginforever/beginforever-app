@@ -278,30 +278,93 @@ select.field option { background: var(--dark2); color: var(--white); }
       <button class="af-btn af-btn-gold" id="rBtn" onclick="doRegister()">Create Account ✦</button>
       <div class="af-center"><span>Already a member? </span><button class="af-link" style="color:#F5C842;font-weight:700;" onclick="showScr('loginScreen')">Sign In</button></div>
     </div>
+    <!-- ─── ADD TO HOME SCREEN — paste after the auth-card closing div on registerScreen ─── -->
+<div style="max-width:420px;width:100%;margin-top:16px;" id="a2hsSection">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <div style="flex:1;height:1px;background:rgba(255,255,255,.08);"></div>
+    <span style="font-size:11px;color:rgba(255,255,255,.3);">get the app</span>
+    <div style="flex:1;height:1px;background:rgba(255,255,255,.08);"></div>
   </div>
+
+  <!-- ANDROID / DESKTOP: browser install prompt -->
+  <div id="a2hsBanner" style="display:none;background:rgba(59,7,100,.4);border:1px solid rgba(212,160,23,.35);border-radius:14px;padding:14px 16px;text-align:center;">
+    <p style="font-size:13px;font-weight:700;color:#F5C842;margin:0 0 4px;">📲 Install Begin Forever</p>
+    <p style="font-size:12px;color:rgba(255,255,255,.55);margin:0 0 12px;line-height:1.5;">Add to your home screen for the full app experience</p>
+    <button id="a2hsBtn" style="background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-weight:700;font-size:14px;border:none;border-radius:50px;padding:12px 28px;cursor:pointer;width:100%;">
+      Add to Home Screen ✦
+    </button>
+    <p id="a2hsDone" style="display:none;font-size:12px;color:#4ade80;margin:8px 0 0;">✅ App installed!</p>
+  </div>
+
+  <!-- iOS: manual instructions (no install prompt API on Safari) -->
+  <div id="a2hsIos" style="display:none;background:rgba(59,7,100,.4);border:1px solid rgba(212,160,23,.35);border-radius:14px;padding:14px 16px;">
+    <p style="font-size:13px;font-weight:700;color:#F5C842;margin:0 0 10px;text-align:center;">📲 Add Begin Forever to your Home Screen</p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.75);">
+        <span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.4);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#F5C842;flex-shrink:0;">1</span>
+        Tap the <strong style="color:#fff;">Share</strong> button at the bottom of Safari
+        <span style="font-size:16px;flex-shrink:0;">⎙</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.75);">
+        <span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.4);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#F5C842;flex-shrink:0;">2</span>
+        Scroll down and tap <strong style="color:#fff;">"Add to Home Screen"</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.75);">
+        <span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.4);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#F5C842;flex-shrink:0;">3</span>
+        Tap <strong style="color:#fff;">"Add"</strong> — Begin Forever appears on your home screen ✦
+      </div>
+    </div>
+  </div>
+
+  <!-- Already installed / desktop: show nothing -->
 </div>
 
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  var isIOS = /iphone|ipad|ipod/i.test(ua);
+  var isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-<!-- EMAIL VERIFY SCREEN -->
-<div id="emailVerifyScreen" class="screen" style="display:none;">
-  <div class="auth-page">
-    <div class="auth-logo-wrap"><img src="logo.png" alt="Begin Forever" onerror="this.style.display='none'"/></div>
-    <h1 class="auth-app-name">Begin Forever</h1>
-    <p class="auth-tagline">Where love begins to last.</p>
-    <div class="auth-card" style="text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;">📧</div>
-      <h2 class="auth-card-title">Verify Your Email</h2>
-      <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px;line-height:1.7;">We sent a verification link to</p>
-      <p id="evEmail" style="font-size:15px;font-weight:700;color:var(--gold2);margin-bottom:16px;"></p>
-      <p style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.7;">Please check your inbox and click the link to confirm your email. Then come back and tap the button below.</p>
-      <button class="af-btn af-btn-gold" onclick="checkEmailVerified()">I've Verified My Email ✦</button>
-      <p id="evErr" class="af-err" style="margin-top:10px;"></p>
-      <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);">
-        <p style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:8px;">Didn't get the email?</p>
-        <button class="af-link" id="evResendBtn" onclick="resendVerifyEmail()">Resend verification email</button>
-      </div>
-      <div class="auth-verse">"Ask and it will be given to you." <strong>Matthew 7:7</strong></div>
-    </div>
+  // Already installed as PWA — hide the whole section
+  if (isInStandaloneMode) {
+    var s = document.getElementById('a2hsSection');
+    if (s) s.style.display = 'none';
+    return;
+  }
+
+  if (isIOS) {
+    // Safari on iOS — no beforeinstallprompt, show manual steps
+    var el = document.getElementById('a2hsIos');
+    if (el) el.style.display = '';
+    return;
+  }
+
+  // Android Chrome / desktop Chrome — wait for beforeinstallprompt
+  var deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    var banner = document.getElementById('a2hsBanner');
+    if (banner) banner.style.display = '';
+  });
+
+  var btn = document.getElementById('a2hsBtn');
+  if (btn) {
+    btn.addEventListener('click', async function() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      var result = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (result && result.outcome === 'accepted') {
+        btn.style.display = 'none';
+        var done = document.getElementById('a2hsDone');
+        if (done) done.style.display = '';
+      }
+    });
+  }
+})();
+</script>
   </div>
 </div>
 
