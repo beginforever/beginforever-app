@@ -824,19 +824,18 @@ function renPEditMode(){
   if(heroEl) heroEl.innerHTML=
     '<div style="background:#FDFAF4;border-radius:14px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;"><p style="font-family:Cinzel,serif;font-size:18px;color:#3B0764;margin:0;">✏️ Edit Profile</p></div>';
   var mi=document.getElementById('mInfo');if(!mi)return;
-  mi.style.cssText='background:#FDFAF4;border-radius:16px;padding:16px;color:#2D1B4E;';
-var tp=document.getElementById('tProfile');
-if(tp)tp.style.background='#FDFAF4';
+  var tp=document.getElementById('tProfile');
+if(tp)tp.style.background='#1C0530';
   function sel(curVal,opts){return opts.map(function(o){return '<option value="'+o+'"'+(curVal===o?' selected':'')+'>'+o+'</option>';}).join('');}
   function inp(id,val,placeholder){return '<input class="field" id="'+id+'" value="'+(val||'')+'" placeholder="'+(placeholder||'')+'"/>';}
   var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
   var photoHtml='<div class="photo-grid" id="epGrid"></div>';
   mi.innerHTML=
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Photos</p>'+photoHtml+
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">About Me</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Photos</p>'+photoHtml+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">About Me</p>'+
     '<div class="field-group"><label class="field-label">Bio <span style="color:#ff6b6b;">*</span></label><textarea class="field" id="e_bio" style="min-height:90px;resize:vertical;" placeholder="Tell potential matches about yourself...">'+(P.bio||'')+'</textarea></div>'+
     '<div class="field-group"><label class="field-label">What I\'m Looking For</label><textarea class="field" id="e_lookingFor" style="min-height:70px;resize:vertical;" placeholder="Describe what you are looking for...">'+(P.looking_for||'')+'</textarea></div>'+
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Basic Details</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Basic Details</p>'+
     '<div class="field-group"><label class="field-label">Education</label>'+inp('e_edu',P.education,'e.g. B.Tech, MBA')+'</div>'+
     '<div class="field-group"><label class="field-label">Occupation</label>'+inp('e_occ',P.occupation,'e.g. Software Engineer')+'</div>'+
     '<div class="field-row">'+
@@ -844,10 +843,10 @@ if(tp)tp.style.background='#FDFAF4';
       '<div class="field-group"><label class="field-label">Mother Tongue</label>'+inp('e_motherTongue',P.mother_tongue,'e.g. Tamil')+'</div>'+
     '</div>'+
     '<div class="field-group"><label class="field-label">Marital Status</label><select class="field" id="e_marital"><option value="">Select</option>'+sel(P.marital_status,['Never Married','Divorced','Widowed','Annulled','Awaiting Divorce'])+'</select></div>'+
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Faith &amp; Beliefs</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Faith &amp; Beliefs</p>'+
     '<div class="field-group"><label class="field-label">Faith Importance <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_faithImportance"><option value="">Select</option>'+sel(P.faith_importance,['Very important','Important','Somewhat important','Not important'])+'</select></div>'+
     '<div class="field-group"><label class="field-label">Favourite Scripture</label>'+inp('e_scripture',P.scripture,'e.g. Jeremiah 29:11')+'</div>'+
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Lifestyle</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Lifestyle</p>'+
     '<div class="field-row">'+
       '<div class="field-group"><label class="field-label">Diet <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_diet"><option value="">Select</option>'+sel(P.diet,['Vegetarian','Non-Vegetarian','Vegan','Jain','No preference'])+'</select></div>'+
       '<div class="field-group"><label class="field-label">Exercise</label><select class="field" id="e_exercise"><option value="">Select</option>'+sel(P.exercise,['Daily','Often','Sometimes','Rarely'])+'</select></div>'+
@@ -856,10 +855,10 @@ if(tp)tp.style.background='#FDFAF4';
       '<div class="field-group"><label class="field-label">Smoking <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_smoking"><option value="">Select</option>'+sel(P.smoking,['Never','Occasionally','Yes'])+'</select></div>'+
       '<div class="field-group"><label class="field-label">Drinking <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_drinking"><option value="">Select</option>'+sel(P.drinking,['Never','Occasionally','Yes'])+'</select></div>'+
     '</div>'+
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 4px;">Hobbies <span style="color:#ff6b6b;">*</span> (min 3)</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 4px;">Hobbies <span style="color:#ff6b6b;">*</span> (min 3)</p>'+
     '<p style="font-size:11px;color:var(--w40);margin-bottom:8px;">Selected: <span id="eHobbyCount">'+_editHobbies.length+'</span></p>'+
     '<div id="eHobbyChips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;"></div>'+
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Partner Preferences</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Partner Preferences</p>'+
     '<div class="field-row">'+
       '<div class="field-group"><label class="field-label">Min Age</label><input class="field" type="number" id="e_prefAgeMin" value="'+(P.pref_age_min||18)+'" min="18" max="70"/></div>'+
       '<div class="field-group"><label class="field-label">Max Age</label><input class="field" type="number" id="e_prefAgeMax" value="'+(P.pref_age_max||70)+'" min="18" max="70"/></div>'+
