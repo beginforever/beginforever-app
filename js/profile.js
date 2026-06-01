@@ -554,6 +554,12 @@ function toggleFpDropdown(type){
   if(other)other.style.display='none';
   if(menu)menu.style.display=menu.style.display==='none'?'':'none';
 }
+function closeAllFpDropdowns(){
+  var bm=document.getElementById('fpBrowseMenu');
+  var rm=document.getElementById('fpReceiveMenu');
+  if(bm)bm.style.display='none';
+  if(rm)rm.style.display='none';
+}
 function fpHandleAll(type){
   var cls=type==='browse'?'fpb-opt':'fpr-opt';
   document.querySelectorAll('.'+cls).forEach(function(o){o.checked=false;});
