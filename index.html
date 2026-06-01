@@ -1376,9 +1376,9 @@ select.field option { background: var(--dark2); color: var(--white); }
 <script src="js/ui.js?v=20"></script>
 <script src="js/auth.js"></script>
 <script src="js/referral.js"></script>
-<script src="js/profile.js?v=21"></script>
+<script src="js/profile.js?v=22"></script>
 <script src="js/onboarding.js?v=120"></script>
-<script src="js/admin.js?v=20"></script>
+<script src="js/admin.js?v=21"></script>
 <script src="js/pwa-install.js?v=1"></script>
 <script src="js/boot.js"></script>
  <div id="faithModal" onclick="closeFaithPrefs()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
@@ -1388,43 +1388,45 @@ select.field option { background: var(--dark2); color: var(--white); }
       <button onclick="closeFaithPrefs()" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
     </div>
     <div style="padding:20px 18px 32px;">
-      <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.6;">Control who you see and who can reach you. Changes save immediately.</p>
+      <p style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;line-height:1.6;">Control who you see and who can reach you.</p>
 
-      <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browse profiles from</p>
-      <div style="display:flex;gap:6px;margin-bottom:6px;">
-        <button onclick="fpSelectAll('browse')" style="font-size:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button>
-        <button onclick="fpClearAll('browse')" style="font-size:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">Clear</button>
+      <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🔍 Browse profiles from</p>
+      <div id="fpBrowseDropdown" style="position:relative;margin-bottom:20px;">
+        <button onclick="toggleFpDropdown('browse')" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;text-align:left;cursor:pointer;font-family:Nunito,sans-serif;display:flex;justify-content:space-between;align-items:center;">
+          <span id="fpBrowseLabel">All Faiths</span><span>▾</span>
+        </button>
+        <div id="fpBrowseMenu" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1C0530;border:1px solid rgba(255,255,255,.15);border-radius:10px;z-index:10;max-height:240px;overflow-y:auto;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" id="fpb_all" onchange="fpHandleAll('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> All Faiths</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Christian" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> ✝️ Christian</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Hindu" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🕉️ Hindu</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Muslim" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> ☪️ Muslim</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Sikh" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> ☬ Sikh</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Jain" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🕊️ Jain</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Buddhist" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> ☸️ Buddhist</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Parsi" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🔥 Parsi</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Jewish" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> ✡️ Jewish</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:13px;color:#fff;"><input type="checkbox" value="Other" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🌐 Other</label>
+        </div>
       </div>
-      <select id="fpBrowseSelect" multiple style="width:100%;background:#280840;border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;padding:6px;margin-bottom:20px;min-height:130px;font-family:Nunito,sans-serif;">
-        <option value="Christian">✝️ Christian</option>
-        <option value="Hindu">🕉️ Hindu</option>
-        <option value="Muslim">☪️ Muslim</option>
-        <option value="Sikh">☬ Sikh</option>
-        <option value="Jain">🕊️ Jain</option>
-        <option value="Buddhist">☸️ Buddhist</option>
-        <option value="Parsi">🔥 Parsi</option>
-        <option value="Jewish">✡️ Jewish</option>
-        <option value="Spiritual">🌱 Spiritual</option>
-        <option value="Other">🌐 Other</option>
-      </select>
 
-      <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receive interests from</p>
-      <div style="display:flex;gap:6px;margin-bottom:6px;">
-        <button onclick="fpSelectAll('receive')" style="font-size:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">All</button>
-        <button onclick="fpClearAll('receive')" style="font-size:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:Nunito,sans-serif;">Clear</button>
+      <p style="font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">💌 Receive interests from</p>
+      <div id="fpReceiveDropdown" style="position:relative;margin-bottom:24px;">
+        <button onclick="toggleFpDropdown('receive')" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;text-align:left;cursor:pointer;font-family:Nunito,sans-serif;display:flex;justify-content:space-between;align-items:center;">
+          <span id="fpReceiveLabel">All Faiths</span><span>▾</span>
+        </button>
+        <div id="fpReceiveMenu" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1C0530;border:1px solid rgba(255,255,255,.15);border-radius:10px;z-index:10;max-height:240px;overflow-y:auto;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" id="fpr_all" onchange="fpHandleAll('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> All Faiths</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Christian" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> ✝️ Christian</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Hindu" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🕉️ Hindu</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Muslim" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> ☪️ Muslim</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Sikh" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> ☬ Sikh</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Jain" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🕊️ Jain</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Buddhist" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> ☸️ Buddhist</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Parsi" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🔥 Parsi</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Jewish" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> ✡️ Jewish</label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:13px;color:#fff;"><input type="checkbox" value="Other" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🌐 Other</label>
+        </div>
       </div>
-      <select id="fpReceiveSelect" multiple style="width:100%;background:#280840;border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;padding:6px;margin-bottom:20px;min-height:130px;font-family:Nunito,sans-serif;">
-        <option value="Christian">✝️ Christian</option>
-        <option value="Hindu">🕉️ Hindu</option>
-        <option value="Muslim">☪️ Muslim</option>
-        <option value="Sikh">☬ Sikh</option>
-        <option value="Jain">🕊️ Jain</option>
-        <option value="Buddhist">☸️ Buddhist</option>
-        <option value="Parsi">🔥 Parsi</option>
-        <option value="Jewish">✡️ Jewish</option>
-        <option value="Spiritual">🌱 Spiritual</option>
-        <option value="Other">🌐 Other</option>
-      </select>
 
       <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.15);border-radius:10px;padding:10px 12px;margin-bottom:18px;font-size:11px;color:rgba(255,255,255,.45);line-height:1.6;">
         🔒 Other members cannot see your preferences.
@@ -1432,6 +1434,7 @@ select.field option { background: var(--dark2); color: var(--white); }
       <button id="fpSaveBtn" onclick="saveFaithPrefs()" style="width:100%;padding:14px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:'Cinzel',serif;font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;">Save Preferences ✦</button>
     </div>
   </div>
+</div>
 </div>
 <script>
 if('serviceWorker' in navigator){
