@@ -1,50 +1,164 @@
-// Begin Forever — Profile v17
-// Fixes:
-//   - Toast has X close button, doesn't bleed across tabs
-//   - Toast reappears every 5 mins until profile complete
-//   - Toast only shows on Home tab, dismissed cleanly per session
-//   - All other fixes from v16 retained
+// ═══════════════════════════════════════════════════════════
+// Begin Forever — Photo Upload Fix
+// ═══════════════════════════════════════════════════════════
+
+function compressImage(file, maxWidth, quality) {
+  maxWidth = maxWidth || 1200;
+  quality = quality || 0.82;
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function(blob) {
+          if (!blob) { resolve(file); return; }
+          var compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+          resolve(compressed);
+        }, 'image/jpeg', quality);
+      };
+      img.onerror = function() { resolve(file); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() { resolve(file); };
+    reader.readAsDataURL(file);
+  });
+}
+
+function initPG() {
+  var g = document.getElementById('photoGrid');
+  if (!g) return;
+  g.innerHTML = '';
+  for (var i = 0; i < 5; i++) {
+    _makePhotoSlot(g, i, 'ps', 'pi', photos, false);
+  }
+}
+
+function initEditPG() {
+  var g = document.getElementById('epGrid');
+  if (!g) return;
+  g.innerHTML = '';
+  var urls = [P.photo_url, P.photo_2_url, P.photo_3_url, P.photo_4_url, P.photo_5_url];
+  editPhotos = [null, null, null, null, null];
+  for (var i = 0; i < 5; i++) {
+    _makePhotoSlot(g, i, 'eps', 'epi', editPhotos, true, urls[i]);
+  }
+}
+
+function _makePhotoSlot(grid, idx, slotPrefix, inputPrefix, photoArr, isEdit, existingUrl) {
+  var slot = document.createElement('div');
+  slot.className = 'photo-slot';
+  slot.id = slotPrefix + idx;
+  if (existingUrl) {
+    slot.style.backgroundImage = 'url(' + existingUrl + ')';
+    slot.style.backgroundSize = 'cover';
+    slot.style.backgroundPosition = 'center';
+    slot.style.borderColor = 'var(--gold)';
+    slot.style.borderStyle = 'solid';
+  } else {
+    var icon = document.createElement('span');
+    icon.style.cssText = 'font-size:15px;opacity:.4;pointer-events:none;';
+    icon.textContent = '📷';
+    var label = document.createElement('span');
+    label.style.cssText = 'font-size:9px;color:var(--w40);pointer-events:none;';
+    label.textContent = idx === 0 ? 'Main *' : '# ' + (idx + 1);
+    slot.appendChild(icon);
+    slot.appendChild(label);
+  }
+  var inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.id = inputPrefix + idx;
+  inp.style.display = 'none';
+  slot.appendChild(inp);
+  slot.addEventListener('click', function() { inp.click(); });
+  inp.addEventListener('change', function() {
+    var f = inp.files[0];
+    if (!f) return;
+    if (f.size > 20 * 1024 * 1024) {
+      alert('Photo is too large (max 20MB). Please choose a smaller image.');
+      inp.value = '';
+      return;
+    }
+    _handlePhotoSelected(slot, inp, idx, f, photoArr);
+  });
+  grid.appendChild(slot);
+}
+
+function _handlePhotoSelected(slot, inp, idx, file, photoArr) {
+  var previewURL = URL.createObjectURL(file);
+  slot.style.backgroundImage = 'url(' + previewURL + ')';
+  slot.style.backgroundSize = 'cover';
+  slot.style.backgroundPosition = 'center';
+  slot.style.borderColor = 'var(--gold)';
+  slot.style.borderStyle = 'solid';
+  Array.from(slot.childNodes).forEach(function(child) {
+    if (child !== inp && child.tagName !== 'INPUT') slot.removeChild(child);
+  });
+  var spinner = document.createElement('div');
+  spinner.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;border-radius:inherit;pointer-events:none;';
+  spinner.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#F5C842;border-radius:50%;animation:spin .6s linear infinite;"></div>';
+  slot.style.position = 'relative';
+  slot.appendChild(spinner);
+  compressImage(file).then(function(compressed) {
+    photoArr[idx] = compressed;
+    if (spinner.parentNode) slot.removeChild(spinner);
+    var kb = Math.round(compressed.size / 1024);
+    var badge = document.createElement('div');
+    badge.style.cssText = 'position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.6);color:#4ade80;font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;pointer-events:none;';
+    badge.textContent = kb < 1024 ? kb + 'KB' : (kb/1024).toFixed(1) + 'MB';
+    slot.appendChild(badge);
+  });
+}
+
+function pickP(i, inp) {
+  var f = inp.files[0]; if (!f) return;
+  var slot = document.getElementById('ps' + i);
+  if (slot) _handlePhotoSelected(slot, inp, i, f, photos);
+}
+
+function pickEP(i, inp) {
+  var f = inp.files[0]; if (!f) return;
+  var slot = document.getElementById('eps' + i);
+  if (slot) _handlePhotoSelected(slot, inp, i, f, editPhotos);
+}
+
+// ═══════════════════════════════════════════════════════════
+// Begin Forever — Profile v18
+// ═══════════════════════════════════════════════════════════
 
 var _setupPrefReligions = [];
 var _profileToastTimer = null;
 
-// ── Show profile completion toast (only on home tab, dismissable, repeating)
 function showProfileToast() {
   if (!P || P.status !== 'approved') return;
-  var missing = !P.bio || !P.diet || !P.smoking || !P.drinking ||
-                !P.hobbies || P.hobbies === '[]' || P.hobbies === '[]';
-  if (!missing) return; // profile complete — never show again
-
-  // Don't show if already visible
+  var missing = !P.bio || !P.diet || !P.smoking || !P.drinking || !P.hobbies || P.hobbies === '[]';
+  if (!missing) return;
   if (document.getElementById('profileCompletionToast')) return;
-
-  // Only show on home tab
   var tHome = document.getElementById('tHome');
   if (!tHome || tHome.style.display === 'none') return;
-
   var toast = document.createElement('div');
   toast.id = 'profileCompletionToast';
   toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.5);color:#F5C842;padding:14px 40px 14px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:9998;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
-  // Build toast with DOM methods to avoid quote escaping issues
   var closeBtn = document.createElement('button');
   closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
   closeBtn.textContent = '✕';
   closeBtn.onclick = function(){_dismissProfileToast();};
-
   var msg = document.createElement('span');
   msg.innerHTML = '✨ Complete your profile to attract better matches!<br/>';
-
   var completeBtn = document.createElement('button');
   completeBtn.style.cssText = 'margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
   completeBtn.textContent = 'Complete Now →';
   completeBtn.onclick = function(){goTab('profile');openEdit();_dismissProfileToast();};
-
   toast.appendChild(closeBtn);
   toast.appendChild(msg);
   toast.appendChild(completeBtn);
   document.body.appendChild(toast);
-
-  // Auto-hide after 8 seconds, then reappear after 5 mins
   setTimeout(function() { _dismissProfileToast(true); }, 8000);
 }
 
@@ -53,36 +167,30 @@ function _dismissProfileToast(requeue) {
   if (t) t.remove();
   if (_profileToastTimer) clearTimeout(_profileToastTimer);
   if (requeue !== false) {
-    // Reappear after 5 minutes
     _profileToastTimer = setTimeout(function() { showProfileToast(); }, 5 * 60 * 1000);
   }
 }
 
-// ── Called on tab switch — remove toast if not on home
 function _handleToastOnTabChange(tab) {
   if (tab !== 'home') {
     var t = document.getElementById('profileCompletionToast');
     if (t) t.remove();
   } else {
-    // Slight delay so tab renders first
     setTimeout(showProfileToast, 800);
   }
 }
 
-// ═══ LOAD PROFILE
 async function loadP() {
   if (!U) {
     try { var s2 = await sb.auth.getUser(); if (s2.data && s2.data.user) U = s2.data.user; } catch(x) {}
   }
   if (!U) { if (_justRegistered || _loadingProfile) return; showScr('loginScreen'); return; }
-
   var profileData = null;
   try {
     var r = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r.error) throw r.error;
     profileData = (r.data && r.data.length > 0) ? r.data[0] : null;
   } catch(x) { if (!_justRegistered && !_loadingProfile) showScr('loginScreen'); return; }
-
   P = profileData;
   if (!P) { showScr('setupScreen'); step = 1; updUI(); return; }
   if (P.status === 'pending')      { showScr('pendingScreen'); return; }
@@ -98,10 +206,8 @@ async function loadP() {
       catch(x) { alert('Could not reactivate.'); await sb.auth.signOut(); U = null; P = null; showScr('loginScreen'); return; }
     } else { await sb.auth.signOut(); U = null; P = null; showScr('loginScreen'); return; }
   }
-
   try { fpBrowse  = P.faith_browse  ? JSON.parse(P.faith_browse)  : FAITHS.map(function(f){return f.key;}); } catch(x) { fpBrowse  = FAITHS.map(function(f){return f.key;}); }
   try { fpReceive = P.faith_receive ? JSON.parse(P.faith_receive) : FAITHS.map(function(f){return f.key;}); } catch(x) { fpReceive = FAITHS.map(function(f){return f.key;}); }
-
   if (P.is_admin) {
     var bar = document.getElementById('tBar');
     if (bar && !document.getElementById('adTab')) {
@@ -111,27 +217,19 @@ async function loadP() {
       bar.appendChild(ab);
     }
   }
-
   try { if (typeof checkAndExpireSubscription==='function') await checkAndExpireSubscription(); } catch(x) {}
   try { if (typeof activateFoundingPremium==='function') await activateFoundingPremium(); } catch(x) {}
-
   if (P.status === 'approved' && P.onboarding_completed !== true && typeof needsOnboarding==='function' && needsOnboarding()) {
     startOnboarding(); return;
   }
-
   showScr('mainApp');
   goTab('home');
   checkNotifs();
-
-  // Start toast cycle after short delay (only for approved users with incomplete profiles)
   if (P.status === 'approved' && P.onboarding_completed === true) {
     setTimeout(showProfileToast, 2000);
   }
 }
 
-// isPremiumUser() defined in subscription.js
-
-// ═══ SETUP WIZARD
 function toggleDenom() {
   var r = document.getElementById('fReligion').value;
   var denoms = DENOM_MAP[r] || [];
@@ -156,22 +254,6 @@ function fillC() {
   (CT[s]||[]).forEach(function(v){c.innerHTML+='<option>'+v+'</option>';});
 }
 
-function initPG() {
-  var g = document.getElementById('photoGrid'); if (!g) return; g.innerHTML = '';
-  for (var i=0;i<5;i++) {
-    g.innerHTML += '<div class="photo-slot" id="ps'+i+'" onclick="document.getElementById(\'pi'+i+'\').click()"><span style="font-size:15px;opacity:.4">📷</span><span style="font-size:9px;color:var(--w40)">'+(i===0?'Main*':'#'+(i+1))+'</span><input type="file" accept="image/*" id="pi'+i+'" style="display:none" onchange="pickP('+i+',this)"/></div>';
-  }
-}
-
-function pickP(i,inp) {
-  var f=inp.files[0]; if(!f) return;
-  photos[i]=f;
-  var s=document.getElementById('ps'+i);
-  s.style.backgroundImage='url('+URL.createObjectURL(f)+')';
-  s.style.borderColor='var(--gold)'; s.style.borderStyle='solid';
-  s.innerHTML='<input type="file" accept="image/*" id="pi'+i+'" style="display:none" onchange="pickP('+i+',this)"/>';
-}
-
 function pickId(inp) {
   var f=inp.files[0]; if(!f||f.size>5*1024*1024){alert('Max 5MB');return;}
   idFile=f;
@@ -189,7 +271,6 @@ function updUI() {
   var nx=document.getElementById('nxBtn'); if(nx) nx.textContent=step<5?'Next →':'Submit for Review ✦';
   var se=document.getElementById('sErr'); if(se) se.style.display='none';
   if(step===3) initPG();
-
   if(step===5) {
     setTimeout(function(){
       var chipsEl=document.getElementById('fPRChips'); if(!chipsEl) return;
@@ -214,7 +295,6 @@ function updUI() {
       });
     },50);
   }
-
   if(step===1) {
     var verifiedPhone=''; try{verifiedPhone=sessionStorage.getItem('bf_verified_phone')||'';}catch(x){}
     if(verifiedPhone) {
@@ -256,19 +336,15 @@ async function goNext(){
     if(!document.getElementById('fIdT').value||!idFile){if(e){e.textContent='ID type and upload are required.';e.style.display='block';}return;}
     step++;updUI();return;
   }
-
   var btn=document.getElementById('nxBtn');
   btn.disabled=true;
   btn.innerHTML='<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;"></div>';
-
   if(!U){
     try{var sr=await sb.auth.getUser();if(sr.data&&sr.data.user)U=sr.data.user;else{if(e){e.textContent='Session expired.';e.style.display='block';}btn.disabled=false;btn.textContent='Submit for Review ✦';return;}}
     catch(x){if(e){e.textContent='Session error.';e.style.display='block';}btn.disabled=false;btn.textContent='Submit for Review ✦';return;}
   }
-
   var verifiedPhone=''; try{verifiedPhone=sessionStorage.getItem('bf_verified_phone')||'';}catch(x){}
   var phoneVal=verifiedPhone||(document.getElementById('fPhone')?document.getElementById('fPhone').value.trim():'');
-
   try {
     var urls=['','','','',''];
     for(var i=0;i<5;i++){
@@ -286,7 +362,6 @@ async function goNext(){
       try{var r2=await sb.storage.from('id-proofs').upload(idP,idFile,{upsert:true});if(!r2.error)idUrl=sb.storage.from('id-proofs').getPublicUrl(idP).data.publicUrl;}
       catch(x){try{var r3=await sb.storage.from('profile-photos').upload(idP,idFile,{upsert:true});if(!r3.error)idUrl=sb.storage.from('profile-photos').getPublicUrl(idP).data.publicUrl;}catch(y){}}
     }
-
     var FOUNDER_CAP=300;
     var apprRes=await sb.from('profiles').select('id',{count:'exact',head:true}).eq('is_founding_member',true).eq('status','approved');
     var apprCount=apprRes.count||0;
@@ -297,7 +372,6 @@ async function goNext(){
     var browseVal=setupBrowse.length>0?JSON.stringify(setupBrowse):allFaithKeys;
     var receiveVal=setupReceive.length>0?JSON.stringify(setupReceive):allFaithKeys;
     var isResubmit=P&&P.status==='resubmitting';
-
     var pd={
       id:U.id,email:U.email,
       full_name:document.getElementById('fName').value.trim(),
@@ -331,12 +405,9 @@ async function goNext(){
       onboarding_completed:false,status:'pending'
     };
     Object.keys(pd).forEach(function(k){if(pd[k]===undefined)delete pd[k];});
-
     var res=await sb.from('profiles').upsert(pd,{onConflict:'id'});
     if(res.error) throw res.error;
-
-    try{fetch(SB_URL+'/functions/v1/smart-function',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:isResubmit?'resubmitted':'pending',full_name:pd.full_name,email:pd.email,phone:pd.phone,city:pd.city,state:pd.state,religion:pd.religion,denomination:pd.denomination||pd.religion,gender:pd.gender,founding_number:foundingNum})});}catch(x){}
-
+    try{fetch(SB_URL+'/functions/v1/smart-function',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},body:JSON.stringify({type:isResubmit?'resubmitted':'pending',full_name:pd.full_name,email:pd.email,phone:pd.phone,city:pd.city,state:pd.state,religion:pd.religion,denomination:pd.denomination||pd.religion,gender:pd.gender,founding_number:foundingNum})});}catch(x){}
     P=pd;
     if(!isResubmit) clearReferrerId();
     if(!isResubmit&&typeof fbq!=='undefined') fbq('track','CompleteRegistration');
@@ -347,15 +418,12 @@ async function goNext(){
   }
 }
 
-// ═══ PROFILE VIEW
 function renP() {
   if(!P) return;
   if(_editMode){renPEditMode();return;}
-
   var f=faithByKey(P.religion||'Other');
   var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
   var ph=ap[0]?'background-image:url('+ap[0]+');background-size:cover;background-position:center':'';
-
   var heroEl=document.getElementById('profileHero');
   if(heroEl) heroEl.innerHTML=
     '<div style="width:88px;height:88px;border-radius:50%;margin:0 auto;border:3px solid '+f.color+';'+ph+';background-color:var(--dark3);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(59,7,100,.4);">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
@@ -366,7 +434,6 @@ function renP() {
     (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'')+
     (isPremiumUser()?'<div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:8px 12px;margin-top:10px;"><p style="font-size:11px;color:#F5C842;font-weight:700;margin:0;">✦ Premium Active'+(P.subscription_expires_at?' · Expires '+new Date(P.subscription_expires_at).toLocaleDateString('en-IN'):'')+'</p></div>':'')+
     (ap.length>1?'<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;">'+ap.slice(1).map(function(u){return '<div style="width:56px;height:56px;border-radius:10px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>';}).join('')+'</div>':'');
-
   var h='';
   var rows=[
     {l:'Profile For',v:P.profile_for||P.registered_by},
@@ -386,17 +453,14 @@ function renP() {
   });
   if(P.bio) h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--w08);"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">About Me</p><p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
   var mi=document.getElementById('mInfo'); if(mi) mi.innerHTML=h;
-
   var hobbies=[]; try{hobbies=JSON.parse(P.hobbies||'[]');}catch(e){}
   var hobEl=document.getElementById('profileHobbies');
   if(hobEl){
     if(hobbies.length){hobEl.style.display='';var hp=document.getElementById('hobbyPills');if(hp)hp.innerHTML=hobbies.map(function(h2){return '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(212,160,23,.35);background:rgba(212,160,23,.1);color:#F5C842;margin:2px;">'+h2+'</span>';}).join('');}
     else hobEl.style.display='none';
   }
-
   var lfEl=document.getElementById('profileLookingFor');
   if(lfEl){if(P.looking_for){lfEl.style.display='';var lft=document.getElementById('lookingForText');if(lft)lft.textContent=P.looking_for;}else lfEl.style.display='none';}
-
   var fbEl=document.getElementById('profileFaithBeliefs');
   if(fbEl){
     var frows='';
@@ -406,7 +470,6 @@ function renP() {
     fbEl.style.display=frows?'':'none';
     var fbc=document.getElementById('faithBeliefsContent');if(fbc)fbc.innerHTML=frows;
   }
-
   var lsEl=document.getElementById('profileLifestyle');
   if(lsEl){
     var lrows='';
@@ -416,16 +479,13 @@ function renP() {
     lsEl.style.display=lrows?'':'none';
     var lsc=document.getElementById('lifestyleContent');if(lsc)lsc.innerHTML=lrows;
   }
-
   var pvb=document.getElementById('privacyBadge');
   if(pvb)pvb.textContent='Photos: '+(P.photos_visible_to==='all'?'Everyone':P.photos_visible_to==='interests_only'?'Interests only':'Hidden')+' · Contact: '+(P.contact_visible_to==='premium'?'Premium members':P.contact_visible_to==='interests_only'?'Interests only':'Hidden');
-
   renderFaithPrefCard();
   loadStats();
   if(typeof renderReferralCard==='function') renderReferralCard();
 }
 
-// ═══ FAITH PREF CARD
 function renderFaithPrefCard(){
   var el=document.getElementById('profileFaithSummary');if(!el)return;
   var premium=isPremiumUser();
@@ -450,10 +510,6 @@ function renderFpPills(containerId,arr){
   el.innerHTML=arr.map(function(k){var f=faithByKey(k);return '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+f.color+';background:'+f.bg+';color:'+f.color+';">'+f.icon+' '+k+'</span>';}).join('');
 }
 
-// ═══ FAITH PREFS MODAL
-var fpBrowseDenoms=[],fpReceiveDenoms=[];
-var FP_DENOM_MAP={Christian:['Catholic','Protestant','Pentecostal','Baptist','CSI / CNI','Methodist','SDA','Orthodox','Mar Thoma','Brethren','Lutheran','Anglican','Non-Denom'],Hindu:['Shaivism','Vaishnavism','Shaktism','ISKCON','Arya Samaj'],Muslim:['Sunni','Shia','Sufi','Ahmadiyya','Ismaili'],Sikh:['Amritdhari','Sahajdhari','Nanakpanthi'],Jain:['Digambara','Shvetambara'],Buddhist:['Theravada','Mahayana','Vajrayana','Zen'],Jewish:['Orthodox','Conservative','Reform']};
-
 function openFaithPrefs(){
   if(!isPreLaunch()&&!isPremiumUser()){if(typeof showSubModal==='function')showSubModal('Faith filter');return;}
   var f=faithByKey(P&&P.religion?P.religion:'Other');
@@ -462,61 +518,43 @@ function openFaithPrefs(){
   if(nameEl)nameEl.textContent=(P&&P.religion)||'Not set';
   if(denomEl)denomEl.textContent=(P&&P.denomination)||'';
   var savedBrowse=[];try{savedBrowse=JSON.parse((P&&P.faith_browse)||'[]');}catch(e){}
-  var bRel=(savedBrowse.length===1)?savedBrowse[0]:'all';
-  var bRelSel=document.getElementById('fpBrowseReligion');if(bRelSel)bRelSel.value=bRel;
-  fpBrowseDenoms=[];_buildFpChips('browse',bRel,fpBrowseDenoms);
   var savedReceive=[];try{savedReceive=JSON.parse((P&&P.faith_receive)||'[]');}catch(e){}
-  var rRel=(savedReceive.length===1)?savedReceive[0]:'all';
-  var rRelSel=document.getElementById('fpReceiveReligion');if(rRelSel)rRelSel.value=rRel;
-  fpReceiveDenoms=[];_buildFpChips('receive',rRel,fpReceiveDenoms);
+  if(!savedBrowse.length) savedBrowse=FAITHS.map(function(f){return f.key;});
+  if(!savedReceive.length) savedReceive=FAITHS.map(function(f){return f.key;});
+  _setSelectValues('fpBrowseSelect', savedBrowse);
+  _setSelectValues('fpReceiveSelect', savedReceive);
   var m=document.getElementById('faithModal');if(m)m.classList.add('show');
 }
+
+function _setSelectValues(id, arr){
+  var s=document.getElementById(id);if(!s)return;
+  Array.from(s.options).forEach(function(o){o.selected=arr.indexOf(o.value)>-1;});
+}
+function _getSelectValues(id){
+  var s=document.getElementById(id);if(!s)return FAITHS.map(function(f){return f.key;});
+  return Array.from(s.selectedOptions).map(function(o){return o.value;});
+}
+function fpSelectAll(t){var id=t==='browse'?'fpBrowseSelect':'fpReceiveSelect';var s=document.getElementById(id);if(s)Array.from(s.options).forEach(function(o){o.selected=true;});}
+function fpClearAll(t){var id=t==='browse'?'fpBrowseSelect':'fpReceiveSelect';var s=document.getElementById(id);if(s)Array.from(s.options).forEach(function(o){o.selected=false;});}
 function closeFaithPrefs(){var m=document.getElementById('faithModal');if(m)m.classList.remove('show');}
 
-function fpSyncDenom(type){
-  var rel=document.getElementById(type==='browse'?'fpBrowseReligion':'fpReceiveReligion').value;
-  if(type==='browse')fpBrowseDenoms=[];else fpReceiveDenoms=[];
-  _buildFpChips(type,rel,[]);
-}
-
-function _buildFpChips(type,religion,selectedDenoms){
-  var wrapId=type==='browse'?'fpBrowseDenomWrap':'fpReceiveDenomWrap';
-  var contId=type==='browse'?'fpBrowseChips':'fpReceiveChips';
-  var wrap=document.getElementById(wrapId),cont=document.getElementById(contId);
-  if(!wrap||!cont)return;
-  var list=FP_DENOM_MAP[religion]||[];
-  if(!list.length||religion==='all'){wrap.style.display='none';cont.innerHTML='';return;}
-  wrap.style.display='';cont.innerHTML='';
-  var state=type==='browse'?fpBrowseDenoms:fpReceiveDenoms;
-  list.forEach(function(d){
-    var on=state.indexOf(d)>-1;
-    var chip=document.createElement('button');
-    chip.type='button';chip.textContent=d;
-    chip.style.cssText='padding:5px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;transition:all .15s;margin-bottom:4px;border:1px solid '+(on?'#9B59B6':'rgba(255,255,255,.18)')+';background:'+(on?'rgba(155,89,182,.3)':'rgba(255,255,255,.05)')+';color:'+(on?'#C39BD3':'rgba(255,255,255,.5)')+';';
-    chip.onclick=function(){var ix=state.indexOf(d);if(ix>-1)state.splice(ix,1);else state.push(d);_buildFpChips(type,religion,state);};
-    cont.appendChild(chip);
-  });
-}
-
 async function saveFaithPrefs(){
-  var bRel=document.getElementById('fpBrowseReligion').value;
-  var rRel=document.getElementById('fpReceiveReligion').value;
-  var allFaiths=['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
-  var fpBrowseNew=bRel==='all'?allFaiths:[bRel];
-  var fpReceiveNew=rRel==='all'?allFaiths:[rRel];
+  var newBrowse=_getSelectValues('fpBrowseSelect');
+  var newReceive=_getSelectValues('fpReceiveSelect');
+  if(!newBrowse.length) newBrowse=FAITHS.map(function(f){return f.key;});
+  if(!newReceive.length) newReceive=FAITHS.map(function(f){return f.key;});
+  fpBrowse=newBrowse; fpReceive=newReceive;
   var btn=document.getElementById('fpSaveBtn');
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
   try{
-    await sb.from('profiles').update({faith_browse:JSON.stringify(fpBrowseNew),faith_receive:JSON.stringify(fpReceiveNew)}).eq('id',U.id);
-    if(P){P.faith_browse=JSON.stringify(fpBrowseNew);P.faith_receive=JSON.stringify(fpReceiveNew);}
-    fpBrowse=fpBrowseNew;fpReceive=fpReceiveNew;
+    await sb.from('profiles').update({faith_browse:JSON.stringify(fpBrowse),faith_receive:JSON.stringify(fpReceive)}).eq('id',U.id);
+    if(P){P.faith_browse=JSON.stringify(fpBrowse);P.faith_receive=JSON.stringify(fpReceive);}
     closeFaithPrefs();
     if(typeof renderFaithPrefCard==='function')renderFaithPrefCard();
   }catch(x){alert('Could not save preferences.');}
   if(btn){btn.disabled=false;btn.textContent='Save Preferences ✦';}
 }
 
-// ═══ EDIT MODE
 var _editMode=false;
 var _editHobbies=[],_editMaritalStatuses=[];
 var editPhotos=[null,null,null,null,null];
@@ -529,33 +567,24 @@ function openEdit(){
   renP();
   setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},100);
 }
-
-function closeEditInline(){
-  _editMode=false;
-  renP();
-}
+function closeEditInline(){_editMode=false;renP();}
 function closeEdit(){var m=document.getElementById('editModal');if(m)m.classList.remove('show');_editMode=false;renP();}
 
 async function saveEditInline(){
   var btn=document.getElementById('eSaveBtn');
   if(btn&&btn.disabled)return;
-
-  // Validate mandatory fields
   var bio=(document.getElementById('e_bio')||{}).value||'';
   var diet=(document.getElementById('e_diet')||{}).value||'';
   var smoking=(document.getElementById('e_smoking')||{}).value||'';
   var drinking=(document.getElementById('e_drinking')||{}).value||'';
   var faithImp=(document.getElementById('e_faithImportance')||{}).value||'';
-
-  if(!bio.trim()){alert('Please write your bio — tell matches about yourself.');return;}
-  if(!diet){alert('Please select your diet preference.');return;}
-  if(!smoking){alert('Please select your smoking preference.');return;}
-  if(!drinking){alert('Please select your drinking preference.');return;}
-  if(!faithImp){alert('Please select how important faith is to you.');return;}
+  if(!bio.trim()){alert('Please write your bio.');return;}
+  if(!diet){alert('Please select your diet.');return;}
+  if(!smoking){alert('Please select smoking preference.');return;}
+  if(!drinking){alert('Please select drinking preference.');return;}
+  if(!faithImp){alert('Please select how important faith is.');return;}
   if(_editHobbies.length<3){alert('Please select at least 3 hobbies.');return;}
-
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
-
   try{
     var upd={
       bio:bio,
@@ -576,7 +605,6 @@ async function saveEditInline(){
       height_cm:(document.getElementById('e_height')||{}).value?parseInt((document.getElementById('e_height')||{}).value):P.height_cm||null,
       marital_status:(document.getElementById('e_marital')||{}).value||P.marital_status||''
     };
-
     for(var i=0;i<5;i++){
       if(editPhotos[i]){
         var ext=editPhotos[i].name.split('.').pop();
@@ -589,18 +617,13 @@ async function saveEditInline(){
         }
       }
     }
-
     await sb.from('profiles').update(upd).eq('id',U.id);
     var r2=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
     if(r2.data&&r2.data.length) P=r2.data[0];
-
     if(btn){btn.disabled=false;btn.textContent='Save Changes ✦';}
     _editMode=false;
     renP();
-
-    // Stop the toast if profile is now complete
     _dismissProfileToast(false);
-
     var toast=document.createElement('div');
     toast.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;';
     toast.textContent='✅ Profile updated';
@@ -613,7 +636,6 @@ async function saveEditInline(){
 }
 async function saveEdit(){await saveEditInline();}
 
-// ═══ VIEW PROFILE MODAL
 async function viewProfile(id){
   try{await sb.from('profile_views').upsert({viewer_id:U.id,viewed_id:id,viewed_at:new Date().toISOString()},{onConflict:'viewer_id,viewed_id'});}catch(x){}
   var r=await sb.from('profiles').select('*').eq('id',id).limit(1);
@@ -641,6 +663,17 @@ async function viewProfile(id){
       h+='<div onclick="event.stopPropagation();showSubModal(\'Contact reveal\')" style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:12px;padding:13px;margin-top:10px;cursor:pointer;text-align:center;"><p style="font-size:11px;color:#F5C842;font-weight:700;margin:0 0 4px;">🔒 ✦ PREMIUM</p><p style="font-size:13px;color:#fff;margin:0;">Tap to unlock contact details</p></div>';
     }
   }
+  var ir=await sb.from('interests').select('*').eq('from_user',U.id).eq('to_user',id).limit(1);
+  var sent=(ir.data&&ir.data.length>0);
+  if(!sent && p.id!==U.id){
+    if(!isPreLaunch() && !isSubscribed()){
+      h+='<button class="btn btn-gold" style="margin-top:16px" onclick="event.stopPropagation();showChatSubModal()">💝 Express Interest <span style="font-size:10px;opacity:.8;">(Subscribe)</span></button>';
+    } else {
+      h+='<button class="btn btn-gold" style="margin-top:16px" onclick="event.stopPropagation();sendInt(\''+p.id+'\')">💝 Express Interest</button>';
+    }
+  } else if(sent){
+    h+='<p style="text-align:center;color:#4ade80;margin-top:16px;font-size:13px;">✅ Interest sent</p>';
+  }
   h+='<div style="display:flex;gap:8px;padding:14px 4px 8px;">';
   h+='<button class="btn btn-dark" style="flex:1;font-size:12px;padding:10px;" onclick="event.stopPropagation();openReportModal(\''+p.id+'\',\''+(p.full_name||'').replace(/[\\\'\"]/g,'')+'\')">🚩 Report</button>';
   h+='<button class="btn btn-dark" style="flex:1;font-size:12px;padding:10px;color:#ff6b6b;" onclick="event.stopPropagation();openBlockModal(\''+p.id+'\',\''+(p.full_name||'').replace(/[\\\'\"]/g,'')+'\')">🚫 Block</button>';
@@ -650,7 +683,6 @@ async function viewProfile(id){
 }
 function closeModal(){document.getElementById('profileModal').classList.remove('show');}
 
-// ═══ REJECTED SCREEN
 function renderRejectedScreen(profile){
   var reason=profile.rejection_reason||'Your profile did not meet our verification requirements.';
   var el=document.getElementById('rejectedContent');if(!el)return;
@@ -691,15 +723,7 @@ function prefillSetupWizard(p){
   },100);
 }
 
-// ═══ HOBBIES
 var ALL_HOBBIES=['Reading','Travel','Music','Movies','Cooking','Photography','Fitness','Yoga','Hiking','Cricket','Football','Badminton','Painting','Dancing','Singing','Gaming','Cycling','Swimming','Volunteering','Gardening','Crafts','Writing','Meditation','Fashion','Foodie','Cars','Tech','Startups'];
-
-function pickEP(i,inp){
-  var f=inp.files[0];if(!f)return;
-  editPhotos[i]=f;
-  var s=document.getElementById('eps'+i);
-  if(s){s.style.backgroundImage='url('+URL.createObjectURL(f)+')';s.style.borderColor='var(--gold)';s.style.borderStyle='solid';s.innerHTML='<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/>';}
-}
 
 function renderEditHobbyChips(){
   var c=document.getElementById('eHobbyChips');if(!c)return;c.innerHTML='';
@@ -718,7 +742,6 @@ function renderEditHobbyChips(){
   });
 }
 
-// ═══ PRIVACY
 function openPrivacySettings(){
   var m=document.getElementById('privacyModal');if(!m)return;
   var pv=document.getElementById('pvPhotos');if(pv)pv.value=P.photos_visible_to||'all';
@@ -740,33 +763,20 @@ async function savePrivacySettings(){
   if(btn){btn.disabled=false;btn.textContent='Save Privacy Settings';}
 }
 
-// ═══ INLINE EDIT RENDERER
 function renPEditMode(){
   var heroEl=document.getElementById('profileHero');
   if(heroEl) heroEl.innerHTML=
-    '<div style="display:flex;align-items:center;justify-content:space-between;"><p style="font-family:Cinzel,serif;font-size:18px;color:var(--gold-bright);margin:0;">✏️ Edit Profile</p>'+
-    '<button onclick="closeEditInline()" style="background:var(--w10);border:none;color:var(--w70);border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;font-family:Nunito,sans-serif;">Cancel</button></div>'+
-    '<p style="font-size:11px;color:var(--w50);margin-top:4px;"><span style="color:#ff6b6b;">*</span> = required field</p>';
-
+    '<div style="display:flex;align-items:center;justify-content:space-between;"><p style="font-family:Cinzel,serif;font-size:18px;color:var(--gold-bright);margin:0;">✏️ Edit Profile</p></div>';
   var mi=document.getElementById('mInfo');if(!mi)return;
   function sel(curVal,opts){return opts.map(function(o){return '<option value="'+o+'"'+(curVal===o?' selected':'')+'>'+o+'</option>';}).join('');}
   function inp(id,val,placeholder){return '<input class="field" id="'+id+'" value="'+(val||'')+'" placeholder="'+(placeholder||'')+'"/>';}
-
   var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
-  var photoHtml='<div class="photo-grid" id="epGrid">';
-  for(var i=0;i<5;i++){
-    var hasPhoto=!!ap[i];
-    photoHtml+='<div class="photo-slot" id="eps'+i+'" onclick="document.getElementById(\'epi'+i+'\').click()" style="'+(hasPhoto?'background-image:url('+ap[i]+');background-size:cover;background-position:center;border-color:var(--gold);border-style:solid;':'')+'">'+(!hasPhoto?'<span style="font-size:14px;opacity:.4">📷</span><span style="font-size:9px;color:var(--w40)">'+(i===0?'Main':'#'+(i+1))+'</span>':'')+'<input type="file" accept="image/*" id="epi'+i+'" style="display:none" onchange="pickEP('+i+',this)"/></div>';
-  }
-  photoHtml+='</div>';
-
+  var photoHtml='<div class="photo-grid" id="epGrid"></div>';
   mi.innerHTML=
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Photos</p>'+photoHtml+
-
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">About Me</p>'+
     '<div class="field-group"><label class="field-label">Bio <span style="color:#ff6b6b;">*</span></label><textarea class="field" id="e_bio" style="min-height:90px;resize:vertical;" placeholder="Tell potential matches about yourself...">'+(P.bio||'')+'</textarea></div>'+
-    '<div class="field-group"><label class="field-label">What I\'m Looking For</label><textarea class="field" id="e_lookingFor" style="min-height:70px;resize:vertical;" placeholder="Describe the kind of partner and relationship you\'re looking for...">'+(P.looking_for||'')+'</textarea></div>'+
-
+    '<div class="field-group"><label class="field-label">What I\'m Looking For</label><textarea class="field" id="e_lookingFor" style="min-height:70px;resize:vertical;" placeholder="Describe what you are looking for...">'+(P.looking_for||'')+'</textarea></div>'+
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Basic Details</p>'+
     '<div class="field-group"><label class="field-label">Education</label>'+inp('e_edu',P.education,'e.g. B.Tech, MBA')+'</div>'+
     '<div class="field-group"><label class="field-label">Occupation</label>'+inp('e_occ',P.occupation,'e.g. Software Engineer')+'</div>'+
@@ -775,11 +785,9 @@ function renPEditMode(){
       '<div class="field-group"><label class="field-label">Mother Tongue</label>'+inp('e_motherTongue',P.mother_tongue,'e.g. Tamil')+'</div>'+
     '</div>'+
     '<div class="field-group"><label class="field-label">Marital Status</label><select class="field" id="e_marital"><option value="">Select</option>'+sel(P.marital_status,['Never Married','Divorced','Widowed','Annulled','Awaiting Divorce'])+'</select></div>'+
-
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Faith &amp; Beliefs</p>'+
     '<div class="field-group"><label class="field-label">Faith Importance <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_faithImportance"><option value="">Select</option>'+sel(P.faith_importance,['Very important','Important','Somewhat important','Not important'])+'</select></div>'+
-    '<div class="field-group"><label class="field-label">Favourite Scripture / Verse</label>'+inp('e_scripture',P.scripture,'e.g. Jeremiah 29:11')+'</div>'+
-
+    '<div class="field-group"><label class="field-label">Favourite Scripture</label>'+inp('e_scripture',P.scripture,'e.g. Jeremiah 29:11')+'</div>'+
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Lifestyle</p>'+
     '<div class="field-row">'+
       '<div class="field-group"><label class="field-label">Diet <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_diet"><option value="">Select</option>'+sel(P.diet,['Vegetarian','Non-Vegetarian','Vegan','Jain','No preference'])+'</select></div>'+
@@ -789,41 +797,39 @@ function renPEditMode(){
       '<div class="field-group"><label class="field-label">Smoking <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_smoking"><option value="">Select</option>'+sel(P.smoking,['Never','Occasionally','Yes'])+'</select></div>'+
       '<div class="field-group"><label class="field-label">Drinking <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_drinking"><option value="">Select</option>'+sel(P.drinking,['Never','Occasionally','Yes'])+'</select></div>'+
     '</div>'+
-
-    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 4px;">Hobbies &amp; Interests <span style="color:#ff6b6b;">*</span> (min 3)</p>'+
+    '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 4px;">Hobbies <span style="color:#ff6b6b;">*</span> (min 3)</p>'+
     '<p style="font-size:11px;color:var(--w40);margin-bottom:8px;">Selected: <span id="eHobbyCount">'+_editHobbies.length+'</span></p>'+
     '<div id="eHobbyChips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;"></div>'+
-
     '<p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Partner Preferences</p>'+
     '<div class="field-row">'+
       '<div class="field-group"><label class="field-label">Min Age</label><input class="field" type="number" id="e_prefAgeMin" value="'+(P.pref_age_min||18)+'" min="18" max="70"/></div>'+
       '<div class="field-group"><label class="field-label">Max Age</label><input class="field" type="number" id="e_prefAgeMax" value="'+(P.pref_age_max||70)+'" min="18" max="70"/></div>'+
     '</div>'+
-    '<div class="field-group"><label class="field-label">Preferred Denomination</label><input class="field" id="e_prefDenom" value="'+(P.pref_denomination||'')+'" placeholder="e.g. Any, Catholic, Pentecostal"/></div>'+
-    '<div class="field-group"><label class="field-label">Preferred City / Location</label>'+inp('e_prefCity',P.pref_city,'e.g. Pune, Mumbai or Any')+'</div>';
+    '<div class="field-group"><label class="field-label">Preferred Denomination</label><input class="field" id="e_prefDenom" value="'+(P.pref_denomination||'')+'" placeholder="e.g. Any, Catholic"/></div>'+
+    '<div class="field-group"><label class="field-label">Preferred City</label>'+inp('e_prefCity',P.pref_city,'e.g. Pune or Any')+'</div>';
 
+  initEditPG();
   renderEditHobbyChips();
 
   var existing=document.getElementById('profileButtonsBlock');
   if(existing)existing.remove();
-
   var btnBlock=document.createElement('div');
   btnBlock.id='profileButtonsBlock';
   btnBlock.style.cssText='margin-top:20px;padding-bottom:20px;';
-
   var saveBtn=document.createElement('button');
   saveBtn.id='eSaveBtn';
   saveBtn.className='btn btn-gold';
   saveBtn.style.marginBottom='10px';
   saveBtn.textContent='Save Changes ✦';
   saveBtn.onclick=function(){saveEditInline();};
-
   var cancelBtn=document.createElement('button');
   cancelBtn.className='btn btn-dark';
   cancelBtn.textContent='Cancel';
   cancelBtn.onclick=function(){closeEditInline();};
-
   btnBlock.appendChild(saveBtn);
   btnBlock.appendChild(cancelBtn);
   mi.parentNode.appendChild(btnBlock);
+
+  var hideIds=['profileHobbies','profileLookingFor','profilePartnerPrefs','profileFaithBeliefs','profileLifestyle','profileFaithSummary','referralCard'];
+  hideIds.forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
 }
