@@ -567,7 +567,14 @@ function openEdit(){
   renP();
   setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},100);
 }
-function closeEditInline(){_editMode=false;renP();}
+function closeEditInline(){
+  _editMode=false;
+  var tp=document.getElementById('tProfile');
+  if(tp)tp.style.background='';
+  var mi=document.getElementById('mInfo');
+  if(mi)mi.style.cssText='';
+  renP();
+}
 function closeEdit(){var m=document.getElementById('editModal');if(m)m.classList.remove('show');_editMode=false;renP();}
 
 async function saveEditInline(){
@@ -616,19 +623,25 @@ async function saveEditInline(){
           upd[colMap[i]]=url;
         }
       }
-    }
+ }
     await sb.from('profiles').update(upd).eq('id',U.id);
     var r2=await sb.from('profiles').select('*').eq('id',U.id).limit(1);
     if(r2.data&&r2.data.length) P=r2.data[0];
-    if(btn){btn.disabled=false;btn.textContent='Save Changes ✦';}
-    _editMode=false;
-    renP();
     _dismissProfileToast(false);
-    var toast=document.createElement('div');
-    toast.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;';
-    toast.textContent='✅ Profile updated';
-    document.body.appendChild(toast);
-    setTimeout(function(){if(document.body.contains(toast))document.body.removeChild(toast);},2500);
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='✅ Saved!';
+      btn.style.background='var(--green)';
+      setTimeout(function(){
+        btn.textContent='Save Changes ✦';
+        btn.style.background='';
+        _editMode=false;
+        renP();
+      },1500);
+    } else {
+      _editMode=false;
+      renP();
+    }
   }catch(ex){
     alert('Could not save: '+(ex.message||'try again'));
     if(btn){btn.disabled=false;btn.textContent='Save Changes ✦';}
@@ -822,12 +835,7 @@ function renPEditMode(){
   saveBtn.style.marginBottom='10px';
   saveBtn.textContent='Save Changes ✦';
   saveBtn.onclick=function(){saveEditInline();};
-  var cancelBtn=document.createElement('button');
-  cancelBtn.className='btn btn-dark';
-  cancelBtn.textContent='Cancel';
-  cancelBtn.onclick=function(){closeEditInline();};
   btnBlock.appendChild(saveBtn);
-  btnBlock.appendChild(cancelBtn);
   mi.parentNode.appendChild(btnBlock);
 
   var hideIds=['profileHobbies','profileLookingFor','profilePartnerPrefs','profileFaithBeliefs','profileLifestyle','profileFaithSummary','referralCard'];
