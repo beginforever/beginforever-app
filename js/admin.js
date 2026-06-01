@@ -9,7 +9,7 @@ async function ldAdmin(filter) {
     var el = document.getElementById(tabId);
     if (el) el.className = 'btn btn-sm ' + (f === filter ? 'btn-gold' : 'btn-dark');
   });
-
+  
   var q = sb.from('profiles').select('*');
   if (filter === 'founders') q = q.eq('is_founding_member', true).eq('status', 'approved').order('founding_number', { ascending: true });
   else q = q.eq('status', filter).order('created_at', { ascending: false });
