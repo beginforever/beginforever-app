@@ -1324,7 +1324,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     <p style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);">🔒 Secured by Razorpay · Cancel anytime</p>
   </div>
 </div>
-<div id="privacyModal" onclick="closePrivacySettings()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:0;">
+<div id="privacyModal" onclick="closePrivacySettings()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
   <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;background:#1C0530;border-radius:24px 24px 0 0;padding:0;overflow:hidden;">
     <div style="background:#280840;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;">
       <h3 style="font-family:'Cinzel',serif;color:#F5C842;font-size:16px;margin:0;">🔒 Privacy Settings</h3>
@@ -1395,7 +1395,7 @@ select.field option { background: var(--dark2); color: var(--white); }
         <button onclick="toggleFpDropdown('browse')" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;text-align:left;cursor:pointer;font-family:Nunito,sans-serif;display:flex;justify-content:space-between;align-items:center;">
           <span id="fpBrowseLabel">All Faiths</span><span>▾</span>
         </button>
-        <div id="fpBrowseMenu" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1C0530;border:1px solid rgba(255,255,255,.15);border-radius:10px;z-index:10;max-height:240px;overflow-y:auto;margin-top:4px;">
+        <div id="fpBrowseMenu" style="display:none;background:#1C0530;border:1px solid rgba(255,255,255,.15);border-radius:10px;max-height:240px;overflow-y:auto;margin-top:4px;">
           <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" id="fpb_all" onchange="fpHandleAll('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> All Faiths</label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Christian" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> ✝️ Christian</label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Hindu" class="fpb-opt" onchange="fpUpdateLabel('browse')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🕉️ Hindu</label>
@@ -1414,7 +1414,7 @@ select.field option { background: var(--dark2); color: var(--white); }
         <button onclick="toggleFpDropdown('receive')" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;text-align:left;cursor:pointer;font-family:Nunito,sans-serif;display:flex;justify-content:space-between;align-items:center;">
           <span id="fpReceiveLabel">All Faiths</span><span>▾</span>
         </button>
-        <div id="fpReceiveMenu" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1C0530;border:1px solid rgba(255,255,255,.15);border-radius:10px;z-index:10;max-height:240px;overflow-y:auto;margin-top:4px;">
+        <div id="fpReceiveMenu" style="display:none;background:#1C0530;border:1px solid rgba(255,255,255,.15);border-radius:10px;max-height:240px;overflow-y:auto;margin-top:4px;">
           <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" id="fpr_all" onchange="fpHandleAll('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> All Faiths</label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Christian" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> ✝️ Christian</label>
           <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#fff;"><input type="checkbox" value="Hindu" class="fpr-opt" onchange="fpUpdateLabel('receive')" style="accent-color:var(--gold);width:16px;height:16px;"/> 🕉️ Hindu</label>
