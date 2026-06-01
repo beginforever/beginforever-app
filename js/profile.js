@@ -822,8 +822,11 @@ async function savePrivacySettings(){
 function renPEditMode(){
   var heroEl=document.getElementById('profileHero');
   if(heroEl) heroEl.innerHTML=
-    '<div style="display:flex;align-items:center;justify-content:space-between;"><p style="font-family:Cinzel,serif;font-size:18px;color:var(--gold-bright);margin:0;">✏️ Edit Profile</p></div>';
+    '<div style="background:#FDFAF4;border-radius:14px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;"><p style="font-family:Cinzel,serif;font-size:18px;color:#3B0764;margin:0;">✏️ Edit Profile</p></div>';
   var mi=document.getElementById('mInfo');if(!mi)return;
+  mi.style.cssText='background:#FDFAF4;border-radius:16px;padding:16px;color:#2D1B4E;';
+var tp=document.getElementById('tProfile');
+if(tp)tp.style.background='#FDFAF4';
   function sel(curVal,opts){return opts.map(function(o){return '<option value="'+o+'"'+(curVal===o?' selected':'')+'>'+o+'</option>';}).join('');}
   function inp(id,val,placeholder){return '<input class="field" id="'+id+'" value="'+(val||'')+'" placeholder="'+(placeholder||'')+'"/>';}
   var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
