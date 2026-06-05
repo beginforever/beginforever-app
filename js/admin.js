@@ -15,7 +15,7 @@ async function ldAdmin(filter) {
   try {
     if (filter === 'all') {
       // Query all profiles regardless of status — no RPC needed
-      var r = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+      var r = await sb.from('admin_all_users').select('*');
       d = r.data || [];
     } else if (filter === 'founders') {
       var r = await sb.from('profiles').select('*').eq('is_founding_member', true).eq('status', 'approved').order('founding_number', { ascending: true });
@@ -89,7 +89,7 @@ async function ldAdmin(filter) {
           (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:3px 0;">'+(p.age||'—')+' · '+(p.gender||'—')+' · '+(p.religion||'—')+(p.denomination?' / '+p.denomination:'')+'</p>' : '') +
           (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.city||'')+', '+(p.state||'')+'</p>' : '') +
           '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.email||'')+(p.phone?' · '+p.phone:'')+'</p>' +
-          (p.created_at ? '<p style="font-size:10px;color:var(--w50);margin:2px 0;">Joined: '+new Date(p.created_at).toLocaleDateString('en-IN')+'</p>' : '') +
+          (p.registered_at||p.created_at) ? '<p style="font-size:10px;color:var(--w50);margin:2px 0;">Joined: '+new Date(p.registered_at||p.created_at).toLocaleDateString('en-IN')+'</p>' : '') +
           (p.is_founding_member ? '<p style="font-size:10px;color:var(--gold);margin:2px 0;">✦ Founding Member #'+(p.founding_number||'—')+'</p>' : '') +
           (p.education ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+p.education+' · '+(p.occupation||'')+'</p>' : '') +
         '</div>' +
