@@ -1,33 +1,20 @@
-// Begin Forever — Admin v24
-// Fix: All tab now queries profiles directly (no RPC needed)
-// Fix: markReferralApproved called on approval
-// Fix: All tabs restored — all / pending / approved / rejected / founders + reminder button
+// Begin Forever — Admin v16
+// Fix: adAct() and submitReject() now fetch full profile before calling smart-function
+// Fix: tab highlight logic corrected
+// Fix: pid → p.id bug in approved-tab revoke button
 
 async function ldAdmin(filter) {
-  ['all','pending','approved','rejected','founders'].forEach(function(f) {
-    var tabId = 'adTab' + f.charAt(0).toUpperCase() + f.slice(1);
-    var el = document.getElementById(tabId);
+  ['pending','approved','rejected','founders'].forEach(function(f) {
+    var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
     if (el) el.className = 'btn btn-sm ' + (f === filter ? 'btn-gold' : 'btn-dark');
   });
 
-  var d = [];
+  var q = sb.from('profiles').select('*');
+  if (filter === 'founders') q = q.eq('is_founding_member', true).order('founding_number', { ascending: true });
+  else q = q.eq('status', filter).order('created_at', { ascending: false });
 
-  try {
-    if (filter === 'all') {
-      // Query all profiles regardless of status — no RPC needed
-      var r = await sb.from('admin_all_users').select('*');
-      d = r.data || [];
-    } else if (filter === 'founders') {
-      var r = await sb.from('profiles').select('*').eq('is_founding_member', true).eq('status', 'approved').order('founding_number', { ascending: true });
-      d = r.data || [];
-    } else {
-      var r = await sb.from('profiles').select('*').eq('status', filter).order('created_at', { ascending: false });
-      d = r.data || [];
-    }
-  } catch(e) {
-    console.warn('ldAdmin error:', e);
-    d = [];
-  }
+  var r = await q;
+  var d = r.data || [];
 
   var countId = 'adCount' + filter.charAt(0).toUpperCase() + filter.slice(1);
   var countEl = document.getElementById(countId);
@@ -37,11 +24,7 @@ async function ldAdmin(filter) {
   var list  = document.getElementById('adList');
   if (!list) return;
 
-  if (!d.length) {
-    if (empty) empty.style.display = '';
-    list.innerHTML = '';
-    return;
-  }
+  if (!d.length) { if (empty) empty.style.display = ''; list.innerHTML = ''; return; }
   if (empty) empty.style.display = 'none';
   list.innerHTML = '';
 
@@ -50,98 +33,44 @@ async function ldAdmin(filter) {
     card.className = 'card';
     card.style.marginBottom = '12px';
 
-    var hasProfile = !!p.full_name;
-    var statusColor = { approved: '#27ae60', pending: '#F5C842', rejected: '#e74c3c', resubmitting: '#9B59B6', deleted: '#888', deactivated: '#888' }[p.status] || '#888';
-    var statusLabel = p.status || 'no-profile';
-
     var photoHtml = p.photo_url
       ? '<div style="width:56px;height:56px;border-radius:50%;background-image:url('+p.photo_url+');background-size:cover;background-position:center;border:2px solid var(--gold);flex-shrink:0;"></div>'
       : '<div style="width:56px;height:56px;border-radius:50%;background:var(--dark3);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:20px;opacity:.4">👤</span></div>';
 
-    var idHtml = '';
-    if (p.id_proof_url) {
-      idHtml = '<div style="margin-top:10px;"><a href="#" onclick="viewIdProof(\''+p.id_proof_url+'\');return false;" style="font-size:11px;color:var(--gold);text-decoration:none;">🪪 View ID: '+(p.id_proof_type||'Document')+'</a></div>';
-    } else if (hasProfile) {
-      idHtml = '<div style="margin-top:8px;font-size:11px;color:#e74c3c;">⚠️ No ID uploaded</div>';
-    }
-
-    // Action buttons — show reminder for no-profile users, approve/reject/delete for profile users
-    var actionBtns = '';
-    if (!hasProfile) {
-      // Registered auth user but no profile submitted — show reminder button
-      actionBtns = '<button class="btn btn-dark btn-sm" style="background:#7B1FA2;color:#fff;" onclick="sendReminder(\''+p.id+'\',\''+(p.email||'')+'\',\''+(p.full_name||'')+'\',this)">📲 Send Reminder</button>';
-    } else {
-      actionBtns +=
-        (p.status !== 'approved' ? '<button class="btn btn-grn btn-sm" onclick="adAct(\''+p.id+'\',\'approved\')">✅ Approve</button>' : '') +
-        (p.status !== 'pending'  ? '<button class="btn btn-dark btn-sm" onclick="adAct(\''+p.id+'\',\'pending\')">⏳ Pending</button>' : '') +
-        (p.status !== 'rejected' ? '<button class="btn btn-sm" style="background:var(--red);color:#fff;" onclick="openRejectModal(\''+p.id+'\',\''+(p.full_name||'').replace(/'/g,'')+'\')">❌ Reject</button>' : '') +
-        '<button class="btn btn-dark btn-sm" onclick="adAct(\''+p.id+'\',\'deleted\')">🗑 Delete</button>';
-    }
+    var statusColor = { approved: '#27ae60', pending: '#F5C842', rejected: '#e74c3c', resubmitting: '#9B59B6' }[p.status] || 'var(--w50)';
 
     card.innerHTML =
-      '<div style="display:flex;gap:12px;align-items:flex-start;">' +
-        photoHtml +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-            '<h3 style="font-size:14px;font-weight:700;margin:0;color:#fff;">' + (p.full_name || p.email || '—') + '</h3>' +
-            '<span style="font-size:10px;font-weight:700;color:' + statusColor + ';flex-shrink:0;margin-left:6px;">' + statusLabel + '</span>' +
-          '</div>' +
-          (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:3px 0;">'+(p.age||'—')+' · '+(p.gender||'—')+' · '+(p.religion||'—')+(p.denomination?' / '+p.denomination:'')+'</p>' : '') +
-          (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.city||'')+', '+(p.state||'')+'</p>' : '') +
-          '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.email||'')+(p.phone?' · '+p.phone:'')+'</p>' +
-          (p.registered_at||p.created_at) ? '<p style="font-size:10px;color:var(--w50);margin:2px 0;">Joined: '+new Date(p.registered_at||p.created_at).toLocaleDateString('en-IN')+'</p>' : '') +
-          (p.is_founding_member ? '<p style="font-size:10px;color:var(--gold);margin:2px 0;">✦ Founding Member #'+(p.founding_number||'—')+'</p>' : '') +
-          (p.education ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+p.education+' · '+(p.occupation||'')+'</p>' : '') +
-        '</div>' +
-      '</div>' +
-      idHtml +
-      (p.photo_url ? '<div style="display:flex;gap:6px;margin-top:10px;overflow-x:auto;">' +
-        [p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean).map(function(u) {
+      '<div style="display:flex;gap:12px;align-items:flex-start;">'+
+        photoHtml+
+        '<div style="flex:1;min-width:0;">'+
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;">'+
+            '<h3 style="font-size:14px;font-weight:700;margin:0;color:#fff;">'+(p.full_name||'—')+'</h3>'+
+            '<span style="font-size:10px;font-weight:700;color:'+statusColor+';flex-shrink:0;margin-left:6px;">'+p.status+'</span>'+
+          '</div>'+
+          '<p style="font-size:11px;color:var(--w50);margin:3px 0;">'+(p.age||'—')+' · '+(p.gender||'—')+' · '+(p.religion||'—')+(p.denomination?' / '+p.denomination:'')+'</p>'+
+          '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.city||'')+', '+(p.state||'')+'</p>'+
+          '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.email||'')+' · '+(p.phone||'')+'</p>'+
+          (p.is_founding_member ? '<p style="font-size:10px;color:var(--gold);margin:2px 0;">✦ Founding Member #'+(p.founding_number||'—')+'</p>' : '')+
+          (p.education ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+p.education+' · '+(p.occupation||'')+'</p>' : '')+
+        '</div>'+
+      '</div>'+
+      (p.id_proof_url ? '<div style="margin-top:10px;"><a href="'+p.id_proof_url+'" target="_blank" style="font-size:11px;color:var(--gold);text-decoration:none;">🪪 View ID: '+(p.id_proof_type||'Document')+'</a></div>' : '<div style="margin-top:8px;font-size:11px;color:#e74c3c;">⚠️ No ID uploaded</div>')+
+      (p.photo_url ? '<div style="display:flex;gap:6px;margin-top:10px;overflow-x:auto;">'+
+        [p.photo_url,p.photo_2_url,p.photo_3_url,p.photo_4_url,p.photo_5_url].filter(Boolean).map(function(u){
           return '<img src="'+u+'" style="width:60px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;" onclick="window.open(\''+u+'\',\'_blank\')"/>';
-        }).join('') + '</div>' : '') +
-      '<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;">' + actionBtns + '</div>';
+        }).join('')+'</div>' : '')+
+      '<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;">'+
+        (p.status !== 'approved'  ? '<button class="btn btn-grn btn-sm" onclick="adAct(\''+p.id+'\',\'approved\')">✅ Approve</button>' : '')+
+        (p.status !== 'pending'   ? '<button class="btn btn-dark btn-sm" onclick="adAct(\''+p.id+'\',\'pending\')">⏳ Pending</button>' : '')+
+        (p.status !== 'rejected'  ? '<button class="btn btn-sm" style="background:var(--red);color:#fff;" onclick="openRejectModal(\''+p.id+'\',\''+(p.full_name||'').replace(/'/g,'')+'\')">❌ Reject</button>' : '')+
+        '<button class="btn btn-dark btn-sm" onclick="adAct(\''+p.id+'\',\'deleted\')">🗑 Delete</button>'+
+      '</div>';
 
     list.appendChild(card);
   });
 }
 
-// View ID proof — signed URL
-async function viewIdProof(storagePath) {
-  try {
-    var path = storagePath;
-    var marker = '/object/public/id-proofs/';
-    if (path.indexOf(marker) !== -1) path = path.split(marker)[1];
-    var r = await sb.storage.from('id-proofs').createSignedUrl(path, 60);
-    if (r.error) throw r.error;
-    window.open(r.data.signedUrl, '_blank');
-  } catch(e) {
-    alert('Could not load ID: ' + (e.message || 'Please try again'));
-  }
-}
-
-// Send reminder email to user who registered but never submitted profile
-async function sendReminder(userId, email, name, btn) {
-  if (!email) { alert('No email for this user'); return; }
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-  try {
-    await fetch(SB_URL + '/functions/v1/smart-function', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
-      body: JSON.stringify({ type: 'reminder', email: email, full_name: name || email })
-    });
-    try {
-      await sb.from('reminder_log').upsert(
-        { user_id: userId, email: email, reminder_type: 'incomplete_profile' },
-        { onConflict: 'user_id,reminder_type' }
-      );
-    } catch(x) {}
-    if (btn) btn.textContent = '✅ Sent';
-  } catch(e) {
-    if (btn) { btn.disabled = false; btn.textContent = '📲 Send Reminder'; }
-    alert('Failed: ' + (e.message || 'Please try again'));
-  }
-}
-
+// FIXED: fetch full profile before calling smart-function so notifications have all data
 async function adAct(id, status) {
   if (status === 'deleted' && !confirm('Permanently delete this profile?')) return;
 
@@ -158,15 +87,15 @@ async function adAct(id, status) {
     var r = await sb.from('profiles').update(updates).eq('id', id);
     if (r.error) throw r.error;
 
+    // Fetch full profile for notification data
     if (status === 'approved') {
       try {
         var pr = await sb.from('profiles').select('*').eq('id', id).limit(1);
         var profile = pr.data && pr.data[0];
         if (profile) {
-          // Send approval email
           fetch(SB_URL + '/functions/v1/smart-function', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               type: 'approved',
               full_name: profile.full_name || '',
@@ -178,27 +107,23 @@ async function adAct(id, status) {
               state: profile.state || ''
             })
           });
-          // Fire referral reward
-          if (typeof markReferralApproved === 'function') {
-            markReferralApproved(id).catch(function(e){ console.warn('Referral mark error:', e); });
-          }
         }
-      } catch(x) { console.warn('Post-approval error:', x); }
+      } catch(x) {}
     }
 
-    // Reload current active tab
+    // Refresh whichever tab is currently active
     var activeFilter = 'pending';
-    ['all','pending','approved','rejected','founders'].forEach(function(f) {
+    ['pending','approved','rejected','founders'].forEach(function(f) {
       var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
       if (el && el.classList.contains('btn-gold')) activeFilter = f;
     });
     ldAdmin(activeFilter);
-
   } catch(ex) {
     alert('Error: ' + (ex.message || 'Could not update profile'));
   }
 }
 
+// ── Reject modal
 var _rejectTargetId = null;
 
 function openRejectModal(id, name) {
@@ -218,6 +143,7 @@ function setRejectReason(text) {
   var ra = document.getElementById('rejectReason'); if (ra) ra.value = text;
 }
 
+// FIXED: fetch full profile before calling smart-function
 async function submitReject() {
   var reason = (document.getElementById('rejectReason') || {}).value || '';
   if (!reason.trim()) {
@@ -232,17 +158,20 @@ async function submitReject() {
 
   try {
     var r = await sb.from('profiles').update({
-      status: 'rejected', rejection_reason: reason, approved_at: null
+      status: 'rejected',
+      rejection_reason: reason,
+      approved_at: null
     }).eq('id', _rejectTargetId);
     if (r.error) throw r.error;
 
+    // Fetch full profile for notification
     try {
       var pr = await sb.from('profiles').select('*').eq('id', _rejectTargetId).limit(1);
       var profile = pr.data && pr.data[0];
       if (profile) {
         fetch(SB_URL + '/functions/v1/smart-function', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'rejected',
             full_name: profile.full_name || '',
@@ -262,3 +191,5 @@ async function submitReject() {
 
   if (btn) { btn.disabled = false; btn.textContent = 'Confirm Rejection & Send Email'; }
 }
+
+// openDeactivateModal() and openDeleteModal() handled by safety.js
