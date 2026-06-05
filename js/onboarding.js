@@ -1,9 +1,6 @@
-// Begin Forever — Onboarding v16
-// Fixes:
-//   - Slide-left bug: onb-foot now uses bottom:0 with safe padding, card uses padding-bottom:120px
-//   - After complete: directs user to Profile tab with edit prompt (not home)
-//   - onbNext() validates mandatory fields properly
-//   - Welcome step shows correctly
+// Begin Forever — Onboarding v121
+// Fix: _onbFaithPrefs() closing brace was missing — caused JS crash on Step 4
+// Fix: _onbPrivacy() now correctly separate from _onbFaithPrefs()
 
 var _onbStep = 0;
 var _onbRunning = false;
@@ -12,7 +9,6 @@ var ONB_STEPS = ['welcome','partner_prefs','family','hobbies','faith_prefs','pri
 var ALL_RELIGIONS = ['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
 var ALL_MARITAL   = ['Never Married','Awaiting Divorce','Divorced','Widowed','Annulled'];
 
-// Inject styles once
 var ONB_STYLE = [
   '#onboardingScreen{background:var(--dark1);min-height:100vh;display:block;overflow-y:auto;position:relative;}',
   '.onb-card{background:#FDFAF4;max-width:520px;margin:0 auto;min-height:100vh;padding:28px 22px 140px;box-sizing:border-box;}',
@@ -22,7 +18,6 @@ var ONB_STYLE = [
   '.onb-card input::placeholder,.onb-card textarea::placeholder{color:rgba(59,7,100,.35)!important;}',
   '.onb-card select option{background:#fff;color:#1C0530;}',
   '.onb-lbl{font-size:10px;font-weight:700;color:#C8960C;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;}',
-  // FIX: foot is fixed to bottom of viewport, not the card — card has padding-bottom:140px to clear it
   '.onb-foot{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));background:#FDFAF4;border-top:1px solid rgba(59,7,100,.12);display:flex;gap:10px;z-index:200;box-sizing:border-box;}',
   '.onb-title{font-family:Cinzel,serif;font-size:22px;color:#1C0530;margin:0 0 4px;}',
   '.onb-sub{font-size:13px;color:#5B3A7A;margin-bottom:20px;line-height:1.6;}',
@@ -73,7 +68,6 @@ function startOnboarding(){
   var sc=document.getElementById('onboardingScreen');
   if(!sc){_onbRunning=false;showScr('mainApp');goTab('home');return;}
 
-  // Hide mainApp + tabbar during onboarding
   var ma=document.getElementById('mainApp');if(ma)ma.style.display='none';
   var tb=document.getElementById('tBar');if(tb)tb.style.display='none';
 
@@ -92,7 +86,6 @@ function _renderOnbStep(){
   else if(s==='faith_prefs')_onbFaithPrefs(sc);
   else if(s==='privacy')_onbPrivacy(sc);
   else if(s==='done')_onbComplete();
-  // FIX: scroll card to top on each step change
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -121,6 +114,17 @@ function _collectStep(){
     _onbData.siblings=val('onbSiblings');
     _onbData.father_occupation=val('onbFatherOcc');
     _onbData.mother_occupation=val('onbMotherOcc');
+  }
+  if(s==='faith_prefs'){
+    // Collect from checkboxes
+    var allBrowseChk=document.getElementById('onbFpb_all');
+    var allReceiveChk=document.getElementById('onbFpr_all');
+    var browseAll=allBrowseChk&&allBrowseChk.checked;
+    var receiveAll=allReceiveChk&&allReceiveChk.checked;
+    _onbData.faith_browse=browseAll?ALL_RELIGIONS.slice():Array.from(document.querySelectorAll('.onb-fpb-opt:checked')).map(function(o){return o.value;});
+    _onbData.faith_receive=receiveAll?ALL_RELIGIONS.slice():Array.from(document.querySelectorAll('.onb-fpr-opt:checked')).map(function(o){return o.value;});
+    if(!_onbData.faith_browse.length)_onbData.faith_browse=ALL_RELIGIONS.slice();
+    if(!_onbData.faith_receive.length)_onbData.faith_receive=ALL_RELIGIONS.slice();
   }
   if(s==='privacy'){
     _onbData.photos_visible_to=val('onbPhotos');
@@ -193,7 +197,6 @@ function _onbWelcome(sc){
 // STEP 1: PARTNER PREFERENCES
 function _onbPartnerPrefs(sc){
   var eduOpts=['Any','Graduate and above','Post Graduate','Doctorate','Professional Degree'];
-  var incOpts=[{v:'',l:'Select…'},{v:'below_3l',l:'Below ₹3 LPA'},{v:'3_5l',l:'₹3–5 LPA'},{v:'5_10l',l:'₹5–10 LPA'},{v:'10_15l',l:'₹10–15 LPA'},{v:'15_25l',l:'₹15–25 LPA'},{v:'25_50l',l:'₹25–50 LPA'},{v:'above_50l',l:'Above ₹50 LPA'},{v:'prefer_not',l:'Prefer not to say'}];
   var states=['Any','Andhra Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Other / Outside India'];
 
   sc.innerHTML='<div class="onb-card">'+_onbHdr('Partner Preferences',1,5)+
@@ -203,7 +206,7 @@ function _onbPartnerPrefs(sc){
       '<div style="flex:1;"><label class="field-label">Max</label><input type="number" class="field" id="onbAgeMax" value="'+_onbData.pref_age_max+'" min="18" max="70"/></div>'+
     '</div>'+
     '<span class="onb-lbl">Preferred Religion * <span style="font-size:10px;color:#7A6090;text-transform:none;letter-spacing:0;">(select all that apply)</span></span>'+
-    '<div id="onbRelSelect" style="margin-bottom:16px;"></div>'+
+    '<div id="onbRelChips" style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:4px;"></div>'+
     '<span class="onb-lbl">Preferred Marital Status</span>'+
     '<div id="onbMarChips" style="margin-bottom:16px;"></div>'+
     '<span class="onb-lbl">Preferred Location</span>'+
@@ -216,10 +219,8 @@ function _onbPartnerPrefs(sc){
     '<div class="field-group"><label class="field-label">What are you looking for? <span style="color:#9B8FAA;font-weight:400;">(optional)</span></label><textarea class="field" id="onbLookingFor" style="min-height:70px;resize:vertical;" placeholder="e.g. Someone who is family-oriented and shares my faith...">'+(_onbData.looking_for||'')+'</textarea></div>'+
     _onbFoot(true)+'</div>';
 
- if(typeof createFaithMultiSelect==='function'){
-    createFaithMultiSelect('onbRelSelect',_onbData.pref_religions,null,'Select preferred religions...');
-  }
-  _onbChips('onbMarSelect',ALL_MARITAL,_onbData.pref_marital_statuses,null,null,false);
+  _onbChips('onbRelChips',ALL_RELIGIONS,_onbData.pref_religions,null,null,false);
+  _onbChips('onbMarChips',ALL_MARITAL,_onbData.pref_marital_statuses,null,null,false);
 }
 
 function _onbLoadCities(){
@@ -252,24 +253,63 @@ function _onbHobbies(sc){
   _onbChips('onbHobChips',list,_onbData.hobbies,12,function(){var ct=document.getElementById('onbHobCount');if(ct)ct.textContent=_onbData.hobbies.length;});
 }
 
-// STEP 4: FAITH PREFS
+// STEP 4: FAITH PREFS — FIXED: function now properly closed
 function _onbFaithPrefs(sc){
   if(!_onbData.faith_browse.length)_onbData.faith_browse=ALL_RELIGIONS.slice();
   if(!_onbData.faith_receive.length)_onbData.faith_receive=ALL_RELIGIONS.slice();
+
+  var faithOpts=ALL_RELIGIONS.map(function(r){
+    var icons={'Christian':'✝️','Hindu':'🕉️','Muslim':'☪️','Sikh':'☬','Jain':'🕊️','Buddhist':'☸️','Parsi':'🔥','Jewish':'✡️','Spiritual':'🌱','Other':'🌐'};
+    return '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(59,7,100,.08);font-size:13px;color:#1C0530;">'+
+      '<input type="checkbox" value="'+r+'" class="BROWSE_CLS" onchange="_onbFpUpdateLabel(\'browse\')" style="accent-color:#D4A017;width:16px;height:16px;"'+((_onbData.faith_browse.indexOf(r)>-1)?' checked':'')+'/> '+(icons[r]||'')+'  '+r+'</label>';
+  }).join('').replace(/BROWSE_CLS/g,'onb-fpb-opt');
+
+  var faithOptsR=ALL_RELIGIONS.map(function(r){
+    var icons={'Christian':'✝️','Hindu':'🕉️','Muslim':'☪️','Sikh':'☬','Jain':'🕊️','Buddhist':'☸️','Parsi':'🔥','Jewish':'✡️','Spiritual':'🌱','Other':'🌐'};
+    return '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(59,7,100,.08);font-size:13px;color:#1C0530;">'+
+      '<input type="checkbox" value="'+r+'" class="RECEIVE_CLS" onchange="_onbFpUpdateLabel(\'receive\')" style="accent-color:#D4A017;width:16px;height:16px;"'+((_onbData.faith_receive.indexOf(r)>-1)?' checked':'')+'/> '+(icons[r]||'')+'  '+r+'</label>';
+  }).join('').replace(/RECEIVE_CLS/g,'onb-fpr-opt');
+
+  var browseAllChecked=_onbData.faith_browse.length>=ALL_RELIGIONS.length;
+  var receiveAllChecked=_onbData.faith_receive.length>=ALL_RELIGIONS.length;
+
   sc.innerHTML='<div class="onb-card">'+_onbHdr('Faith Preferences',4,5)+
     '<p class="onb-sub">Control who you see and who can reach you. You can change this anytime.</p>'+
-    '<span class="onb-lbl">🔍 Browse profiles from</span>'+
-    '<div id="onbBrowseSelect" style="margin-bottom:20px;"></div>'+
-    '<span class="onb-lbl">💌 Receive interests from</span>'+
-    '<div id="onbReceiveSelect" style="margin-bottom:24px;"></div>'+
-    '<div style="background:rgba(59,7,100,.05);border:1px solid rgba(59,7,100,.12);border-radius:10px;padding:12px;margin-bottom:16px;font-size:11px;color:#5B3A7A;line-height:1.6;">🔒 These settings only affect your discovery feed and who can send you interest. Other members cannot see your preferences.</div>'+
-    _onbFoot(true)+'</div>';
-  if(typeof createFaithMultiSelect==='function'){
-    createFaithMultiSelect('onbBrowseSelect',_onbData.faith_browse,null,'Select faiths to browse...');
-    createFaithMultiSelect('onbReceiveSelect',_onbData.faith_receive,null,'Select faiths to receive from...');
-  }
 
-// STEP 5: PRIVACY
+    '<span class="onb-lbl">🔍 Browse profiles from</span>'+
+    '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;overflow:hidden;margin-bottom:20px;">'+
+      '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:2px solid rgba(59,7,100,.12);font-size:13px;color:#3B0764;font-weight:700;background:rgba(59,7,100,.04);">'+
+        '<input type="checkbox" id="onbFpb_all" onchange="_onbFpHandleAll(\'browse\')" style="accent-color:#D4A017;width:16px;height:16px;"'+(browseAllChecked?' checked':'')+'/> All Faiths</label>'+
+      faithOpts+
+    '</div>'+
+
+    '<span class="onb-lbl">💌 Receive interests from</span>'+
+    '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;overflow:hidden;margin-bottom:20px;">'+
+      '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:2px solid rgba(59,7,100,.12);font-size:13px;color:#3B0764;font-weight:700;background:rgba(59,7,100,.04);">'+
+        '<input type="checkbox" id="onbFpr_all" onchange="_onbFpHandleAll(\'receive\')" style="accent-color:#D4A017;width:16px;height:16px;"'+(receiveAllChecked?' checked':'')+'/> All Faiths</label>'+
+      faithOptsR+
+    '</div>'+
+
+    '<div style="background:rgba(59,7,100,.05);border:1px solid rgba(59,7,100,.12);border-radius:10px;padding:12px;margin-bottom:16px;font-size:11px;color:#5B3A7A;line-height:1.6;">🔒 These settings only affect your discovery feed. Other members cannot see your preferences.</div>'+
+    _onbFoot(true)+'</div>';
+}  // ← THIS CLOSING BRACE WAS MISSING IN v120
+
+function _onbFpHandleAll(type){
+  var cls=type==='browse'?'onb-fpb-opt':'onb-fpr-opt';
+  var allId=type==='browse'?'onbFpb_all':'onbFpr_all';
+  var allChk=document.getElementById(allId);
+  document.querySelectorAll('.'+cls).forEach(function(o){o.checked=allChk&&allChk.checked;});
+}
+
+function _onbFpUpdateLabel(type){
+  var cls=type==='browse'?'onb-fpb-opt':'onb-fpr-opt';
+  var allId=type==='browse'?'onbFpb_all':'onbFpr_all';
+  var selected=Array.from(document.querySelectorAll('.'+cls+':checked')).map(function(o){return o.value;});
+  var allChk=document.getElementById(allId);
+  if(allChk) allChk.checked=selected.length>=ALL_RELIGIONS.length;
+}
+
+// STEP 5: PRIVACY — now correctly its own function
 function _onbPrivacy(sc){
   sc.innerHTML='<div class="onb-card">'+_onbHdr('Privacy Settings',5,5)+
     '<p class="onb-sub">Changeable anytime from Profile → Privacy Settings.</p>'+
@@ -279,7 +319,7 @@ function _onbPrivacy(sc){
     _onbFoot(true)+'</div>';
 }
 
-// COMPLETE — save everything then go to Profile tab with prompt
+// COMPLETE
 async function _onbComplete(){
   var sc=document.getElementById('onboardingScreen');
   if(sc) sc.innerHTML='<div style="min-height:100vh;background:#1C0530;display:flex;align-items:center;justify-content:center;"><div style="background:#FDFAF4;border-radius:20px;padding:48px 40px;text-align:center;max-width:320px;width:90%;"><div class="spinner" style="margin:0 auto 20px;border-top-color:#3B0764;"></div><p style="color:#1C0530;font-family:Cinzel,serif;font-size:16px;margin:0;">Saving your preferences…</p><p style="color:#7A6090;font-size:12px;margin-top:8px;">Almost there!</p></div></div>';
@@ -314,33 +354,29 @@ async function _onbComplete(){
   _removeOnbStyle();
   _onbRunning=false;
 
-  // Restore tabbar and mainApp
   var tb=document.getElementById('tBar');if(tb)tb.style.display='';
   var ma=document.getElementById('mainApp');if(ma){ma.style.display='block';ma.classList.add('active');}
   var obs=document.getElementById('onboardingScreen');if(obs){obs.style.display='none';obs.classList.remove('active');}
 
   showScr('mainApp');
   checkNotifs();
-
-  // FIX: go to Profile tab and prompt user to complete their profile details
   goTab('profile');
+
   setTimeout(function(){
     var toast=document.createElement('div');
+    toast.id='onbCompletionToast';
     toast.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.4);color:#F5C842;padding:14px 20px;border-radius:14px;font-size:13px;font-weight:700;z-index:9999;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
-    var onbClose = document.createElement('button');
-    onbClose.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
-    onbClose.textContent = '✕';
-    onbClose.onclick = function(){var t=document.getElementById('onbCompletionToast');if(t)t.remove();};
-    var onbMsg = document.createElement('span');
-    onbMsg.innerHTML = '✨ Almost done! Add your bio, lifestyle &amp; hobbies to attract better matches.<br/>';
-    var onbBtn = document.createElement('button');
-    onbBtn.style.cssText = 'margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
-    onbBtn.textContent = 'Complete Profile →';
-    onbBtn.onclick = function(){openEdit();var t=document.getElementById('onbCompletionToast');if(t)t.remove();};
-    toast.id = 'onbCompletionToast';
-    toast.appendChild(onbClose);
-    toast.appendChild(onbMsg);
-    toast.appendChild(onbBtn);
+    var closeBtn=document.createElement('button');
+    closeBtn.style.cssText='position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
+    closeBtn.textContent='✕';
+    closeBtn.onclick=function(){var t=document.getElementById('onbCompletionToast');if(t)t.remove();};
+    var msg=document.createElement('span');
+    msg.innerHTML='✨ Almost done! Add your bio, lifestyle &amp; hobbies to attract better matches.<br/>';
+    var btn=document.createElement('button');
+    btn.style.cssText='margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
+    btn.textContent='Complete Profile →';
+    btn.onclick=function(){openEdit();var t=document.getElementById('onbCompletionToast');if(t)t.remove();};
+    toast.appendChild(closeBtn);toast.appendChild(msg);toast.appendChild(btn);
     document.body.appendChild(toast);
   },600);
 }

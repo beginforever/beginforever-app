@@ -1,8 +1,6 @@
-// Begin Forever — Admin v22
-// New: All Users tab (all auth users via RPC)
-// Fix: ID proof signed URL (extracts path from full Supabase storage URL)
-// New: Send Reminder button for incomplete profiles
-// Fix: Founders tab approved-only
+// Begin Forever — Admin v23
+// Fix: markReferralApproved(id) now called when profile is approved → referral rewards fire
+// Fix: adAct signature confirmed as (id, status) strings throughout
 
 async function ldAdmin(filter) {
   ['all','pending','approved','rejected','founders'].forEach(function(f) {
@@ -101,7 +99,7 @@ async function ldAdmin(filter) {
   });
 }
 
-// View ID proof — extracts path from full Supabase URL and generates signed URL
+// View ID proof — signed URL
 async function viewIdProof(storagePath) {
   try {
     var path = storagePath;
@@ -150,10 +148,12 @@ async function adAct(id, status) {
     if (r.error) throw r.error;
 
     if (status === 'approved') {
+      // Fetch profile for notification email
       try {
         var pr = await sb.from('profiles').select('*').eq('id', id).limit(1);
         var profile = pr.data && pr.data[0];
         if (profile) {
+          // Send approval email
           fetch(SB_URL + '/functions/v1/smart-function', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
@@ -168,16 +168,23 @@ async function adAct(id, status) {
               state: profile.state || ''
             })
           });
+
+          // ✅ FIX: Fire referral reward when profile is approved
+          if (typeof markReferralApproved === 'function') {
+            markReferralApproved(id).catch(function(e){ console.warn('Referral mark error:', e); });
+          }
         }
-      } catch(x) {}
+      } catch(x) { console.warn('Post-approval actions error:', x); }
     }
 
+    // Reload the current active filter tab
     var activeFilter = 'pending';
     ['all','pending','approved','rejected','founders'].forEach(function(f) {
       var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
       if (el && el.classList.contains('btn-gold')) activeFilter = f;
     });
     ldAdmin(activeFilter);
+
   } catch(ex) {
     alert('Error: ' + (ex.message || 'Could not update profile'));
   }
