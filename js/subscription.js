@@ -14,7 +14,6 @@ var PLANS = {
     monthly:    { price: 499,  per: '/month',    days: 30  },
     quarterly:  { price: 1299, per: '/3 months', days: 90,  save: '13% off' },
     halfyearly: { price: 2199, per: '/6 months', days: 180, save: '27% off' },
-    // Google Play product IDs (must match Play Console in-app products)
     gpb: {
       monthly:    'basic_monthly',
       quarterly:  'basic_quarterly',
@@ -64,10 +63,7 @@ var PLANS = {
 
 // ═══ ENVIRONMENT DETECTION
 function isAndroidTWA() {
-  // TWA sets document.referrer to android-app://package or window.matchMedia display-mode=standalone
-  // Most reliable: check for Digital Goods API presence
   if (typeof window !== 'undefined' && window.getDigitalGoodsService) return true;
-  // Fallback: TWA user-agent hint
   if (navigator.userAgent && navigator.userAgent.includes('wv') && /Android/.test(navigator.userAgent)) return true;
   return false;
 }
@@ -143,11 +139,10 @@ async function activateFoundingPremium() {
   } catch(x) {}
 }
 
-// ═══ CHOOSE PLAN — routes to GPB on Android, Razorpay on web
+// ═══ CHOOSE PLAN
 async function choosePlan(tier) {
-  if (isPreLaunch()) { alert('Plans unlock on 7 June 2026.\nFounding members get Premium FREE for the first week!'); return; }
+  if (isPreLaunch()) { alert('Plans unlock on 21 June 2026.\nFounding members get Premium FREE for the first week!'); return; }
   if (!U) { alert('Please log in first'); return; }
-
   if (isAndroidTWA()) {
     await _choosePlanGPB(tier);
   } else {
@@ -155,14 +150,13 @@ async function choosePlan(tier) {
   }
 }
 
-// ─── GOOGLE PLAY BILLING (Digital Goods API)
+// ─── GOOGLE PLAY BILLING
 async function _choosePlanGPB(tier) {
   try {
     var service = await window.getDigitalGoodsService('https://play.google.com/billing');
     var productId = PLANS[tier].gpb[SUB_CYCLE];
     var details = await service.getDetails([productId]);
     if (!details || !details.length) { alert('Product not available. Please try again.'); return; }
-
     var item = details[0];
     var payRequest = new PaymentRequest(
       [{ supportedMethods: 'https://play.google.com/billing', data: { sku: productId } }],
@@ -171,25 +165,21 @@ async function _choosePlanGPB(tier) {
     var payResponse = await payRequest.show();
     var token = payResponse.details && payResponse.details.purchaseToken;
     if (!token) { await payResponse.complete('fail'); alert('Payment failed. Please try again.'); return; }
-
     await payResponse.complete('success');
     await _activateSubscription(tier, SUB_CYCLE, PLANS[tier][SUB_CYCLE].days, null, token);
   } catch(e) {
-    if (e.name === 'AbortError') return; // user cancelled
+    if (e.name === 'AbortError') return;
     console.error('GPB error:', e);
-    // Fallback to Razorpay if Digital Goods API fails unexpectedly
     await _choosePlanRazorpay(tier);
   }
 }
 
-// ─── RAZORPAY (web / non-Android)
+// ─── RAZORPAY
 async function _choosePlanRazorpay(tier) {
   var planData = PLANS[tier][SUB_CYCLE];
   var cycleLabel = { monthly: 'Monthly', quarterly: '3 Months', halfyearly: '6 Months' }[SUB_CYCLE] || SUB_CYCLE;
   var planLabel = (tier === 'premium' ? 'Premium' : 'Basic') + ' · ' + cycleLabel;
-
   try {
-    // Create order server-side — key_secret never touches client
     var res = await fetch(SB_URL + '/functions/v1/create-razorpay-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
@@ -197,12 +187,11 @@ async function _choosePlanRazorpay(tier) {
     });
     var orderData = await res.json();
     if (orderData.error) { alert('Could not create order: ' + orderData.error); return; }
-
     var options = {
-      key: orderData.key_id,          // public key only, returned from server
+      key: orderData.key_id,
       amount: orderData.amount,
       currency: orderData.currency,
-      order_id: orderData.order_id,   // Razorpay now verifies against this
+      order_id: orderData.order_id,
       name: 'Begin Forever',
       description: planLabel,
       image: 'https://beginforever.github.io/beginforever-app/logo.png',
@@ -230,7 +219,6 @@ async function _activateSubscription(tier, cycle, days, razorpayPaymentId, gpbPu
     var expiresAt = new Date(baseDate.getTime() + (days + referralDays) * 24 * 60 * 60 * 1000);
     var cycleLabel = { monthly: 'Monthly', quarterly: '3 Months', halfyearly: '6 Months' }[cycle] || cycle;
     var planLabel = (tier === 'premium' ? 'Premium' : 'Basic') + ' · ' + cycleLabel;
-
     await sb.from('subscriptions').insert({
       user_id: U.id,
       plan_type: cycle,
@@ -243,7 +231,6 @@ async function _activateSubscription(tier, cycle, days, razorpayPaymentId, gpbPu
       started_at: now.toISOString(),
       expires_at: expiresAt.toISOString()
     });
-
     await sb.from('profiles').update({
       is_premium: tier === 'premium',
       subscription_status: 'active',
@@ -251,11 +238,8 @@ async function _activateSubscription(tier, cycle, days, razorpayPaymentId, gpbPu
       subscription_expires_at: expiresAt.toISOString(),
       referral_premium_days: 0
     }).eq('id', U.id);
-
     var r2 = await sb.from('profiles').select('*').eq('id', U.id).limit(1);
     if (r2.data && r2.data.length) P = r2.data[0];
-
-// ── Notify user via email + WhatsApp
     try {
       await fetch(SB_URL + '/functions/v1/smart-function', {
         method: 'POST',
@@ -386,7 +370,7 @@ function _launchOverlay() {
     '<h3 style="font-family:\'Cinzel\',serif;color:#1C0530;font-size:17px;margin:0 0 6px;">Plans unlock at launch</h3>'+
     '<p style="font-family:\'EB Garamond\',serif;font-style:italic;color:#D4A017;font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'+
     '<div id="subCountdown" style="background:#3B0764;color:#F5C842;padding:11px 14px;border-radius:10px;font-family:Cinzel,serif;font-size:19px;font-weight:700;margin-bottom:4px;">—</div>'+
-    '<div style="font-size:10px;color:#9B8FAA;letter-spacing:1px;">UNTIL 7 JUNE 2026</div></div>';
+    '<div style="font-size:10px;color:#9B8FAA;letter-spacing:1px;">UNTIL 21 JUNE 2026</div></div>';
 }
 
 function _startSubCountdown() {
@@ -420,7 +404,6 @@ function updatePricingCountdown() {
   if (fm && P && P.is_founding_member) fm.style.display = '';
 }
 
-// Legacy alias — used in index.html subscribe modal buttons
 function payRzp(plan, amt) {
   var tier = plan.toLowerCase().indexOf('premium') > -1 ? 'premium' : 'basic';
   SUB_CYCLE = plan.indexOf('Quarterly') !== -1 ? 'quarterly' : plan.indexOf('Monthly') !== -1 ? 'monthly' : 'halfyearly';

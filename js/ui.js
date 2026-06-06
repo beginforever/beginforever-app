@@ -1,15 +1,9 @@
-// Begin Forever — UI v16
-// Changes from v15:
-// - canSendInterest() now requires subscription (not just approved status)
-// - sendInt() checks subscription before inserting interest
-// - viewProfile() interest button shows paywall if no subscription
-// - ldViews() gated on Premium
-// - ldBrowse() calls renderBrowseChips() and applies age + marital filters
-// - actInt() fires interest_accepted notification (3-arg signature)
-// - sendInt() fires interest_received notification
-// - _appendMsg() shows read receipt ticks for Premium users
-// - checkNotifs() properly hides dot when count = 0
-// - Launch auto-detection: polls isPreLaunch() and refreshes UI at exact launch moment
+// Begin Forever — UI v21
+// Changes from v20:
+// - showLockToast() added
+// - ldBrowse() updated: pre-launch shows anonymous cards for ALL approved profiles
+// - post-launch restores gender filter, age/marital/faith filters, full cards
+// - Interests + Chat banners updated to June 21
 // - blink keyframe injected at runtime
 
 // ═══ SCREEN MANAGEMENT
@@ -32,7 +26,6 @@ function show(id) { showScr(id); }
 })();
 
 // ═══ LAUNCH AUTO-DETECTION
-// Polls every 30s while in pre-launch; at exact launch moment refreshes current tab
 var _wasPreLaunch = isPreLaunch ? isPreLaunch() : true;
 var _launchPollInterval = setInterval(function() {
   if (!_wasPreLaunch) { clearInterval(_launchPollInterval); return; }
@@ -40,10 +33,8 @@ var _launchPollInterval = setInterval(function() {
   if (_wasPreLaunch && !nowPreLaunch) {
     _wasPreLaunch = false;
     clearInterval(_launchPollInterval);
-    // Refresh to home — all tabs now unlock
     if (typeof goTab === 'function' && P && P.status === 'approved') {
       goTab('home');
-      // Small toast to let user know
       var t = document.createElement('div');
       t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:800;z-index:9999;box-shadow:0 6px 24px rgba(212,160,23,0.5);';
       t.textContent = '🎉 Begin Forever is LIVE! Discover your matches now.';
@@ -150,7 +141,21 @@ async function _doLoadStats() {
   } catch(x) {}
 }
 
-// ═══ BROWSE — applies partner pref filters + renders faith chips
+// ═══ LOCK TOAST — shown when anonymous card is tapped pre-launch
+function showLockToast() {
+  var t = document.getElementById('lockToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'lockToast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#3B0764;color:#F5C842;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:9999;border:1px solid rgba(212,160,23,.4);white-space:nowrap;display:none;';
+    t.textContent = '🔒 Full profile unlocks June 21';
+    document.body.appendChild(t);
+  }
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display = 'none'; }, 2500);
+}
+
+// ═══ BROWSE
 async function ldBrowse() {
   if (!P) return;
   if (P.status === 'pending') {
@@ -158,48 +163,75 @@ async function ldBrowse() {
     if (l) l.innerHTML = '<div style="text-align:center;padding:40px 20px"><div style="font-size:40px">🔒</div><p style="color:#FFD54F;font-size:14px;font-weight:700;margin-top:12px">Profile Under Review</p></div>';
     return;
   }
-  if (isPreLaunch()) { var l0 = document.getElementById('bList'); if (l0) l0.innerHTML = ''; return; }
   if (typeof loadBlockedIds === 'function') await loadBlockedIds();
 
-  // Render faith filter chips
-  renderBrowseChips();
+  var preLaunch = isPreLaunch();
+  var q = sb.from('profiles').select('*').eq('status', 'approved').neq('id', U.id);
 
-  var g = P.gender === 'Male' ? 'Female' : 'Male';
-  var q = sb.from('profiles').select('*').eq('status', 'approved').eq('gender', g).neq('id', U.id);
+  if (!preLaunch) {
+    // Post-launch: gender filter + all preference filters restored
+    var g = P.gender === 'Male' ? 'Female' : 'Male';
+    q = q.eq('gender', g);
 
-  // Faith filter from profile preferences
-  var browseFaiths = []; try { browseFaiths = JSON.parse(P.faith_browse || '[]'); } catch(x) {}
-  if (quickFaithFilter !== 'All') {
-    q = q.eq('religion', quickFaithFilter);
-  } else if (browseFaiths.length > 0 && browseFaiths.length < FAITHS.length) {
-    q = q.in('religion', browseFaiths);
+    // Faith filter
+    var browseFaiths = [];
+    try { browseFaiths = JSON.parse(P.faith_browse || '[]'); } catch(x) {}
+    if (quickFaithFilter !== 'All') {
+      q = q.eq('religion', quickFaithFilter);
+    } else if (browseFaiths.length > 0 && browseFaiths.length < FAITHS.length) {
+      q = q.in('religion', browseFaiths);
+    }
+
+    // Age filter
+    if (P.pref_age_min && P.pref_age_min > 18) q = q.gte('age', P.pref_age_min);
+    if (P.pref_age_max && P.pref_age_max < 70) q = q.lte('age', P.pref_age_max);
+
+    // Marital status filter
+    var prefMarital = [];
+    try { prefMarital = JSON.parse(P.pref_marital_statuses || '[]'); } catch(x) {}
+    if (prefMarital.length > 0) q = q.in('marital_status', prefMarital);
   }
-
-  // Age filter from partner preferences
-  if (P.pref_age_min && P.pref_age_min > 18) q = q.gte('age', P.pref_age_min);
-  if (P.pref_age_max && P.pref_age_max < 70) q = q.lte('age', P.pref_age_max);
-
-  // Marital status filter
-  var prefMarital = [];
-  try { prefMarital = JSON.parse(P.pref_marital_statuses || '[]'); } catch(x) {}
-  if (prefMarital.length > 0) q = q.in('marital_status', prefMarital);
 
   var r = await q.order('created_at', { ascending: false });
   var d = r.data || [];
-  if (typeof BLOCKED_IDS !== 'undefined' && BLOCKED_IDS.length > 0) d = d.filter(function(p) { return BLOCKED_IDS.indexOf(p.id) === -1; });
+  if (typeof BLOCKED_IDS !== 'undefined' && BLOCKED_IDS.length > 0) {
+    d = d.filter(function(p) { return BLOCKED_IDS.indexOf(p.id) === -1; });
+  }
 
   var be = document.getElementById('bEmpty'); if (be) be.style.display = d.length ? 'none' : '';
   var l = document.getElementById('bList'); if (!l) return; l.innerHTML = '';
+
   d.forEach(function(p) {
     var f = faithByKey(p.religion || 'Other');
-    l.innerHTML += '<div class="card" onclick="viewProfile(\'' + p.id + '\')">' +
-      '<div style="display:flex;gap:12px;align-items:center">' +
-      '<div class="avatar" style="' + (p.photo_url ? 'background-image:url(' + p.photo_url + ');background-size:cover;background-position:center' : '') + ';border-color:' + f.color + '">' + (!p.photo_url ? '<span style="font-size:20px;opacity:.3">👤</span>' : '') + '</div>' +
-      '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">' + p.full_name + ', ' + p.age + '</h3>' +
-      '<p style="font-size:11px;margin:3px 0"><span style="color:' + f.color + '">' + f.icon + ' ' + (p.religion || '') + '</span>' + (p.denomination ? ' · <span style="color:var(--w50)">' + p.denomination + '</span>' : '') + '</p>' +
-      '<p style="font-size:10px;color:var(--w50)">' + p.city + ', ' + p.state + '</p></div><span style="font-size:18px">→</span></div>' +
-      (p.bio ? '<p style="font-size:12px;color:var(--w50);margin-top:8px;line-height:1.4;overflow:hidden;max-height:36px">' + p.bio + '</p>' : '') +
-      '</div>';
+    if (preLaunch) {
+      // Anonymous card
+      l.innerHTML +=
+        '<div style="background:#1C0530;border-radius:14px;padding:14px;margin-bottom:8px;border:1px solid ' + f.color + '33;display:flex;align-items:center;gap:12px;" onclick="showLockToast()">'
+        + '<div style="width:52px;height:52px;border-radius:50%;background:' + f.bg + ';border:2px solid ' + f.color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">' + f.icon + '</div>'
+        + '<div style="flex:1;">'
+        + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
+        + '<span style="font-size:13px;font-weight:700;color:#fff;">Member</span>'
+        + (p.denomination ? '<span style="font-size:10px;padding:2px 8px;background:' + f.bg + ';border:1px solid ' + f.color + '59;border-radius:20px;color:' + f.color + ';font-weight:700;">' + p.denomination + '</span>' : '')
+        + '</div>'
+        + '<div style="font-size:11px;color:rgba(255,255,255,.5);">' + p.city + ', ' + p.state + '</div>'
+        + '<div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;">Joins full discovery on Jun 21</div>'
+        + '</div>'
+        + '<div style="width:28px;height:28px;border-radius:50%;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);display:flex;align-items:center;justify-content:center;font-size:13px;">🔒</div>'
+        + '</div>';
+    } else {
+      // Full card post-launch
+      renderBrowseChips();
+      var ph = p.photo_url ? 'background-image:url(' + p.photo_url + ');background-size:cover;background-position:center' : '';
+      l.innerHTML +=
+        '<div class="card" onclick="viewProfile(\'' + p.id + '\')"><div style="display:flex;gap:12px;align-items:center">'
+        + '<div class="avatar" style="' + ph + ';border-color:' + f.color + '">' + (!p.photo_url ? '<span style="font-size:20px;opacity:.3">👤</span>' : '') + '</div>'
+        + '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">' + p.full_name + ', ' + p.age + '</h3>'
+        + '<p style="font-size:11px;margin:3px 0"><span style="color:' + f.color + '">' + f.icon + ' ' + (p.religion || '') + '</span>' + (p.denomination ? ' · <span style="color:var(--w50)">' + p.denomination + '</span>' : '') + '</p>'
+        + '<p style="font-size:10px;color:var(--w50)">' + p.city + ', ' + p.state + '</p></div>'
+        + '<span style="font-size:18px">→</span></div>'
+        + (p.bio ? '<p style="font-size:12px;color:var(--w50);margin-top:8px;line-height:1.4;overflow:hidden;max-height:36px">' + p.bio + '</p>' : '')
+        + '</div>';
+    }
   });
 }
 
@@ -230,7 +262,6 @@ async function ldInt(type) {
 }
 function showInt(t) { ldInt(t); }
 
-// FIXED: fires interest_accepted notification; 3-arg signature
 async function actInt(id, st, fromUserId) {
   await sb.from('interests').update({ status: st }).eq('id', id);
   if (st === 'accepted' && fromUserId && P) {
@@ -256,7 +287,7 @@ async function actInt(id, st, fromUserId) {
   ldInt('received');
 }
 
-// ═══ CHAT LIST — gated on subscription
+// ═══ CHAT LIST
 async function ldChats() {
   if (isPreLaunch()) return;
   if (!canChat()) {
@@ -374,7 +405,6 @@ function _subscribeChatRealtime(pid) {
     }).subscribe();
 }
 
-// FIXED: read receipts ✓/✓✓ for Premium users on sent messages
 function _appendMsg(m) {
   var c = document.getElementById('cwMs'); if (!c) return;
   var isSent = m.sender_id === U.id;
@@ -463,7 +493,7 @@ async function ldViews() {
   });
 }
 
-// ═══ NOTIFICATIONS — FIXED: properly hides dots when count = 0
+// ═══ NOTIFICATIONS
 async function checkNotifs() {
   if (!U) return;
   try {
@@ -528,17 +558,11 @@ async function openFaithPrefsGated() {
   if (isPremiumUser()) openFaithPrefs(); else showSubModal('Faith filter');
 }
 
-// FIXED: sendInt requires subscription; fires interest_received notification
 async function sendInt(to) {
-  // Subscription gate — post-launch only
-  if (!isPreLaunch() && !isSubscribed()) {
-    showChatSubModal();
-    return;
-  }
+  if (!isPreLaunch() && !isSubscribed()) { showChatSubModal(); return; }
   try {
     await sb.from('interests').insert({ from_user: U.id, to_user: to, status: 'pending' });
     closeModal();
-    // Notify receiver
     try {
       var receiverRes = await sb.from('profiles').select('full_name,email,phone').eq('id', to).limit(1);
       var receiver = receiverRes.data && receiverRes.data[0];

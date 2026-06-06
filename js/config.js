@@ -3,8 +3,8 @@ var SB_URL = 'https://neftjxvovxocqabxjvme.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZnRqeHZvdnhvY3FhYnhqdm1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTgyMjksImV4cCI6MjA5MDM3NDIyOX0.qWIVda-i5MsCy1OinW4JLLciI1B4ArBWviWIuGcOPBc';
 var sb = supabase.createClient(SB_URL, SB_KEY);
 
-// Launch date: 7 June 2026 00:00 IST
-var LAUNCH = new Date('2026-06-06T18:30:00Z');
+// Launch date: 21 June 2026 00:00 IST
+var LAUNCH = new Date('2026-06-21T18:30:00Z');
 
 function isPreLaunch() { return new Date() < LAUNCH; }
 
@@ -116,7 +116,6 @@ var MARITAL_STATUSES = [
   'Never Married', 'Divorced', 'Widowed', 'Annulled', 'Awaiting Divorce'
 ];
 
-// Height options: 5'0" to 6'5" in 1-inch steps (60in = 152cm to 77in = 196cm)
 function buildHeightOptions() {
   var arr = [];
   for (var inches = 60; inches <= 77; inches++) {
@@ -129,7 +128,6 @@ function buildHeightOptions() {
 }
 var HEIGHT_OPTIONS = buildHeightOptions();
 
-// Age range buckets for partner preferences
 var AGE_RANGES = [
   { v:'18-22', min:18, max:22 },
   { v:'22-26', min:22, max:26 },

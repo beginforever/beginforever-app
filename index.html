@@ -55,6 +55,7 @@ input::placeholder, textarea::placeholder { color: var(--white40); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
 @keyframes floatUp { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
@@ -211,6 +212,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 .cs-d-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.35);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:800;color:var(--gold2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
 .cs-d-dot{width:6px;height:6px;border-radius:50%;background:var(--gold2);animation:blink 1.6s infinite;}
 /* Congrats shimmer */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 .congrats-shimmer{position:absolute;top:0;left:-100%;width:60%;height:100%;background:rgba(255,255,255,.03);transform:skewX(-20deg);animation:shimmer 4s ease-in-out infinite 2s;}
 
@@ -846,32 +848,62 @@ select.field option { background: var(--dark2); color: var(--white); }
   </div><!-- end tHome -->
 
 <!-- ═══ BROWSE TAB ═══ -->
-  <div id="tBrowse" class="content-area" style="display:none;">
-    <!-- COMING SOON — Regal Dark -->
-    <div style="background:#140226;border-radius:18px;padding:20px;margin-bottom:14px;border:1px solid rgba(212,160,23,.25);position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-50px;right:-50px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.12),transparent 70%);pointer-events:none;"></div>
-      <div style="position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(155,89,182,.1),transparent 70%);pointer-events:none;"></div>
+  <div id="tBrowse" class="content-area" style="display:none;padding:14px 14px 90px;">
+
+    <!-- BANNER -->
+    <div style="background:#140226;border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid rgba(212,160,23,.25);position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.12),transparent 70%);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-30px;left:-20px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(155,89,182,.1),transparent 70%);pointer-events:none;"></div>
       <div style="position:relative;z-index:1;">
-        <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.35);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:800;color:var(--gold2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold2);animation:blink 1.6s infinite;display:inline-block;"></span>Early Access · 2 Weeks Away
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);border-radius:20px;padding:4px 10px;margin-bottom:12px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:blink 1.6s infinite;"></span>
+          <span style="font-size:9px;font-weight:800;color:#4ade80;text-transform:uppercase;letter-spacing:1.5px;">You're in &#8212; community growing</span>
         </div>
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
-          <div>
-            <h2 style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:#fff;line-height:1.25;">The wait will<br/>be <span style="color:var(--gold2);">worth it.</span></h2>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+          <div style="flex:1;margin-right:10px;">
+            <h2 style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#fff;line-height:1.25;margin:0 0 6px;">Congratulations.<br/>You made the <span style="color:#F5C842;">list.</span></h2>
+            <p style="font-size:11px;color:rgba(255,255,255,.45);line-height:1.6;margin:0;">Real people, real faith, real intentions &#8212; all verified. We go live June 21.</p>
           </div>
-          <div style="text-align:right;flex-shrink:0;margin-left:12px;">
-            <div id="discoverDays" style="font-family:'Cinzel',serif;font-size:38px;font-weight:900;color:var(--gold2);line-height:1;animation:floatNum 3s ease-in-out infinite;">14</div>
-            <div style="font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Days away</div>
+          <div style="text-align:center;flex-shrink:0;">
+            <div id="discoverDays" style="font-family:'Cinzel',serif;font-size:32px;font-weight:900;color:#F5C842;line-height:1;animation:floatNum 3s ease-in-out infinite;">14</div>
+            <div style="font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Days to go</div>
           </div>
         </div>
-        <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:12px;">"There is a time for every purpose under heaven — a time to love." Your matches are being carefully verified and prepared. Every profile, real. Every person, ready.</p>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(212,160,23,.15);">
-          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,.3);line-height:1.5;">"A time to seek what you have lost."<br/>Eccl. 3:6</div>
-          <button style="display:flex;align-items:center;gap:5px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:20px;padding:7px 14px;font-size:10px;font-weight:700;color:var(--gold2);cursor:pointer;font-family:'Nunito',sans-serif;animation:pulseGold 2.5s infinite;" onclick="shareApp()">🔔 Share &amp; earn</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px;">
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(212,160,23,.12);border-radius:10px;padding:9px 6px;text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#F5C842;">500+</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Members</div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(212,160,23,.12);border-radius:10px;padding:9px 6px;text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#F5C842;">8</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Faiths</div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(212,160,23,.12);border-radius:10px;padding:9px 6px;text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#F5C842;">21</div>
+            <div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">States</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid rgba(212,160,23,.1);padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:10px;color:rgba(255,255,255,.25);line-height:1.5;">"A time to love." &#8212; Eccl. 3:8</div>
+          <button style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.35);border-radius:20px;padding:6px 12px;font-size:10px;font-weight:800;color:#F5C842;cursor:pointer;font-family:'Nunito',sans-serif;" onclick="shareApp()">Invite &amp; earn</button>
         </div>
       </div>
     </div>
-    <div style="text-align:center;padding:16px 0;"><p style="font-size:12px;color:var(--w40);">🔒 Discover unlocks at early access · All profiles verified</p></div>
+
+    <!-- MEMBERS LABEL -->
+    <p style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:2px;margin:0 2px 10px;">Members near you</p>
+
+    <!-- CARDS INJECTED BY ldBrowse() -->
+    <div id="bList"></div>
+    <div id="bEmpty" style="display:none;text-align:center;padding:30px 20px;">
+      <p style="color:rgba(255,255,255,.3);font-size:13px;">No members found</p>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align:center;padding:14px 0 4px;">
+      <p style="font-size:11px;color:rgba(255,255,255,.25);">&#128274; Full profiles unlock June 21 &middot; All members ID-verified</p>
+    </div>
+
   </div>
 
   <!-- ═══ INTERESTS TAB ═══ -->
@@ -879,13 +911,13 @@ select.field option { background: var(--dark2); color: var(--white); }
     <!-- COMING SOON — Ivory Editorial -->
     <div style="background:#FBF8F2;border-radius:18px;overflow:hidden;margin-bottom:14px;border:1px solid rgba(59,7,100,.1);">
       <div style="background:#3B0764;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;">✦ Early Access · 2 Weeks Away</div>
+        <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;">✦ We Go Live — June 21</div>
         <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,.4);">Founding Member</div>
       </div>
       <div style="padding:16px;">
         <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#9B59B6;margin-bottom:7px;">Your heart has company</div>
-        <h2 style="font-family:'Cinzel',serif;font-size:18px;color:#1C0530;font-weight:700;line-height:1.25;margin-bottom:7px;">300 people are waiting<br/>to find <span style="color:#D4A017;">you.</span></h2>
-        <p style="font-family:'Nunito',sans-serif;font-size:12px;color:#7A6090;line-height:1.6;margin-bottom:13px;">Interest requests will be live on launch day. The moment we open, your matches will be right here — verified, genuine, and ready to connect.</p>
+        <h2 style="font-family:'Cinzel',serif;font-size:18px;color:#1C0530;font-weight:700;line-height:1.25;margin-bottom:7px;">500+ people are waiting<br/>to find <span style="color:#D4A017;">you.</span></h2>
+        <p style="font-family:'Nunito',sans-serif;font-size:12px;color:#7A6090;line-height:1.6;margin-bottom:13px;">Interest requests go live June 21. Your matches will be right here — verified, genuine, and ready to connect.</p>
         <div style="display:flex;gap:7px;margin-bottom:13px;">
           <div style="flex:1;background:#fff;border:1px solid rgba(59,7,100,.08);border-radius:10px;padding:9px 6px;text-align:center;"><div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#3B0764;">300</div><div style="font-size:9px;color:#9B8FAA;margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Founders</div></div>
           <div style="flex:1;background:#fff;border:1px solid rgba(59,7,100,.08);border-radius:10px;padding:9px 6px;text-align:center;"><div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;color:#3B0764;">100%</div><div style="font-size:9px;color:#9B8FAA;margin-top:2px;text-transform:uppercase;letter-spacing:.5px;">Verified</div></div>
@@ -895,7 +927,7 @@ select.field option { background: var(--dark2); color: var(--white); }
         <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:#C0B0D0;text-align:center;margin-top:10px;">"Two are better than one." — Ecclesiastes 4:9</p>
       </div>
     </div>
-    <div style="text-align:center;padding:16px 0;"><p style="font-size:12px;color:var(--w40);">💝 Interests unlock at early access</p></div>
+    <div style="text-align:center;padding:16px 0;"><p style="font-size:12px;color:var(--w40);">💝 Interests unlock June 21</p></div>
   </div>
 
   <!-- ═══ CHAT LIST TAB ═══ -->
@@ -915,12 +947,12 @@ select.field option { background: var(--dark2); color: var(--white); }
         </div>
         <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.18);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
           <span style="width:7px;height:7px;border-radius:50%;background:var(--gold2);flex-shrink:0;animation:blink 1.4s infinite;display:inline-block;"></span>
-          <div style="flex:1;font-size:11px;color:rgba(255,255,255,.6);line-height:1.4;"><strong style="color:var(--gold2);display:block;font-size:12px;margin-bottom:1px;">You're on the list.</strong>Be first to know when chat unlocks.</div>
+          <div style="flex:1;font-size:11px;color:rgba(255,255,255,.6);line-height:1.4;"><strong style="color:var(--gold2);display:block;font-size:12px;margin-bottom:1px;">You're on the list.</strong>Chat unlocks June 21.</div>
           <button style="background:var(--gold2);color:#1C0530;font-size:10px;font-weight:800;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;" onclick="shareApp()">Share</button>
         </div>
       </div>
     </div>
-    <div style="text-align:center;padding:16px 0;"><p style="font-size:12px;color:var(--w40);">💬 Messages unlock at early access</p></div>
+    <div style="text-align:center;padding:16px 0;"><p style="font-size:12px;color:var(--w40);">💬 Messages unlock June 21</p></div>
   </div>
 
 <!-- ═══ CHAT WINDOW ═══ -->
@@ -1376,7 +1408,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 <script src="js/config.js?v=13"></script>
 <script src="js/safety.js"></script>
 <script src="js/subscription.js?v=19"></script>
-<script src="js/ui.js?v=20"></script>
+<script src="js/ui.js?v=21"></script>
 <script src="js/auth.js?v=1"></script>
 <script src="js/referral.js"></script>
 <script src="js/profile.js?v=25"></script>
