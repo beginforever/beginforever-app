@@ -1,13 +1,9 @@
-// Begin Forever — Admin v22
-// New: All Users tab (all auth users via RPC)
-// Fix: ID proof signed URL (extracts path from full Supabase storage URL)
-// New: Send Reminder button for incomplete profiles
-// Fix: Founders tab approved-only
+// Begin Forever — Admin v24
+// Fix: All tab uses sb.rpc() instead of raw fetch (fixes CORS block)
 
 async function ldAdmin(filter) {
   ['all','pending','approved','rejected','founders'].forEach(function(f) {
-    var tabId = 'adTab' + f.charAt(0).toUpperCase() + f.slice(1);
-    var el = document.getElementById(tabId);
+    var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
     if (el) el.className = 'btn btn-sm ' + (f === filter ? 'btn-gold' : 'btn-dark');
   });
 
@@ -15,13 +11,8 @@ async function ldAdmin(filter) {
 
   if (filter === 'all') {
     try {
-      var res = await fetch(SB_URL + '/rest/v1/rpc/admin_get_all_users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
-        body: JSON.stringify({})
-      });
-      d = await res.json();
-      if (!Array.isArray(d)) d = [];
+      var res = await sb.rpc('admin_get_all_users');
+      d = res.data || [];
     } catch(e) { d = []; }
   } else {
     var q = sb.from('profiles').select('*');
@@ -31,8 +22,7 @@ async function ldAdmin(filter) {
     d = r.data || [];
   }
 
-  var countId = 'adCount' + filter.charAt(0).toUpperCase() + filter.slice(1);
-  var countEl = document.getElementById(countId);
+  var countEl = document.getElementById('adCount' + filter.charAt(0).toUpperCase() + filter.slice(1));
   if (countEl) countEl.textContent = d.length ? ' (' + d.length + ')' : '';
 
   var empty = document.getElementById('adEmpty');
@@ -71,7 +61,7 @@ async function ldAdmin(filter) {
         (p.status !== 'rejected' ? '<button class="btn btn-sm" style="background:var(--red);color:#fff;" onclick="openRejectModal(\''+p.id+'\',\''+(p.full_name||'').replace(/'/g,'')+'\')">❌ Reject</button>' : '') +
         '<button class="btn btn-dark btn-sm" onclick="adAct(\''+p.id+'\',\'deleted\')">🗑 Delete</button>';
     } else {
-      actionBtns += '<button class="btn btn-dark btn-sm" style="background:#7B1FA2;color:#fff;" onclick="sendReminder(\''+p.id+'\',\''+(p.email||'')+'\',\''+(p.full_name||'')+'\',this)">📲 Send Reminder</button>';
+      actionBtns = '<button class="btn btn-dark btn-sm" style="background:#7B1FA2;color:#fff;" onclick="sendReminder(\''+p.id+'\',\''+(p.email||'')+'\',\''+(p.full_name||'')+'\',this)">📲 Send Reminder</button>';
     }
 
     card.innerHTML =
@@ -101,7 +91,6 @@ async function ldAdmin(filter) {
   });
 }
 
-// View ID proof — extracts path from full Supabase URL and generates signed URL
 async function viewIdProof(storagePath) {
   try {
     var path = storagePath;
@@ -115,7 +104,6 @@ async function viewIdProof(storagePath) {
   }
 }
 
-// Send reminder to incomplete/no-profile users
 async function sendReminder(userId, email, name, btn) {
   if (!email) { alert('No email for this user'); return; }
   btn.disabled = true; btn.textContent = 'Sending…';
