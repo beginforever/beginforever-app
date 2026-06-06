@@ -95,7 +95,7 @@ async function sendOtp() {
   try {
     var res = await fetch(SB_URL + '/functions/v1/send-otp', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY},
       body: JSON.stringify({phone: raw, action: 'send'})
     });
     var data = await res.json();
@@ -164,7 +164,7 @@ async function resendOtp() {
   try {
     var res = await fetch(SB_URL + '/functions/v1/send-otp', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+     headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY},
       body: JSON.stringify({phone: _otpPhone, action: 'send'})
     });
     var data = await res.json();
@@ -191,7 +191,7 @@ async function verifyOtp() {
   try {
     var res = await fetch(SB_URL + '/functions/v1/send-otp', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+     headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY},
       body: JSON.stringify({phone: _otpPhone, action: 'verify', code: code})
     });
     var data = await res.json();
@@ -244,7 +244,7 @@ async function _doRegisterAfterOtp() {
     try {
       fetch(SB_URL + '/functions/v1/smart-function', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY},
         body: JSON.stringify({type: 'registered', full_name: '', email: em})
       });
     } catch(x) {}
