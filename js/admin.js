@@ -39,7 +39,7 @@ async function ldAdmin(filter) {
     card.style.marginBottom = '12px';
 
     var hasProfile = !!p.full_name;
-    var statusColor = { approved: '#27ae60', pending: '#F5C842', rejected: '#e74c3c', resubmitting: '#9B59B6' }[p.status] || '#888';
+    var statusColor = { approved: '#27ae60', pending: '#C13DBF', rejected: '#e74c3c', resubmitting: '#9B59B6' }[p.status] || '#888';
     var statusLabel = p.status || (hasProfile ? 'incomplete' : 'no-profile');
 
     var photoHtml = p.photo_url
