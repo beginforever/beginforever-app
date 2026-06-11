@@ -36,7 +36,7 @@ var _launchPollInterval = setInterval(function() {
     if (typeof goTab === 'function' && P && P.status === 'approved') {
       goTab('home');
       var t = document.createElement('div');
-      t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:800;z-index:9999;box-shadow:0 6px 24px rgba(212,160,23,0.5);';
+      t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#9B30C9,#C13DBF);color:#1A0830;padding:14px 24px;border-radius:50px;font-size:14px;font-weight:800;z-index:9999;box-shadow:0 6px 24px rgba(155,48,201,0.5);';
       t.textContent = '🎉 Begin Forever is LIVE! Discover your matches now.';
       document.body.appendChild(t);
       setTimeout(function() { if (document.body.contains(t)) t.remove(); }, 6000);
@@ -147,7 +147,7 @@ function showLockToast() {
   if (!t) {
     t = document.createElement('div');
     t.id = 'lockToast';
-    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#3B0764;color:#F5C842;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:9999;border:1px solid rgba(212,160,23,.4);white-space:nowrap;display:none;';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#3B0764;color:#C13DBF;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:9999;border:1px solid rgba(155,48,201,.4);white-space:nowrap;display:none;';
     t.textContent = '🔒 Full profile unlocks June 21';
     document.body.appendChild(t);
   }
@@ -160,7 +160,7 @@ async function ldBrowse() {
   if (!P) return;
   if (P.status === 'pending') {
     var l = document.getElementById('bList');
-    if (l) l.innerHTML = '<div style="text-align:center;padding:40px 20px"><div style="font-size:40px">🔒</div><p style="color:#FFD54F;font-size:14px;font-weight:700;margin-top:12px">Profile Under Review</p></div>';
+    if (l) l.innerHTML = '<div style="text-align:center;padding:40px 20px"><div style="font-size:40px">🔒</div><p style="color:#C13DBF;font-size:14px;font-weight:700;margin-top:12px">Profile Under Review</p></div>';
     return;
   }
   if (typeof loadBlockedIds === 'function') await loadBlockedIds();
@@ -216,7 +216,7 @@ async function ldBrowse() {
         + '<div style="font-size:11px;color:rgba(255,255,255,.5);">' + p.city + ', ' + p.state + '</div>'
         + '<div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;">Joins full discovery on Jun 21</div>'
         + '</div>'
-        + '<div style="width:28px;height:28px;border-radius:50%;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);display:flex;align-items:center;justify-content:center;font-size:13px;">🔒</div>'
+        + '<div style="width:28px;height:28px;border-radius:50%;background:rgba(155,48,201,.08);border:1px solid rgba(155,48,201,.2);display:flex;align-items:center;justify-content:center;font-size:13px;">🔒</div>'
         + '</div>';
     } else {
       // Full card post-launch
@@ -295,7 +295,7 @@ async function ldChats() {
     tChat.innerHTML =
       '<div style="text-align:center;padding:40px 20px;">' +
       '<div style="font-size:48px;margin-bottom:16px;">💬</div>' +
-      '<h3 style="font-family:Cinzel,serif;color:#F5C842;font-size:18px;margin-bottom:8px;">Chat requires a subscription</h3>' +
+      '<h3 style="font-family:Cinzel,serif;color:#C13DBF;font-size:18px;margin-bottom:8px;">Chat requires a subscription</h3>' +
       '<p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;">Subscribe to Basic or Premium to chat with your matches.<br/>Sending interests is always free.</p>' +
       '<button class="btn btn-gold" style="width:auto;padding:12px 28px;" onclick="showSub()">View Plans ✦</button>' +
       '</div>';
@@ -410,7 +410,7 @@ function _appendMsg(m) {
   var isSent = m.sender_id === U.id;
   var tick = '';
   if (isSent && typeof isPremiumUser === 'function' && isPremiumUser()) {
-    tick = '<span style="font-size:10px;margin-left:4px;color:' + (m.is_read ? '#F5C842' : 'rgba(255,255,255,.35)') + ';">' + (m.is_read ? '✓✓' : '✓') + '</span>';
+    tick = '<span style="font-size:10px;margin-left:4px;color:' + (m.is_read ? '#C13DBF' : 'rgba(255,255,255,.35)') + ';">' + (m.is_read ? '✓✓' : '✓') + '</span>';
   }
   var div = document.createElement('div');
   div.className = 'msg-bubble ' + (isSent ? 'msg-sent' : 'msg-recv');
@@ -468,8 +468,8 @@ async function ldViews() {
       pw.style.cssText = 'text-align:center;padding:40px 20px;';
       pw.innerHTML =
         '<div style="font-size:48px;margin-bottom:14px;">👁️</div>' +
-        '<h3 style="font-family:Cinzel,serif;color:#F5C842;font-size:17px;margin-bottom:8px;">See who viewed your profile</h3>' +
-        '<p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px;">Know who\'s interested before they send a request.<br/>This is a <strong style="color:#F5C842;">Premium</strong> feature.</p>' +
+        '<h3 style="font-family:Cinzel,serif;color:#C13DBF;font-size:17px;margin-bottom:8px;">See who viewed your profile</h3>' +
+        '<p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px;">Know who\'s interested before they send a request.<br/>This is a <strong style="color:#C13DBF;">Premium</strong> feature.</p>' +
         '<button class="btn btn-gold" style="width:auto;padding:12px 28px;" onclick="showSub()">Upgrade to Premium ✦</button>';
       container.appendChild(pw);
     }
