@@ -126,7 +126,7 @@ async function confirmReport(userId) {
 // ─── DEACTIVATE ACCOUNT ────────────────────────────────────────────
 function openDeactivateModal() {
   var founderNote = (P && P.is_founding_member && new Date() < LAUNCH)
-    ? '<p style="font-size:11px;color:#FFD54F;background:rgba(232,184,48,.08);border:1px solid rgba(232,184,48,.25);border-radius:8px;padding:9px;margin-bottom:12px;line-height:1.5;">⚠️ You are a founding member. If you miss the 7-day free Premium window (24–31 May), message us on WhatsApp +91 97000 25345 to claim it later.</p>'
+    ? '<p style="font-size:11px;color:#C13DBF;background:rgba(232,184,48,.08);border:1px solid rgba(232,184,48,.25);border-radius:8px;padding:9px;margin-bottom:12px;line-height:1.5;">⚠️ You are a founding member. If you miss the 7-day free Premium window (24–31 May), message us on WhatsApp +91 97000 25345 to claim it later.</p>'
     : '';
   var h = '' +
     '<div style="padding:8px 4px;">' +
