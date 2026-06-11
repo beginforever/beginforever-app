@@ -5,7 +5,7 @@
 var _onbStep = 0;
 var _onbRunning = false;
 var _onbData = {};
-var ONB_STEPS = ['welcome','partner_prefs','family','hobbies','faith_prefs','privacy','done'];
+var ONB_STEPS = ['welcome','intent','partner_prefs','family','hobbies','faith_prefs','privacy','done'];
 var ALL_RELIGIONS = ['Christian','Hindu','Muslim','Sikh','Jain','Buddhist','Parsi','Jewish','Spiritual','Other'];
 var ALL_MARITAL   = ['Never Married','Awaiting Divorce','Divorced','Widowed','Annulled'];
 
@@ -65,6 +65,7 @@ function startOnboarding(){
     pref_education:P.pref_education||'Any',pref_occupation:P.pref_occupation||'',
     pref_height_min_cm:P.pref_height_min_cm||152,pref_height_max_cm:P.pref_height_max_cm||196,
     income_bracket:P.income_bracket||'',looking_for:P.looking_for||'',
+    intent:P.intent||'',_lifeHappy:[],_lifeLiving:[],_lifeMeans:[],_lifePace:[],
     family_type:P.family_type||'',family_values:P.family_values||'',
     siblings:P.siblings||'',father_occupation:P.father_occupation||'',mother_occupation:P.mother_occupation||'',
     hobbies:[],faith_browse:[],faith_receive:[],
@@ -88,6 +89,7 @@ function _renderOnbStep(){
   var sc=document.getElementById('onboardingScreen');if(!sc)return;
   var s=ONB_STEPS[_onbStep];
   if(s==='welcome')_onbWelcome(sc);
+  else if(s==='intent')_onbIntent(sc);
   else if(s==='partner_prefs')_onbPartnerPrefs(sc);
   else if(s==='family')_onbFamily(sc);
   else if(s==='hobbies')_onbHobbies(sc);
@@ -117,11 +119,18 @@ function _collectStep(){
     _onbData.pref_city=(cityEl&&cityEl.value&&cityEl.value!=='Any City')?cityEl.value:(stateEl?stateEl.value:'');
   }
   if(s==='family'){
-    _onbData.family_type=val('onbFamType');
-    _onbData.family_values=val('onbFamVals');
-    _onbData.siblings=val('onbSiblings');
-    _onbData.father_occupation=val('onbFatherOcc');
-    _onbData.mother_occupation=val('onbMotherOcc');
+    var _ic=_onbData.intent||'';
+    if(_ic==='companionship'||_ic==='later_life'||_ic==='friendship'){
+      var _p=[].concat(_onbData._lifeHappy||[],_onbData._lifeMeans||[]);
+      if(_p.length)_onbData.looking_for=_p.join(', ');
+      _onbData.family_type='';_onbData.family_values='';_onbData.siblings='';_onbData.father_occupation='';_onbData.mother_occupation='';
+    }else{
+      _onbData.family_type=val('onbFamType');
+      _onbData.family_values=val('onbFamVals');
+      _onbData.siblings=val('onbSiblings');
+      _onbData.father_occupation=val('onbFatherOcc');
+      _onbData.mother_occupation=val('onbMotherOcc');
+    }
   }
   if(s==='faith_prefs'){
     // Collect from checkboxes
@@ -142,6 +151,7 @@ function _collectStep(){
 
 function _validateStep(){
   var s=ONB_STEPS[_onbStep];
+  if(s==='intent'&&!_onbData.intent){alert('Please choose what you are looking for.');return false;}
   if(s==='partner_prefs'){
     if(!_onbData.pref_religions.length){alert('Please select at least one preferred religion you are open to matching with.');return false;}
     var ageMin=parseInt((document.getElementById('onbAgeMin')||{}).value||0);
@@ -202,6 +212,15 @@ function _onbWelcome(sc){
     '</div>';
 }
 
+// STEP: INTENT SELECTOR
+function _onbIntent(sc){
+  var opts=[['marriage_soon','Marriage — ready soon','Looking to marry within 6–12 months','\u25C6'],['marriage_intime','Marriage — in time','Marriage-minded, 1–2 year horizon','\u25C6'],['partnership','Life partnership','A committed partner, marriage optional','\u25C7'],['companionship','Companionship','Emotional connection & shared life','\u2665'],['later_life','Later in life','A partner or companion for this chapter','\u2726'],['friendship','Friendship first','Begin as friends, open to where it leads','\u25CB']];
+  var h='<div class="onb-card"><span class="onb-lbl" style="display:block;margin-bottom:4px;">Begin Forever</span><h2 class="onb-title" style="font-size:22px;margin-bottom:6px;">What are you looking for?</h2><p class="onb-sub">This shapes everything you see. Be honest \u2014 we match by intent, so you only meet people looking for the same.</p><div id="onbIntentList">';
+  opts.forEach(function(o){var on=_onbData.intent===o[0];h+='<div class="onb-intent" onclick="_onbPickIntent(\''+o[0]+'\')" style="border:1.5px solid '+(on?'#C13DBF':'rgba(59,7,100,.12)')+';background:'+(on?'#F1E4F8':'#fff')+';border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:12px;margin-bottom:9px;cursor:pointer;"><div style="width:34px;height:34px;border-radius:50%;background:'+(on?'linear-gradient(135deg,#F24E96,#9B30C9)':'rgba(59,7,100,.06)')+';color:'+(on?'#fff':'#9B30C9')+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">'+o[3]+'</div><div style="flex:1;"><div style="font-family:Cinzel,serif;font-size:15px;color:#1C0530;font-weight:600;">'+o[1]+'</div><div style="font-size:11px;color:#5B3A7A;margin-top:2px;">'+o[2]+'</div></div></div>';});
+  h+='</div>'+_onbFoot(true)+'</div>';sc.innerHTML=h;
+}
+function _onbPickIntent(v){_onbData.intent=v;_onbIntent(document.getElementById('onboardingScreen'));}
+
 // STEP 1: PARTNER PREFERENCES
 function _onbPartnerPrefs(sc){
   var eduOpts=['Any','Graduate and above','Post Graduate','Doctorate','Professional Degree'];
@@ -242,8 +261,17 @@ function _onbLoadCities(){
   if(_onbData.pref_city)ct.value=_onbData.pref_city;
 }
 
-// STEP 2: FAMILY
+// STEP 2: FAMILY (adaptive by intent)
 function _onbFamily(sc){
+  var _ic=_onbData.intent||'';
+  if(_ic==='companionship'||_ic==='later_life'||_ic==='friendship'){
+    sc.innerHTML='<div class="onb-card">'+_onbHdr('Your Life',2,5)+      '<p class="onb-sub">Where marriage asks about family, companionship asks about you \u2014 your days, your space, your pace.</p>'+      '<span class="onb-lbl">I am at my happiest…</span><div id="onbLifeHappy" style="margin-bottom:16px;"></div>'+      '<span class="onb-lbl">My living situation</span><div id="onbLifeLiving" style="margin-bottom:16px;"></div>'+      '<span class="onb-lbl">What companionship means to me</span><div id="onbLifeMeans" style="margin-bottom:16px;"></div>'+      '<span class="onb-lbl">Pace I am comfortable with</span><div id="onbLifePace" style="margin-bottom:16px;"></div>'+      _onbFoot(true)+'</div>';
+    _onbChips('onbLifeHappy',['With a few close people','Out in nature','In a full house','Quiet & solo'],_onbData._lifeHappy,null,null,false);
+    _onbChips('onbLifeLiving',['Live independently','With family','Open to change'],_onbData._lifeLiving,null,null,false);
+    _onbChips('onbLifeMeans',['Someone to share days with','Travel & experiences','Faith & community','Quiet routine together'],_onbData._lifeMeans,null,null,false);
+    _onbChips('onbLifePace',['Slow & unhurried','See where it goes'],_onbData._lifePace,null,null,false);
+    return;
+  }
   sc.innerHTML='<div class="onb-card">'+_onbHdr('Family Background',2,5)+
     '<p class="onb-sub">Helps matches understand your background. All optional.</p>'+
     '<div class="field-group"><label class="field-label">Family Type</label><select class="field" id="onbFamType">'+['','Nuclear','Joint','Extended'].map(function(v){return '<option value="'+v+'"'+(v===_onbData.family_type?' selected':'')+'>'+(v||'Select…')+'</option>';}).join('')+'</select></div>'+
@@ -285,32 +313,37 @@ function _onbFaithPrefs(sc){
   var browseAllChecked=_onbData.faith_browse.length>=ALL_RELIGIONS.length;
   var receiveAllChecked=_onbData.faith_receive.length>=ALL_RELIGIONS.length;
 
-  sc.innerHTML='<div class="onb-card">'+_onbHdr('Faith Preferences',4,5)+
+  sc.innerHTML='<style>#onboardingScreen details>summary::-webkit-details-marker{display:none}#onboardingScreen details[open]>summary .onb-cv{transform:rotate(180deg)}</style><div class="onb-card">'+_onbHdr('Faith Preferences',4,5)+
     '<p class="onb-sub">Control who you see and who can reach you. You can change this anytime.</p>'+
 
     '<span class="onb-lbl">🔍 Browse profiles from</span>'+
-    '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;overflow:hidden;margin-bottom:20px;">'+
+    '<details style="margin-bottom:20px;"><summary style="list-style:none;cursor:pointer;padding:13px 15px;background:#fff;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;font-size:13px;color:#1C0530;font-weight:600;display:flex;align-items:center;justify-content:space-between;"><span id="onbFpbSum">'+_onbFpSummary('browse')+'</span><span class="onb-cv" style="color:#9B30C9;transition:transform .2s;">\u25BE</span></summary>'+
+      '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;">'+
       '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:2px solid rgba(59,7,100,.12);font-size:13px;color:#3B0764;font-weight:700;background:rgba(59,7,100,.04);">'+
         '<input type="checkbox" id="onbFpb_all" onchange="_onbFpHandleAll(\'browse\')" style="accent-color:#9B30C9;width:16px;height:16px;"'+(browseAllChecked?' checked':'')+'/> All Faiths</label>'+
       faithOpts+
-    '</div>'+
+    '</div></details>'+
 
     '<span class="onb-lbl">💌 Receive interests from</span>'+
-    '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;overflow:hidden;margin-bottom:20px;">'+
+    '<details style="margin-bottom:20px;"><summary style="list-style:none;cursor:pointer;padding:13px 15px;background:#fff;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;font-size:13px;color:#1C0530;font-weight:600;display:flex;align-items:center;justify-content:space-between;"><span id="onbFprSum">'+_onbFpSummary('receive')+'</span><span class="onb-cv" style="color:#9B30C9;transition:transform .2s;">\u25BE</span></summary>'+
+      '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;">'+
       '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:2px solid rgba(59,7,100,.12);font-size:13px;color:#3B0764;font-weight:700;background:rgba(59,7,100,.04);">'+
         '<input type="checkbox" id="onbFpr_all" onchange="_onbFpHandleAll(\'receive\')" style="accent-color:#9B30C9;width:16px;height:16px;"'+(receiveAllChecked?' checked':'')+'/> All Faiths</label>'+
       faithOptsR+
-    '</div>'+
+    '</div></details>'+
 
     '<div style="background:rgba(59,7,100,.05);border:1px solid rgba(59,7,100,.12);border-radius:10px;padding:12px;margin-bottom:16px;font-size:11px;color:#5B3A7A;line-height:1.6;">🔒 These settings only affect your discovery feed. Other members cannot see your preferences.</div>'+
     _onbFoot(true)+'</div>';
 }  // ← THIS CLOSING BRACE WAS MISSING IN v120
 
+function _onbFpSummary(type){var arr=type==='browse'?_onbData.faith_browse:_onbData.faith_receive;if(!arr||!arr.length||arr.length>=ALL_RELIGIONS.length)return 'All Faiths';if(arr.length===1)return arr[0];return arr.length+' faiths selected';}
+function _onbFpRefreshSum(type){var sumEl=document.getElementById(type==='browse'?'onbFpbSum':'onbFprSum');if(!sumEl)return;var cls=type==='browse'?'onb-fpb-opt':'onb-fpr-opt';var allChk=document.getElementById(type==='browse'?'onbFpb_all':'onbFpr_all');var sel=Array.from(document.querySelectorAll('.'+cls+':checked')).map(function(o){return o.value;});sumEl.textContent=(allChk&&allChk.checked)?'All Faiths':(sel.length===0?'All Faiths':(sel.length===1?sel[0]:sel.length+' faiths selected'));}
 function _onbFpHandleAll(type){
   var cls=type==='browse'?'onb-fpb-opt':'onb-fpr-opt';
   var allId=type==='browse'?'onbFpb_all':'onbFpr_all';
   var allChk=document.getElementById(allId);
   document.querySelectorAll('.'+cls).forEach(function(o){o.checked=allChk&&allChk.checked;});
+  _onbFpRefreshSum(type);
 }
 
 function _onbFpUpdateLabel(type){
@@ -319,6 +352,7 @@ function _onbFpUpdateLabel(type){
   var selected=Array.from(document.querySelectorAll('.'+cls+':checked')).map(function(o){return o.value;});
   var allChk=document.getElementById(allId);
   if(allChk) allChk.checked=selected.length>=ALL_RELIGIONS.length;
+  _onbFpRefreshSum(type);
 }
 
 // STEP 5: PRIVACY — now correctly its own function
@@ -349,6 +383,7 @@ async function _onbComplete(){
       pref_height_min_cm:_onbData.pref_height_min_cm,pref_height_max_cm:_onbData.pref_height_max_cm,
       income_bracket:_onbData.income_bracket||null,
       looking_for:_onbData.looking_for,
+      intent:_onbData.intent||null,
       family_type:_onbData.family_type||null,family_values:_onbData.family_values||null,
       siblings:_onbData.siblings||null,
       father_occupation:_onbData.father_occupation||null,mother_occupation:_onbData.mother_occupation||null,
