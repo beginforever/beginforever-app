@@ -102,7 +102,7 @@ function _handlePhotoSelected(slot, inp, idx, file, photoArr) {
   });
   var spinner = document.createElement('div');
   spinner.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;border-radius:inherit;pointer-events:none;';
-  spinner.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#F5C842;border-radius:50%;animation:spin .6s linear infinite;"></div>';
+  spinner.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#C13DBF;border-radius:50%;animation:spin .6s linear infinite;"></div>';
   slot.style.position = 'relative';
   slot.appendChild(spinner);
   compressImage(file).then(function(compressed) {
@@ -144,15 +144,15 @@ function showProfileToast() {
   if (!tHome || tHome.style.display === 'none') return;
   var toast = document.createElement('div');
   toast.id = 'profileCompletionToast';
-  toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.5);color:#F5C842;padding:14px 40px 14px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:9998;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
+  toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(155,48,201,.5);color:#C13DBF;padding:14px 40px 14px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:9998;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
   var closeBtn = document.createElement('button');
-  closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
+  closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(193,61,191,.6);font-size:18px;cursor:pointer;line-height:1;';
   closeBtn.textContent = '✕';
   closeBtn.onclick = function(){_dismissProfileToast();};
   var msg = document.createElement('span');
   msg.innerHTML = '✨ Complete your profile to attract better matches!<br/>';
   var completeBtn = document.createElement('button');
-  completeBtn.style.cssText = 'margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
+  completeBtn.style.cssText = 'margin-top:10px;background:#C13DBF;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
   completeBtn.textContent = 'Complete Now →';
   completeBtn.onclick = function(){goTab('profile');openEdit();_dismissProfileToast();};
   toast.appendChild(closeBtn);
@@ -280,15 +280,15 @@ function updUI() {
         var on=_setupPrefReligions.indexOf(r)>-1;
         var btn=document.createElement('button');
         btn.type='button'; btn.textContent=r;
-        btn.style.cssText='padding:8px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:Nunito,sans-serif;border:1px solid '+(on?'var(--gold)':'rgba(255,255,255,.2)')+';background:'+(on?'rgba(212,160,23,.2)':'rgba(255,255,255,.05)')+';color:'+(on?'#F5C842':'rgba(255,255,255,.6)')+';margin-bottom:4px;transition:all .15s;';
+        btn.style.cssText='padding:8px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:Nunito,sans-serif;border:1px solid '+(on?'var(--gold)':'rgba(255,255,255,.2)')+';background:'+(on?'rgba(155,48,201,.2)':'rgba(255,255,255,.05)')+';color:'+(on?'#C13DBF':'rgba(255,255,255,.6)')+';margin-bottom:4px;transition:all .15s;';
         btn.onclick=function(){
           var ix=_setupPrefReligions.indexOf(r);
           if(ix>-1) _setupPrefReligions.splice(ix,1); else _setupPrefReligions.push(r);
           chipsEl.querySelectorAll('button').forEach(function(b){
             var sel=_setupPrefReligions.indexOf(b.textContent)>-1;
             b.style.borderColor=sel?'var(--gold)':'rgba(255,255,255,.2)';
-            b.style.background=sel?'rgba(212,160,23,.2)':'rgba(255,255,255,.05)';
-            b.style.color=sel?'#F5C842':'rgba(255,255,255,.6)';
+            b.style.background=sel?'rgba(155,48,201,.2)':'rgba(255,255,255,.05)';
+            b.style.color=sel?'#C13DBF':'rgba(255,255,255,.6)';
           });
         };
         chipsEl.appendChild(btn);
@@ -432,7 +432,7 @@ function renP() {
     '<p style="color:var(--w50);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
     '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
     (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'')+
-    (isPremiumUser()?'<div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:8px 12px;margin-top:10px;"><p style="font-size:11px;color:#F5C842;font-weight:700;margin:0;">✦ Premium Active'+(P.subscription_expires_at?' · Expires '+new Date(P.subscription_expires_at).toLocaleDateString('en-IN'):'')+'</p></div>':'')+
+    (isPremiumUser()?'<div style="background:rgba(155,48,201,.1);border:1px solid rgba(155,48,201,.3);border-radius:10px;padding:8px 12px;margin-top:10px;"><p style="font-size:11px;color:#C13DBF;font-weight:700;margin:0;">✦ Premium Active'+(P.subscription_expires_at?' · Expires '+new Date(P.subscription_expires_at).toLocaleDateString('en-IN'):'')+'</p></div>':'')+
     (ap.length>1?'<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;">'+ap.slice(1).map(function(u){return '<div style="width:56px;height:56px;border-radius:10px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>';}).join('')+'</div>':'');
   var h='';
   var rows=[
@@ -456,7 +456,7 @@ function renP() {
   var hobbies=[]; try{hobbies=JSON.parse(P.hobbies||'[]');}catch(e){}
   var hobEl=document.getElementById('profileHobbies');
   if(hobEl){
-    if(hobbies.length){hobEl.style.display='';var hp=document.getElementById('hobbyPills');if(hp)hp.innerHTML=hobbies.map(function(h2){return '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(212,160,23,.35);background:rgba(212,160,23,.1);color:#F5C842;margin:2px;">'+h2+'</span>';}).join('');}
+    if(hobbies.length){hobEl.style.display='';var hp=document.getElementById('hobbyPills');if(hp)hp.innerHTML=hobbies.map(function(h2){return '<span style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(155,48,201,.35);background:rgba(155,48,201,.1);color:#C13DBF;margin:2px;">'+h2+'</span>';}).join('');}
     else hobEl.style.display='none';
   }
   var lfEl=document.getElementById('profileLookingFor');
@@ -489,10 +489,10 @@ function renP() {
 function renderFaithPrefCard(){
   var el=document.getElementById('profileFaithSummary');if(!el)return;
   var premium=isPremiumUser();
-  var lockBadge=premium?'':'<span style="background:#F5C842;color:#3B0764;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:6px;">✦ PREMIUM</span>';
+  var lockBadge=premium?'':'<span style="background:#C13DBF;color:#3B0764;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:6px;">✦ PREMIUM</span>';
   var editBtn=premium
-    ?'<button onclick="openFaithPrefs()" style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">Edit ✦</button>'
-    :'<button onclick="showSubModal(\'Faith filter\')" style="background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.4);color:#F5C842;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">🔒 Unlock</button>';
+    ?'<button onclick="openFaithPrefs()" style="background:rgba(155,48,201,.12);border:1px solid rgba(155,48,201,.3);color:var(--gold2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">Edit ✦</button>'
+    :'<button onclick="showSubModal(\'Faith filter\')" style="background:rgba(193,61,191,.12);border:1px solid rgba(193,61,191,.4);color:#C13DBF;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">🔒 Unlock</button>';
   el.innerHTML=
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Faith Preferences'+lockBadge+'</p><p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Who you see &amp; who can reach you</p></div>'+editBtn+'</div>'+
     '<div style="'+(premium?'':'opacity:.45;filter:grayscale(.4);')+'">'+
@@ -711,12 +711,12 @@ async function viewProfile(id){
   h+='</div>';
   if(!isPreLaunch()){
     if(premium&&(p.phone||p.email)){
-      h+='<div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:12px;padding:13px;margin-top:10px;">';
+      h+='<div style="background:rgba(155,48,201,.08);border:1px solid rgba(155,48,201,.25);border-radius:12px;padding:13px;margin-top:10px;">';
       if(p.phone) h+='<p style="font-size:13px;color:#fff;margin:4px 0;">📱 '+p.phone+(p.phone_verified?' <span style="font-size:9px;color:#4ade80;font-weight:700;">✅ Verified</span>':'')+'</p>';
       if(p.email) h+='<p style="font-size:13px;color:#fff;margin:4px 0;">✉️ '+p.email+'</p>';
       h+='</div>';
     }else if(!premium){
-      h+='<div onclick="event.stopPropagation();showSubModal(\'Contact reveal\')" style="background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.3);border-radius:12px;padding:13px;margin-top:10px;cursor:pointer;text-align:center;"><p style="font-size:11px;color:#F5C842;font-weight:700;margin:0 0 4px;">🔒 ✦ PREMIUM</p><p style="font-size:13px;color:#fff;margin:0;">Tap to unlock contact details</p></div>';
+      h+='<div onclick="event.stopPropagation();showSubModal(\'Contact reveal\')" style="background:rgba(193,61,191,.08);border:1px solid rgba(193,61,191,.3);border-radius:12px;padding:13px;margin-top:10px;cursor:pointer;text-align:center;"><p style="font-size:11px;color:#C13DBF;font-weight:700;margin:0 0 4px;">🔒 ✦ PREMIUM</p><p style="font-size:13px;color:#fff;margin:0;">Tap to unlock contact details</p></div>';
     }
   }
   var ir=await sb.from('interests').select('*').eq('from_user',U.id).eq('to_user',id).limit(1);
@@ -787,7 +787,7 @@ function renderEditHobbyChips(){
     var on=_editHobbies.indexOf(h)>-1;
     var chip=document.createElement('button');
     chip.type='button';chip.textContent=h;
-    chip.style.cssText='padding:6px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;margin:2px;border:1px solid '+(on?'var(--gold)':'rgba(255,255,255,.18)')+';background:'+(on?'rgba(212,160,23,.2)':'rgba(255,255,255,.05)')+';color:'+(on?'#F5C842':'rgba(255,255,255,.5)')+';';
+    chip.style.cssText='padding:6px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;margin:2px;border:1px solid '+(on?'var(--gold)':'rgba(255,255,255,.18)')+';background:'+(on?'rgba(155,48,201,.2)':'rgba(255,255,255,.05)')+';color:'+(on?'#C13DBF':'rgba(255,255,255,.5)')+';';
     chip.onclick=function(){
       var ix=_editHobbies.indexOf(h);
       if(ix>-1)_editHobbies.splice(ix,1);else{if(_editHobbies.length<12)_editHobbies.push(h);}
@@ -831,11 +831,11 @@ if(tp)tp.style.background='#1C0530';
   var ap=[P.photo_url,P.photo_2_url,P.photo_3_url,P.photo_4_url,P.photo_5_url].filter(Boolean);
   var photoHtml='<div class="photo-grid" id="epGrid"></div>';
   mi.innerHTML=
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Photos</p>'+photoHtml+
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">About Me</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Photos</p>'+photoHtml+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">About Me</p>'+
     '<div class="field-group"><label class="field-label">Bio <span style="color:#ff6b6b;">*</span></label><textarea class="field" id="e_bio" style="min-height:90px;resize:vertical;" placeholder="Tell potential matches about yourself...">'+(P.bio||'')+'</textarea></div>'+
     '<div class="field-group"><label class="field-label">What I\'m Looking For</label><textarea class="field" id="e_lookingFor" style="min-height:70px;resize:vertical;" placeholder="Describe what you are looking for...">'+(P.looking_for||'')+'</textarea></div>'+
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Basic Details</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Basic Details</p>'+
     '<div class="field-group"><label class="field-label">Education</label>'+inp('e_edu',P.education,'e.g. B.Tech, MBA')+'</div>'+
     '<div class="field-group"><label class="field-label">Occupation</label>'+inp('e_occ',P.occupation,'e.g. Software Engineer')+'</div>'+
     '<div class="field-row">'+
@@ -843,10 +843,10 @@ if(tp)tp.style.background='#1C0530';
       '<div class="field-group"><label class="field-label">Mother Tongue</label>'+inp('e_motherTongue',P.mother_tongue,'e.g. Tamil')+'</div>'+
     '</div>'+
     '<div class="field-group"><label class="field-label">Marital Status</label><select class="field" id="e_marital"><option value="">Select</option>'+sel(P.marital_status,['Never Married','Divorced','Widowed','Annulled','Awaiting Divorce'])+'</select></div>'+
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Faith &amp; Beliefs</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Faith &amp; Beliefs</p>'+
     '<div class="field-group"><label class="field-label">Faith Importance <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_faithImportance"><option value="">Select</option>'+sel(P.faith_importance,['Very important','Important','Somewhat important','Not important'])+'</select></div>'+
     '<div class="field-group"><label class="field-label">Favourite Scripture</label>'+inp('e_scripture',P.scripture,'e.g. Jeremiah 29:11')+'</div>'+
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Lifestyle</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Lifestyle</p>'+
     '<div class="field-row">'+
       '<div class="field-group"><label class="field-label">Diet <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_diet"><option value="">Select</option>'+sel(P.diet,['Vegetarian','Non-Vegetarian','Vegan','Jain','No preference'])+'</select></div>'+
       '<div class="field-group"><label class="field-label">Exercise</label><select class="field" id="e_exercise"><option value="">Select</option>'+sel(P.exercise,['Daily','Often','Sometimes','Rarely'])+'</select></div>'+
@@ -855,10 +855,10 @@ if(tp)tp.style.background='#1C0530';
       '<div class="field-group"><label class="field-label">Smoking <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_smoking"><option value="">Select</option>'+sel(P.smoking,['Never','Occasionally','Yes'])+'</select></div>'+
       '<div class="field-group"><label class="field-label">Drinking <span style="color:#ff6b6b;">*</span></label><select class="field" id="e_drinking"><option value="">Select</option>'+sel(P.drinking,['Never','Occasionally','Yes'])+'</select></div>'+
     '</div>'+
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 4px;">Hobbies <span style="color:#ff6b6b;">*</span> (min 3)</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 4px;">Hobbies <span style="color:#ff6b6b;">*</span> (min 3)</p>'+
     '<p style="font-size:11px;color:var(--w40);margin-bottom:8px;">Selected: <span id="eHobbyCount">'+_editHobbies.length+'</span></p>'+
     '<div id="eHobbyChips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;"></div>'+
-    '<p style="font-size:10px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Partner Preferences</p>'+
+    '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Partner Preferences</p>'+
     '<div class="field-row">'+
       '<div class="field-group"><label class="field-label">Min Age</label><input class="field" type="number" id="e_prefAgeMin" value="'+(P.pref_age_min||18)+'" min="18" max="70"/></div>'+
       '<div class="field-group"><label class="field-label">Max Age</label><input class="field" type="number" id="e_prefAgeMax" value="'+(P.pref_age_max||70)+'" min="18" max="70"/></div>'+
