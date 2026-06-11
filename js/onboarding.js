@@ -17,14 +17,22 @@ var ONB_STYLE = [
   '.onb-card .field-label{color:#3B0764!important;font-weight:700!important;}',
   '.onb-card input::placeholder,.onb-card textarea::placeholder{color:rgba(59,7,100,.35)!important;}',
   '.onb-card select option{background:#fff;color:#1C0530;}',
-  '.onb-lbl{font-size:10px;font-weight:700;color:#C8960C;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;}',
+  '.onb-lbl{font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;}',
   '.onb-foot{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));background:#FDFAF4;border-top:1px solid rgba(59,7,100,.12);display:flex;gap:10px;z-index:200;box-sizing:border-box;}',
   '.onb-title{font-family:Cinzel,serif;font-size:22px;color:#1C0530;margin:0 0 4px;}',
   '.onb-sub{font-size:13px;color:#5B3A7A;margin-bottom:20px;line-height:1.6;}',
   '.onb-chip{padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif;border:2px solid #3B0764;background:#3B0764;color:#fff;margin:0 4px 6px 0;display:inline-block;transition:all .15s;}',
-  '.onb-chip.on{background:#D4A017;border-color:#D4A017;color:#fff;}',
+  '.onb-chip.on{background:#F24E96;border-color:#F24E96;color:#fff;}',
   '.onb-progress-bg{height:3px;background:rgba(59,7,100,.12);border-radius:2px;margin-bottom:16px;}',
-  '.onb-progress-fill{height:3px;background:#D4A017;border-radius:2px;transition:width .3s;}'
+  '.onb-progress-fill{height:3px;background:linear-gradient(135deg,#F24E96,#9B30C9);border-radius:2px;transition:width .3s;}',
+  '#onboardingScreen .btn-gold{background:#3B0764!important;color:#fff!important;border:none!important;}',
+  '.onb-range{position:relative;height:56px;margin:4px 0 18px;}',
+  '.onb-range-val{display:flex;justify-content:space-between;font-family:Cinzel,serif;font-size:22px;color:#1C0530;font-weight:600;margin-bottom:14px;}',
+  '.onb-range-track{position:absolute;left:0;right:0;top:46px;height:4px;background:rgba(59,7,100,.12);border-radius:2px;}',
+  '.onb-range-fill{position:absolute;top:0;bottom:0;left:0;right:0;background:linear-gradient(135deg,#F24E96,#9B30C9);border-radius:2px;}',
+  '.onb-range-input{position:absolute;left:0;right:0;top:38px;width:100%;height:20px;margin:0;-webkit-appearance:none;appearance:none;background:transparent;pointer-events:none;}',
+  '.onb-range-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#3B0764;border:3px solid #fff;box-shadow:0 1px 5px rgba(59,7,100,.4);cursor:pointer;pointer-events:auto;}',
+  '.onb-range-input::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#3B0764;border:3px solid #fff;cursor:pointer;pointer-events:auto;}'
 ].join('\n');
 
 function _injectOnbStyle(){
@@ -152,7 +160,7 @@ function _validateStep(){
 
 function _onbHdr(title,step,total){
   var pct=Math.round((step/total)*100);
-  return '<p style="font-size:10px;font-weight:700;color:#C8960C;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 8px;">'+step+' OF '+total+'</p>'+
+  return '<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 8px;">'+step+' OF '+total+'</p>'+
     '<div class="onb-progress-bg"><div class="onb-progress-fill" style="width:'+pct+'%;"></div></div>'+
     '<h2 class="onb-title">'+title+'</h2>';
 }
@@ -186,7 +194,7 @@ function _onbChips(containerId,list,selected,maxSelect,onChange,keepOne){
 function _onbWelcome(sc){
   var name=P&&P.full_name?P.full_name.split(' ')[0]:'Friend';
   sc.innerHTML='<div class="onb-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 32px 140px;">'+
-    '<div style="font-size:56px;margin-bottom:16px;">🎉</div>'+
+    '<div style="width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#F24E96,#9B30C9);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-family:Cinzel,serif;font-size:38px;color:#fff;font-style:italic;">✦</div>'+
     '<h2 class="onb-title" style="font-size:26px;margin-bottom:8px;">Congratulations, '+name+'!</h2>'+
     '<p style="font-size:14px;color:#1C0530;font-weight:600;margin-bottom:8px;">Your profile has been <span style="color:#2E7D32;">approved</span>.</p>'+
     '<p style="font-size:13px;color:#5B3A7A;line-height:1.7;margin-bottom:32px;max-width:360px;">Let\'s take 3 minutes to set your match preferences so we can show you the most compatible profiles.</p>'+
@@ -201,9 +209,11 @@ function _onbPartnerPrefs(sc){
 
   sc.innerHTML='<div class="onb-card">'+_onbHdr('Partner Preferences',1,5)+
     '<span class="onb-lbl">Age Range *</span>'+
-    '<div style="display:flex;gap:10px;margin-bottom:16px;">'+
-      '<div style="flex:1;"><label class="field-label">Min</label><input type="number" class="field" id="onbAgeMin" value="'+_onbData.pref_age_min+'" min="18" max="70"/></div>'+
-      '<div style="flex:1;"><label class="field-label">Max</label><input type="number" class="field" id="onbAgeMax" value="'+_onbData.pref_age_max+'" min="18" max="70"/></div>'+
+    '<div class="onb-range">'+
+      '<div class="onb-range-val"><span id="onbAgeMinLbl">'+_onbData.pref_age_min+'</span><span style="color:#9B30C9;">—</span><span id="onbAgeMaxLbl">'+_onbData.pref_age_max+'</span></div>'+
+      '<div class="onb-range-track"><div class="onb-range-fill" id="onbAgeFill"></div></div>'+
+      '<input type="range" class="onb-range-input" id="onbAgeMin" min="18" max="70" value="'+_onbData.pref_age_min+'" oninput="_onbAgeSlide(\'min\')"/>'+
+      '<input type="range" class="onb-range-input" id="onbAgeMax" min="18" max="70" value="'+_onbData.pref_age_max+'" oninput="_onbAgeSlide(\'max\')"/>'+
     '</div>'+
     '<span class="onb-lbl">Preferred Religion * <span style="font-size:10px;color:#7A6090;text-transform:none;letter-spacing:0;">(select all that apply)</span></span>'+
     '<div id="onbRelChips" style="margin-bottom:16px;display:flex;flex-wrap:wrap;gap:4px;"></div>'+
@@ -221,8 +231,10 @@ function _onbPartnerPrefs(sc){
 
   _onbChips('onbRelChips',ALL_RELIGIONS,_onbData.pref_religions,null,null,false);
   _onbChips('onbMarChips',ALL_MARITAL,_onbData.pref_marital_statuses,null,null,false);
+  _onbAgeSlide();
 }
 
+function _onbAgeSlide(which){var a=document.getElementById('onbAgeMin'),b=document.getElementById('onbAgeMax');if(!a||!b)return;var lo=parseInt(a.value),hi=parseInt(b.value);if(lo>hi){if(which==='max'){b.value=lo;hi=lo;}else{a.value=hi;lo=hi;}}var mn=document.getElementById('onbAgeMinLbl'),mx=document.getElementById('onbAgeMaxLbl');if(mn)mn.textContent=lo;if(mx)mx.textContent=hi;var fill=document.getElementById('onbAgeFill');if(fill){var span=70-18;fill.style.left=((lo-18)/span*100)+'%';fill.style.right=(100-((hi-18)/span*100))+'%';}}
 function _onbLoadCities(){
   var st=document.getElementById('onbState');var ct=document.getElementById('onbCity');if(!st||!ct)return;
   ct.innerHTML='<option>Any City</option>';
@@ -259,15 +271,15 @@ function _onbFaithPrefs(sc){
   if(!_onbData.faith_receive.length)_onbData.faith_receive=ALL_RELIGIONS.slice();
 
   var faithOpts=ALL_RELIGIONS.map(function(r){
-    var icons={'Christian':'✝️','Hindu':'🕉️','Muslim':'☪️','Sikh':'☬','Jain':'🕊️','Buddhist':'☸️','Parsi':'🔥','Jewish':'✡️','Spiritual':'🌱','Other':'🌐'};
+    var fcol={'Christian':'#7C4DA0','Hindu':'#C2691E','Muslim':'#2E7D52','Sikh':'#B8860B','Jain':'#3F7DC0','Buddhist':'#C0641E','Parsi':'#B5482E','Jewish':'#3A6EA5','Spiritual':'#2E9E63','Other':'#8A7CA8'};var icons={};Object.keys(fcol).forEach(function(k){icons[k]='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+fcol[k]+';flex-shrink:0;"></span>';});
     return '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(59,7,100,.08);font-size:13px;color:#1C0530;">'+
-      '<input type="checkbox" value="'+r+'" class="BROWSE_CLS" onchange="_onbFpUpdateLabel(\'browse\')" style="accent-color:#D4A017;width:16px;height:16px;"'+((_onbData.faith_browse.indexOf(r)>-1)?' checked':'')+'/> '+(icons[r]||'')+'  '+r+'</label>';
+      '<input type="checkbox" value="'+r+'" class="BROWSE_CLS" onchange="_onbFpUpdateLabel(\'browse\')" style="accent-color:#9B30C9;width:16px;height:16px;"'+((_onbData.faith_browse.indexOf(r)>-1)?' checked':'')+'/> '+(icons[r]||'')+'  '+r+'</label>';
   }).join('').replace(/BROWSE_CLS/g,'onb-fpb-opt');
 
   var faithOptsR=ALL_RELIGIONS.map(function(r){
-    var icons={'Christian':'✝️','Hindu':'🕉️','Muslim':'☪️','Sikh':'☬','Jain':'🕊️','Buddhist':'☸️','Parsi':'🔥','Jewish':'✡️','Spiritual':'🌱','Other':'🌐'};
+    var fcol={'Christian':'#7C4DA0','Hindu':'#C2691E','Muslim':'#2E7D52','Sikh':'#B8860B','Jain':'#3F7DC0','Buddhist':'#C0641E','Parsi':'#B5482E','Jewish':'#3A6EA5','Spiritual':'#2E9E63','Other':'#8A7CA8'};var icons={};Object.keys(fcol).forEach(function(k){icons[k]='<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+fcol[k]+';flex-shrink:0;"></span>';});
     return '<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(59,7,100,.08);font-size:13px;color:#1C0530;">'+
-      '<input type="checkbox" value="'+r+'" class="RECEIVE_CLS" onchange="_onbFpUpdateLabel(\'receive\')" style="accent-color:#D4A017;width:16px;height:16px;"'+((_onbData.faith_receive.indexOf(r)>-1)?' checked':'')+'/> '+(icons[r]||'')+'  '+r+'</label>';
+      '<input type="checkbox" value="'+r+'" class="RECEIVE_CLS" onchange="_onbFpUpdateLabel(\'receive\')" style="accent-color:#9B30C9;width:16px;height:16px;"'+((_onbData.faith_receive.indexOf(r)>-1)?' checked':'')+'/> '+(icons[r]||'')+'  '+r+'</label>';
   }).join('').replace(/RECEIVE_CLS/g,'onb-fpr-opt');
 
   var browseAllChecked=_onbData.faith_browse.length>=ALL_RELIGIONS.length;
@@ -279,14 +291,14 @@ function _onbFaithPrefs(sc){
     '<span class="onb-lbl">🔍 Browse profiles from</span>'+
     '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;overflow:hidden;margin-bottom:20px;">'+
       '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:2px solid rgba(59,7,100,.12);font-size:13px;color:#3B0764;font-weight:700;background:rgba(59,7,100,.04);">'+
-        '<input type="checkbox" id="onbFpb_all" onchange="_onbFpHandleAll(\'browse\')" style="accent-color:#D4A017;width:16px;height:16px;"'+(browseAllChecked?' checked':'')+'/> All Faiths</label>'+
+        '<input type="checkbox" id="onbFpb_all" onchange="_onbFpHandleAll(\'browse\')" style="accent-color:#9B30C9;width:16px;height:16px;"'+(browseAllChecked?' checked':'')+'/> All Faiths</label>'+
       faithOpts+
     '</div>'+
 
     '<span class="onb-lbl">💌 Receive interests from</span>'+
     '<div style="background:#FDFAF4;border:1.5px solid rgba(59,7,100,.2);border-radius:12px;overflow:hidden;margin-bottom:20px;">'+
       '<label style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:2px solid rgba(59,7,100,.12);font-size:13px;color:#3B0764;font-weight:700;background:rgba(59,7,100,.04);">'+
-        '<input type="checkbox" id="onbFpr_all" onchange="_onbFpHandleAll(\'receive\')" style="accent-color:#D4A017;width:16px;height:16px;"'+(receiveAllChecked?' checked':'')+'/> All Faiths</label>'+
+        '<input type="checkbox" id="onbFpr_all" onchange="_onbFpHandleAll(\'receive\')" style="accent-color:#9B30C9;width:16px;height:16px;"'+(receiveAllChecked?' checked':'')+'/> All Faiths</label>'+
       faithOptsR+
     '</div>'+
 
@@ -365,15 +377,15 @@ async function _onbComplete(){
   setTimeout(function(){
     var toast=document.createElement('div');
     toast.id='onbCompletionToast';
-    toast.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(212,160,23,.4);color:#F5C842;padding:14px 20px;border-radius:14px;font-size:13px;font-weight:700;z-index:9999;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
+    toast.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#3B0764;border:1px solid rgba(155,48,201,.4);color:#F24E96;padding:14px 20px;border-radius:14px;font-size:13px;font-weight:700;z-index:9999;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,.5);line-height:1.5;';
     var closeBtn=document.createElement('button');
-    closeBtn.style.cssText='position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(245,200,66,.6);font-size:18px;cursor:pointer;line-height:1;';
+    closeBtn.style.cssText='position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,.55);font-size:18px;cursor:pointer;line-height:1;';
     closeBtn.textContent='✕';
     closeBtn.onclick=function(){var t=document.getElementById('onbCompletionToast');if(t)t.remove();};
     var msg=document.createElement('span');
     msg.innerHTML='✨ Almost done! Add your bio, lifestyle &amp; hobbies to attract better matches.<br/>';
     var btn=document.createElement('button');
-    btn.style.cssText='margin-top:10px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
+    btn.style.cssText='margin-top:10px;background:#F24E96;color:#3B0764;border:none;border-radius:8px;padding:8px 18px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;font-size:12px;display:block;width:100%;';
     btn.textContent='Complete Profile →';
     btn.onclick=function(){openEdit();var t=document.getElementById('onbCompletionToast');if(t)t.remove();};
     toast.appendChild(closeBtn);toast.appendChild(msg);toast.appendChild(btn);
