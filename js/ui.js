@@ -155,6 +155,11 @@ function showLockToast() {
   setTimeout(function(){ t.style.display = 'none'; }, 2500);
 }
 
+// ═══ INTENT (Phase 2)
+var _INTENT_META={marriage_soon:{label:'Marriage',grp:'marriage',c:'#C13DBF'},marriage_intime:{label:'Marriage',grp:'marriage',c:'#C13DBF'},partnership:{label:'Partnership',grp:'both',c:'#9B30C9'},companionship:{label:'Companionship',grp:'companion',c:'#2E7D52'},later_life:{label:'Companionship',grp:'companion',c:'#2E7D52'},friendship:{label:'Friendship',grp:'friend',c:'#3F7DC0'}};
+function _intentCompat(mine,theirs){if(!mine||!theirs)return true;var a=_INTENT_META[mine],b=_INTENT_META[theirs];if(!a||!b)return true;if(a.grp==='both'||b.grp==='both')return true;return a.grp===b.grp;}
+function _intentBadge(k){var m=_INTENT_META[k];if(!m)return '';return '<span style="display:inline-block;font-size:9px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:20px;background:'+m.c+'22;color:'+m.c+';border:1px solid '+m.c+'55;">'+m.label+'</span>';}
+
 // ═══ BROWSE
 async function ldBrowse() {
   if (!P) return;
@@ -198,6 +203,7 @@ async function ldBrowse() {
     d = d.filter(function(p) { return BLOCKED_IDS.indexOf(p.id) === -1; });
   }
 
+  if (!preLaunch && P.intent) { d = d.filter(function(p){ return _intentCompat(P.intent, p.intent); }); }
   var be = document.getElementById('bEmpty'); if (be) be.style.display = d.length ? 'none' : '';
   var l = document.getElementById('bList'); if (!l) return; l.innerHTML = '';
 
@@ -214,6 +220,7 @@ async function ldBrowse() {
         + (p.denomination ? '<span style="font-size:10px;padding:2px 8px;background:' + f.bg + ';border:1px solid ' + f.color + '59;border-radius:20px;color:' + f.color + ';font-weight:700;">' + p.denomination + '</span>' : '')
         + '</div>'
         + '<div style="font-size:11px;color:rgba(255,255,255,.5);">' + p.city + ', ' + p.state + '</div>'
+        + (_intentBadge(p.intent) ? '<div style="margin-top:5px;">' + _intentBadge(p.intent) + '</div>' : '')
         + '<div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;">Joins full discovery on Jun 21</div>'
         + '</div>'
         + '<div style="width:28px;height:28px;border-radius:50%;background:rgba(155,48,201,.08);border:1px solid rgba(155,48,201,.2);display:flex;align-items:center;justify-content:center;font-size:13px;">🔒</div>'
@@ -227,7 +234,7 @@ async function ldBrowse() {
         + '<div class="avatar" style="' + ph + ';border-color:' + f.color + '">' + (!p.photo_url ? '<span style="font-size:20px;opacity:.3">👤</span>' : '') + '</div>'
         + '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">' + p.full_name + ', ' + p.age + '</h3>'
         + '<p style="font-size:11px;margin:3px 0"><span style="color:' + f.color + '">' + f.icon + ' ' + (p.religion || '') + '</span>' + (p.denomination ? ' · <span style="color:var(--w50)">' + p.denomination + '</span>' : '') + '</p>'
-        + '<p style="font-size:10px;color:var(--w50)">' + p.city + ', ' + p.state + '</p></div>'
+        + '<p style="font-size:10px;color:var(--w50)">' + p.city + ', ' + p.state + '</p>' + (_intentBadge(p.intent) ? '<div style="margin-top:4px;">' + _intentBadge(p.intent) + '</div>' : '') + '</div>'
         + '<span style="font-size:18px">→</span></div>'
         + (p.bio ? '<p style="font-size:12px;color:var(--w50);margin-top:8px;line-height:1.4;overflow:hidden;max-height:36px">' + p.bio + '</p>' : '')
         + '</div>';
