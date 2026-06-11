@@ -36,7 +36,7 @@
 
     var banner = document.createElement('div');
     banner.id = 'bfIABBanner';
-    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#1C0530;border-bottom:2px solid #D4A017;padding:12px 16px;font-family:Nunito,sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.6)';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#1C0530;border-bottom:2px solid #9B30C9;padding:12px 16px;font-family:Nunito,sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.6)';
 
     var inner = '';
     if (isIOS) {
@@ -44,7 +44,7 @@
         '<div style="display:flex;align-items:flex-start;gap:12px;">' +
           '<span style="font-size:22px;flex-shrink:0;">🔗</span>' +
           '<div style="flex:1;">' +
-            '<p style="font-size:13px;font-weight:800;color:#F5C842;margin:0 0 2px;">Open in Safari to install the app</p>' +
+            '<p style="font-size:13px;font-weight:800;color:#C13DBF;margin:0 0 2px;">Open in Safari to install the app</p>' +
             '<p style="font-size:11px;color:rgba(255,255,255,.6);margin:0 0 8px;line-height:1.5;">Tap <strong style="color:#fff;">⋯</strong> menu → <strong style="color:#fff;">"Open in Safari"</strong></p>' +
             '<button onclick="document.getElementById(\'bfIABBanner\').remove();document.body.style.paddingTop=\'\';" style="padding:9px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:rgba(255,255,255,.5);font-size:12px;font-family:Nunito,sans-serif;cursor:pointer;">Continue here</button>' +
           '</div>' +
@@ -55,10 +55,10 @@
         '<div style="display:flex;align-items:flex-start;gap:12px;">' +
           '<span style="font-size:22px;flex-shrink:0;">📲</span>' +
           '<div style="flex:1;">' +
-            '<p style="font-size:13px;font-weight:800;color:#F5C842;margin:0 0 2px;">Open in Chrome to install the app</p>' +
+            '<p style="font-size:13px;font-weight:800;color:#C13DBF;margin:0 0 2px;">Open in Chrome to install the app</p>' +
             '<p style="font-size:11px;color:rgba(255,255,255,.6);margin:0 0 10px;line-height:1.5;">This browser cannot install apps. Open in Chrome — takes 2 seconds.</p>' +
             '<div style="display:flex;gap:6px;">' +
-              '<a href="' + intentUrl + '" style="flex:2;display:block;padding:10px;background:linear-gradient(135deg,#D4A017,#F5C842);border-radius:8px;color:#1A0830;font-size:13px;font-weight:800;font-family:Nunito,sans-serif;text-decoration:none;text-align:center;">Open in Chrome ↗</a>' +
+              '<a href="' + intentUrl + '" style="flex:2;display:block;padding:10px;background:linear-gradient(135deg,#F24E96,#9B30C9);border-radius:8px;color:#FFFFFF;font-size:13px;font-weight:800;font-family:Nunito,sans-serif;text-decoration:none;text-align:center;">Open in Chrome ↗</a>' +
               '<button onclick="document.getElementById(\'bfIABBanner\').remove();document.body.style.paddingTop=\'\';" style="flex:1;padding:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:rgba(255,255,255,.5);font-size:12px;font-family:Nunito,sans-serif;cursor:pointer;">Skip</button>' +
             '</div>' +
           '</div>' +
@@ -86,7 +86,7 @@
 
     var nudge = document.createElement('div');
     nudge.id = 'bfA2HSNudge';
-    nudge.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9998;background:#1C0530;border-top:2px solid rgba(212,160,23,.6);border-radius:20px 20px 0 0;padding:20px 18px 32px;font-family:Nunito,sans-serif;box-shadow:0 -8px 40px rgba(0,0,0,.7);transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.5,1)';
+    nudge.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9998;background:#1C0530;border-top:2px solid rgba(155,48,201,.6);border-radius:20px 20px 0 0;padding:20px 18px 32px;font-family:Nunito,sans-serif;box-shadow:0 -8px 40px rgba(0,0,0,.7);transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1.2,.5,1)';
 
     var content = '';
 
@@ -95,12 +95,12 @@
         '<div style="text-align:center;">' +
           '<div style="width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>' +
           '<p style="font-size:22px;margin:0 0 6px;">✦</p>' +
-          '<h3 style="font-family:Cinzel,serif;color:#F5C842;font-size:17px;margin:0 0 6px;">Add Begin Forever to Home Screen</h3>' +
+          '<h3 style="font-family:Cinzel,serif;color:#C13DBF;font-size:17px;margin:0 0 6px;">Add Begin Forever to Home Screen</h3>' +
           '<p style="font-size:12px;color:rgba(255,255,255,.5);margin:0 0 20px;line-height:1.6;">Get instant access — no App Store needed</p>' +
           '<div style="display:flex;flex-direction:column;gap:10px;text-align:left;margin-bottom:20px;">' +
-            '<div style="display:flex;align-items:center;gap:12px;"><span style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#F5C842;flex-shrink:0;">1</span><span style="font-size:13px;color:rgba(255,255,255,.8);">Tap <strong style="color:#fff;">Share ⎙</strong> at the bottom of Safari</span></div>' +
-            '<div style="display:flex;align-items:center;gap:12px;"><span style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#F5C842;flex-shrink:0;">2</span><span style="font-size:13px;color:rgba(255,255,255,.8);">Tap <strong style="color:#fff;">"Add to Home Screen"</strong></span></div>' +
-            '<div style="display:flex;align-items:center;gap:12px;"><span style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#F5C842;flex-shrink:0;">3</span><span style="font-size:13px;color:rgba(255,255,255,.8);">Tap <strong style="color:#fff;">"Add"</strong> — done ✦</span></div>' +
+            '<div style="display:flex;align-items:center;gap:12px;"><span style="background:rgba(155,48,201,.15);border:1px solid rgba(155,48,201,.4);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#C13DBF;flex-shrink:0;">1</span><span style="font-size:13px;color:rgba(255,255,255,.8);">Tap <strong style="color:#fff;">Share ⎙</strong> at the bottom of Safari</span></div>' +
+            '<div style="display:flex;align-items:center;gap:12px;"><span style="background:rgba(155,48,201,.15);border:1px solid rgba(155,48,201,.4);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#C13DBF;flex-shrink:0;">2</span><span style="font-size:13px;color:rgba(255,255,255,.8);">Tap <strong style="color:#fff;">"Add to Home Screen"</strong></span></div>' +
+            '<div style="display:flex;align-items:center;gap:12px;"><span style="background:rgba(155,48,201,.15);border:1px solid rgba(155,48,201,.4);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#C13DBF;flex-shrink:0;">3</span><span style="font-size:13px;color:rgba(255,255,255,.8);">Tap <strong style="color:#fff;">"Add"</strong> — done ✦</span></div>' +
           '</div>' +
           '<button onclick="_dismissA2HS()" style="width:100%;padding:13px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:rgba(255,255,255,.4);font-size:13px;font-family:Nunito,sans-serif;cursor:pointer;">Maybe later</button>' +
         '</div>';
@@ -109,9 +109,9 @@
         '<div style="text-align:center;">' +
           '<div style="width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>' +
           '<p style="font-size:22px;margin:0 0 6px;">✦</p>' +
-          '<h3 style="font-family:Cinzel,serif;color:#F5C842;font-size:17px;margin:0 0 6px;">Install Begin Forever</h3>' +
+          '<h3 style="font-family:Cinzel,serif;color:#C13DBF;font-size:17px;margin:0 0 6px;">Install Begin Forever</h3>' +
           '<p style="font-size:12px;color:rgba(255,255,255,.5);margin:0 0 20px;line-height:1.6;">Add to your home screen for instant access — works like a native app</p>' +
-          '<button id="a2hsInstallBtn" onclick="_triggerA2HSInstall()" style="width:100%;padding:14px;background:linear-gradient(135deg,#D4A017,#F5C842);color:#1A0830;font-family:Cinzel,serif;font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;margin-bottom:10px;">📲 Add to Home Screen</button>' +
+          '<button id="a2hsInstallBtn" onclick="_triggerA2HSInstall()" style="width:100%;padding:14px;background:linear-gradient(135deg,#F24E96,#9B30C9);color:#FFFFFF;font-family:Cinzel,serif;font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;margin-bottom:10px;">📲 Add to Home Screen</button>' +
           '<button onclick="_dismissA2HS()" style="width:100%;padding:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:rgba(255,255,255,.4);font-size:13px;font-family:Nunito,sans-serif;cursor:pointer;">Maybe later</button>' +
         '</div>';
     }
