@@ -265,6 +265,32 @@ select.field option { background: var(--dark2); color: var(--white); }
 .auth-card .auth-verse strong{color:#C99A2E!important;}
 .auth-card #rTerms{accent-color:#9B30C9!important;}
 .auth-card .af-ok{color:#1F8A5B!important;}
+
+/* --- register: terms label visible --- */
+#registerScreen label{color:#6E6380!important;}
+
+/* --- Add to Home Screen: deep purple + contrast --- */
+#a2hsSection [style*="255,255,255,.3"]{color:#9A90AC!important;}
+#a2hsSection [style*="255,255,255,.08"]{background:rgba(26,15,43,.1)!important;}
+#a2hsSection [style*="255,255,255,.75"]{color:#3A2E4E!important;}
+#a2hsSection [style*="255,255,255,.55"]{color:#5B3A7A!important;}
+#a2hsSection strong[style*="#fff"]{color:#3B0764!important;}
+#a2hsBanner{background:#3B0764!important;border-color:#9B30C9!important;}
+#a2hsBanner p[style*="F5C842"]{color:#FFFFFF!important;}
+#a2hsBanner p[style*="255,255,255,.55"]{color:rgba(255,255,255,.72)!important;}
+#a2hsBtn{background:#F24E96!important;color:#FFFFFF!important;background-image:none!important;}
+
+/* --- SETUP / Personal Details / About You: light theme (scoped var remap) --- */
+#setupScreen{--dark1:#FBF7EF!important;--dark2:#FFFFFF!important;--dark3:#F1E4F8!important;--white:#1A0F2B!important;--white80:#3A2E4E!important;--white70:#3A2E4E!important;--white50:#6E6380!important;--white40:#6E6380!important;--white08:rgba(26,15,43,.06)!important;--white05:rgba(26,15,43,.03)!important;background:#FBF7EF!important;}
+#setupScreen #sTitle{color:#3B0764!important;}
+#setupScreen .field-label{color:#6E6380!important;}
+#setupScreen .field{background:#FFFFFF!important;border:1px solid rgba(26,15,43,.14)!important;color:#1A0F2B!important;}
+#setupScreen .field::placeholder{color:#9A90AC!important;}
+#setupScreen select.field option{background:#FFFFFF!important;color:#1A0F2B!important;}
+#setupScreen .step-dot{background:rgba(59,7,100,.15)!important;}
+#setupScreen .step-dot.active{background:#9B30C9!important;}
+#setupScreen .btn-gold{background:linear-gradient(135deg,#F24E96,#9B30C9)!important;color:#FFFFFF!important;}
+#setupScreen [style*="background:var(--dark2)"]{background:#FFFFFF!important;border:1px solid rgba(26,15,43,.07)!important;box-shadow:0 14px 40px -26px rgba(59,7,100,.25)!important;}
 </style>
 
 
@@ -677,7 +703,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     <div style="height:0.5px;background:rgba(255,255,255,.06);margin:6px 20px;"></div>
     <div style="padding:4px 20px 2px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Help &amp; Info</p></div>
     <a href="https://wa.me/919700025345" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">💬 WhatsApp Support</a>
-    <a href="/cdn-cgi/l/email-protection#83eaede5ecc3e1e6e4eaede5ecf1e6f5e6f1adeaed" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
+    <a href="/cdn-cgi/l/email-protection#056c6b636a456760626c6b636a77607360772b6c6b" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
     <a href="https://beginforever.in/safety.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">🛡️ Safety Guidelines</a>
     <a href="https://beginforever.in/privacy.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">🔒 Privacy Policy</a>
     <a href="https://beginforever.in/terms.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📄 Terms of Service</a>
@@ -1443,13 +1469,13 @@ select.field option { background: var(--dark2); color: var(--white); }
 <script src="js/config.js?v=14"></script>
 <script src="js/safety.js?v=2"></script>
 <script src="js/subscription.js?v=21"></script>
-<script src="js/ui.js?v=22"></script>
+<script src="js/ui.js?v=23"></script>
 <script src="js/auth.js?v=1"></script>
 <script src="js/referral.js?v=2"></script>
 <script src="js/profile.js?v=26"></script>
-<script src="js/onboarding.js?v=122"></script>
+<script src="js/onboarding.js?v=123"></script>
 <script src="js/admin.js?v=25"></script>
-<script src="js/pwa-install.js?v=1"></script>
+<script src="js/pwa-install.js?v=2"></script>
 <script src="js/boot.js"></script>
  <div id="faithModal" onclick="closeFaithPrefs()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,2,20,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
   <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;background:#1C0530;border-radius:24px;padding:0;overflow:hidden;max-height:75vh;overflow-y:auto;">
@@ -1511,6 +1537,5 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js');
 }
 </script>
-<script src="js/pwa-install.js"></script>
 </body>
 </html>
