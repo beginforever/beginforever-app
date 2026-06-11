@@ -302,7 +302,7 @@ function showSub() {
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;"><button onclick="goTab(\'home\')" style="background:none;border:none;font-size:24px;color:#3B0764;cursor:pointer;padding:4px;">←</button><h2 style="font-family:Cinzel,serif;color:#3B0764;margin:0;font-size:18px;letter-spacing:1px;">Subscription</h2></div>' +
     banner +
     '<p style="font-family:\'EB Garamond\',serif;font-style:italic;color:#7A6090;text-align:center;margin:0 0 14px;font-size:13px;">Choose your path to forever</p>' +
-    (isFounding ? '<div style="background:linear-gradient(135deg,rgba(232,184,48,.12),rgba(123,31,162,.12));border:1px solid rgba(212,160,23,.3);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;"><p style="font-size:11px;font-weight:700;color:#D4A017;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">Founding Member #'+((P&&P.founding_number)||'—')+'</p><p style="font-size:13px;color:#1C0530;margin:0;line-height:1.5;">You get <strong style="color:#D4A017;">Premium free for 1 week</strong> at launch — automatically.</p></div>' : '') +
+    (isFounding ? '<div style="background:linear-gradient(135deg,rgba(232,184,48,.12),rgba(123,31,162,.12));border:1px solid rgba(155,48,201,.3);border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;"><p style="font-size:11px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 4px;">Founding Member #'+((P&&P.founding_number)||'—')+'</p><p style="font-size:13px;color:#1C0530;margin:0;line-height:1.5;">You get <strong style="color:#9B30C9;">Premium free for 1 week</strong> at launch — automatically.</p></div>' : '') +
     '<div style="background:rgba(59,7,100,.06);border-radius:14px;padding:4px;display:flex;margin-bottom:16px;border:1px solid rgba(59,7,100,.12);">' +
     _tabBtn('monthly','Monthly') + _tabBtn('quarterly','3 Months') + _tabBtn('halfyearly','6 Months') +
     '</div>' +
@@ -318,7 +318,7 @@ function showSub() {
 
 function _tabBtn(cycle, label) {
   var on = SUB_CYCLE === cycle;
-  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;transition:all .2s;'+(on?'background:#3B0764;color:#F5C842;':'background:transparent;color:#7A6090;')+'">'+label+'</button>';
+  return '<button onclick="setCycle(\''+cycle+'\')" style="flex:1;padding:9px 4px;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;font-family:Nunito,sans-serif;transition:all .2s;'+(on?'background:#3B0764;color:#C13DBF;':'background:transparent;color:#7A6090;')+'">'+label+'</button>';
 }
 
 function _buildFeatureList(tier) {
@@ -326,9 +326,9 @@ function _buildFeatureList(tier) {
   return PLANS[tier].features.map(function(f) {
     var lk = f.locked === true;
     var icon  = lk ? '🔒' : (f.star ? '⭐' : '✓');
-    var color = lk ? (isDark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)') : (f.star ? '#D4A017' : (isDark ? '#4ade80' : '#3B0764'));
+    var color = lk ? (isDark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)') : (f.star ? '#9B30C9' : (isDark ? '#4ade80' : '#3B0764'));
     var textC = lk ? (isDark ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.25)') : (isDark ? '#fff' : '#2D1655');
-    var rowBg = (f.star && !lk) ? 'background:rgba(212,160,23,.08);margin:2px -4px;padding-left:5px;border-radius:4px;' : '';
+    var rowBg = (f.star && !lk) ? 'background:rgba(155,48,201,.08);margin:2px -4px;padding-left:5px;border-radius:4px;' : '';
     return '<li style="padding:5px 0;font-size:11px;line-height:1.4;display:flex;gap:6px;'+rowBg+'"><span style="color:'+color+';flex-shrink:0;">'+icon+'</span><span style="color:'+textC+';">'+f.text+'</span></li>';
   }).join('');
 }
@@ -341,35 +341,35 @@ function _basicCard() {
     '<div style="font-family:\'EB Garamond\',serif;font-style:italic;color:#9B8FAA;font-size:10px;margin:2px 0 4px;">'+PLANS.basic.tag+'</div>'+
     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#1C0530;">₹'+c.price.toLocaleString('en-IN')+'</div>'+
     '<div style="font-size:10px;color:#9B8FAA;">'+c.per+' · '+c.days+' days</div>'+
-    (c.save ? '<div style="display:inline-block;background:rgba(212,160,23,.12);color:#D4A017;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')+
+    (c.save ? '<div style="display:inline-block;background:rgba(155,48,201,.12);color:#9B30C9;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')+
     '</div>'+
     '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+_buildFeatureList('basic')+'</ul>'+
-    '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#3B0764;color:#F5C842;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'+
+    '<button onclick="choosePlan(\'basic\')" style="width:100%;margin-top:12px;background:#3B0764;color:#C13DBF;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Basic</button>'+
     '</div>';
 }
 
 function _premiumCard() {
   var c = PLANS.premium[SUB_CYCLE];
-  return '<div style="background:linear-gradient(160deg,#2d1655,#3B0764);border:1.5px solid rgba(212,160,23,.5);border-radius:14px;padding:14px 10px;position:relative;box-shadow:0 4px 16px rgba(59,7,100,.25);display:flex;flex-direction:column;">'+
-    '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#D4A017;color:#fff;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:.5px;white-space:nowrap;">★ RECOMMENDED</div>'+
-    '<div style="text-align:center;border-bottom:1px solid rgba(245,200,66,.3);padding-bottom:10px;margin-bottom:10px;padding-top:4px;">'+
-    '<div style="font-family:Cinzel,serif;font-size:15px;color:#F5C842;font-weight:600;letter-spacing:.5px;">PREMIUM ✦</div>'+
-    '<div style="font-family:\'EB Garamond\',serif;font-style:italic;color:#F5C842;opacity:.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'+
+  return '<div style="background:linear-gradient(160deg,#2d1655,#3B0764);border:1.5px solid rgba(155,48,201,.5);border-radius:14px;padding:14px 10px;position:relative;box-shadow:0 4px 16px rgba(59,7,100,.25);display:flex;flex-direction:column;">'+
+    '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#9B30C9;color:#fff;padding:3px 10px;border-radius:10px;font-weight:800;font-size:9px;letter-spacing:.5px;white-space:nowrap;">★ RECOMMENDED</div>'+
+    '<div style="text-align:center;border-bottom:1px solid rgba(193,61,191,.3);padding-bottom:10px;margin-bottom:10px;padding-top:4px;">'+
+    '<div style="font-family:Cinzel,serif;font-size:15px;color:#C13DBF;font-weight:600;letter-spacing:.5px;">PREMIUM ✦</div>'+
+    '<div style="font-family:\'EB Garamond\',serif;font-style:italic;color:#C13DBF;opacity:.8;font-size:10px;margin:2px 0 4px;">'+PLANS.premium.tag+'</div>'+
     '<div style="font-family:Cinzel,serif;font-size:22px;font-weight:700;color:#fff;">₹'+c.price.toLocaleString('en-IN')+'</div>'+
-    '<div style="font-size:10px;color:#F5C842;opacity:.85;">'+c.per+' · '+c.days+' days</div>'+
-    (c.save ? '<div style="display:inline-block;background:#F5C842;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')+
+    '<div style="font-size:10px;color:#C13DBF;opacity:.85;">'+c.per+' · '+c.days+' days</div>'+
+    (c.save ? '<div style="display:inline-block;background:#C13DBF;color:#3B0764;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;">'+c.save+'</div>' : '')+
     '</div>'+
     '<ul style="list-style:none;padding:0;margin:0;flex:1;">'+_buildFeatureList('premium')+'</ul>'+
-    '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#F5C842;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium</button>'+
+    '<button onclick="choosePlan(\'premium\')" style="width:100%;margin-top:12px;background:#C13DBF;color:#3B0764;border:none;border-radius:8px;padding:11px;font-weight:800;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif;">Choose Premium</button>'+
     '</div>';
 }
 
 function _launchOverlay() {
-  return '<div style="position:absolute;top:260px;left:12px;right:12px;background:rgba(253,250,244,.96);border:2px solid #D4A017;border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,.15);">'+
+  return '<div style="position:absolute;top:260px;left:12px;right:12px;background:rgba(253,250,244,.96);border:2px solid #9B30C9;border-radius:14px;padding:22px 16px;text-align:center;box-shadow:0 6px 18px rgba(59,7,100,.15);">'+
     '<div style="font-size:36px;margin-bottom:6px;">🔒</div>'+
     '<h3 style="font-family:\'Cinzel\',serif;color:#1C0530;font-size:17px;margin:0 0 6px;">Plans unlock at launch</h3>'+
-    '<p style="font-family:\'EB Garamond\',serif;font-style:italic;color:#D4A017;font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'+
-    '<div id="subCountdown" style="background:#3B0764;color:#F5C842;padding:11px 14px;border-radius:10px;font-family:Cinzel,serif;font-size:19px;font-weight:700;margin-bottom:4px;">—</div>'+
+    '<p style="font-family:\'EB Garamond\',serif;font-style:italic;color:#9B30C9;font-size:13px;margin:0 0 12px;">Founding members get Premium FREE for 1 week</p>'+
+    '<div id="subCountdown" style="background:#3B0764;color:#C13DBF;padding:11px 14px;border-radius:10px;font-family:Cinzel,serif;font-size:19px;font-weight:700;margin-bottom:4px;">—</div>'+
     '<div style="font-size:10px;color:#9B8FAA;letter-spacing:1px;">UNTIL 21 JUNE 2026</div></div>';
 }
 
