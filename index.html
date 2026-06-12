@@ -289,13 +289,44 @@ select.field option { background: var(--dark2); color: var(--white); }
 #setupScreen select.field option{background:#FFFFFF!important;color:#1A0F2B!important;}
 #setupScreen .step-dot{background:rgba(59,7,100,.15)!important;}
 #setupScreen .step-dot.active{background:#9B30C9!important;}
-#setupScreen .btn-gold{background:linear-gradient(135deg,#F24E96,#9B30C9)!important;color:#FFFFFF!important;}
+#setupScreen .btn-gold{background:#3B0764!important;color:#FFFFFF!important;}
 #setupScreen [style*="background:var(--dark2)"]{background:#FFFFFF!important;border:1px solid rgba(26,15,43,.07)!important;box-shadow:0 14px 40px -26px rgba(59,7,100,.25)!important;}
+
+/* === FUNNEL LIGHT THEME — comprehensive (setup + pending) === */
+/* all primary buttons -> solid plum (no pink) */
+.btn-gold{background:#3B0764!important;background-image:none!important;color:#FFFFFF!important;}
+#a2hsBtn{background:#FFFFFF!important;color:#3B0764!important;background-image:none!important;}
+
+/* catch every text colour used in setup/pending steps */
+#setupScreen [style*="color:var(--w70)"],#pendingScreen [style*="color:var(--w70)"]{color:#3A2E4E!important;}
+#setupScreen [style*="color:var(--white70)"],#pendingScreen [style*="color:var(--white70)"]{color:#3A2E4E!important;}
+#setupScreen [style*="color:var(--white60)"],#pendingScreen [style*="color:var(--white60)"]{color:#6E6380!important;}
+#setupScreen [style*="color:var(--w50)"],#pendingScreen [style*="color:var(--w50)"]{color:#6E6380!important;}
+#setupScreen [style*="color:var(--gold2)"],#pendingScreen [style*="color:var(--gold2)"]{color:#9B30C9!important;}
+#setupScreen [style*="color:var(--gold-bright)"],#pendingScreen [style*="color:var(--gold-bright)"]{color:#9B30C9!important;}
+#setupScreen [style*="color:var(--gold)"],#pendingScreen [style*="color:var(--gold)"]{color:#9B30C9!important;}
+#setupScreen [style*="color:rgba(255,255,255,.75)"],#pendingScreen [style*="color:rgba(255,255,255,.75)"]{color:#3A2E4E!important;}
+#setupScreen [style*="color:rgba(255,255,255,.7)"],#pendingScreen [style*="color:rgba(255,255,255,.7)"]{color:#3A2E4E!important;}
+#setupScreen [style*="color:#fff"],#pendingScreen [style*="color:#fff"]{color:#1A0F2B!important;}
+#setupScreen strong[style*="color:#fff"],#pendingScreen strong[style*="color:#fff"]{color:#3B0764!important;}
+
+/* tint boxes so they read on ivory */
+#setupScreen [style*="background:rgba(39,174,96"]{background:rgba(46,125,82,.08)!important;border-color:rgba(46,125,82,.3)!important;}
+#setupScreen [style*="color:#4ade80"]{color:#1F8A5B!important;}
+#pendingScreen [style*="background:rgba(212,160,23,.08)"]{background:#F7F1FB!important;border-color:rgba(59,7,100,.12)!important;}
+
+/* photo slots visible */
+#setupScreen #photoGrid > div{background:#F7F1FB!important;border:1.5px dashed rgba(59,7,100,.28)!important;color:#6E6380!important;}
+
+/* PENDING screen -> light */
+#pendingScreen{background:#FBF7EF!important;}
+#pendingScreen h2{color:#9B30C9!important;}
+#pendingScreen .btn-dark{background:#F1E4F8!important;color:#3B0764!important;border:1px solid rgba(59,7,100,.2)!important;}
 </style>
 
 
 <style id="bf-brand-app">
-.btn-gold{background:linear-gradient(135deg,#F24E96,#9B30C9)!important;color:#fff!important;}
+.btn-gold{background:#3B0764!important;color:#fff!important;}
 .btn-gold *{color:#fff!important;}
 .tab-btn.active{color:#9B30C9!important;}
 .tab-btn.active .tab-icon{filter:none!important;}
@@ -703,7 +734,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     <div style="height:0.5px;background:rgba(255,255,255,.06);margin:6px 20px;"></div>
     <div style="padding:4px 20px 2px;"><p style="font-size:9px;font-weight:700;color:rgba(212,160,23,.7);text-transform:uppercase;letter-spacing:1.5px;margin:0;">Help &amp; Info</p></div>
     <a href="https://wa.me/919700025345" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">💬 WhatsApp Support</a>
-    <a href="/cdn-cgi/l/email-protection#056c6b636a456760626c6b636a77607360772b6c6b" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
+    <a href="mailto:info@beginforever.in" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📧 Email Us</a>
     <a href="https://beginforever.in/safety.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">🛡️ Safety Guidelines</a>
     <a href="https://beginforever.in/privacy.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">🔒 Privacy Policy</a>
     <a href="https://beginforever.in/terms.html" target="_blank" style="display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;">📄 Terms of Service</a>
@@ -1465,7 +1496,7 @@ select.field option { background: var(--dark2); color: var(--white); }
     </div>
   </div>
 </div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="js/config.js?v=14"></script>
 <script src="js/safety.js?v=2"></script>
 <script src="js/subscription.js?v=21"></script>
@@ -1473,7 +1504,7 @@ select.field option { background: var(--dark2); color: var(--white); }
 <script src="js/auth.js?v=1"></script>
 <script src="js/referral.js?v=2"></script>
 <script src="js/profile.js?v=26"></script>
-<script src="js/onboarding.js?v=123"></script>
+<script src="js/onboarding.js?v=124"></script>
 <script src="js/admin.js?v=25"></script>
 <script src="js/pwa-install.js?v=2"></script>
 <script src="js/boot.js"></script>
