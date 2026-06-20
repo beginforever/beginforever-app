@@ -568,6 +568,14 @@ async function openFaithPrefsGated() {
 async function sendInt(to) {
   if (!isPreLaunch() && !isSubscribed()) { showChatSubModal(); return; }
   try {
+    var gRes = await sb.from('profiles').select('gender,who_initiates').eq('id', to).limit(1);
+    var tgt = gRes.data && gRes.data[0];
+    if (tgt && tgt.gender === 'Female' && tgt.who_initiates === 'me_first') {
+      alert("This member chooses who they connect with — she'll reach out if interested.");
+      return;
+    }
+  } catch(x) {}
+  try {
     await sb.from('interests').insert({ from_user: U.id, to_user: to, status: 'pending' });
     closeModal();
     try {
