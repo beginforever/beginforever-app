@@ -261,6 +261,12 @@ function pickId(inp) {
   var idN=document.getElementById('idN'); if(idN){idN.textContent='📄 '+f.name;idN.style.display='';}
 }
 
+function skipIdStep() {
+  idFile = null;
+  var idT = document.getElementById('fIdT'); if(idT) idT.value = '';
+  step++; updUI();
+}
+
 function updUI() {
   var titles=['Personal Details','About You','Photos','Government ID','Match Preferences'];
   var st=document.getElementById('sTitle'); if(st) st.textContent=titles[step-1];
@@ -271,6 +277,15 @@ function updUI() {
   var nx=document.getElementById('nxBtn'); if(nx) nx.textContent=step<5?'Next →':'Submit for Review ✦';
   var se=document.getElementById('sErr'); if(se) se.style.display='none';
   if(step===3) initPG();
+  if(step===4) {
+    var genderVal = document.getElementById('fGender') ? document.getElementById('fGender').value : '';
+    var isFemaleUser = genderVal === 'Female';
+    var femaleNote = document.getElementById('s4FemaleNote');
+    var skipBtn = document.getElementById('s4SkipBtn');
+    var idTypeGroup = document.getElementById('fIdT') ? document.getElementById('fIdT').closest('.field-group') : null;
+    if (femaleNote) femaleNote.style.display = isFemaleUser ? '' : 'none';
+    if (skipBtn) skipBtn.style.display = isFemaleUser ? '' : 'none';
+  }
   if(step===5) {
     setTimeout(function(){
       var chipsEl=document.getElementById('fPRChips'); if(!chipsEl) return;
@@ -333,7 +348,10 @@ async function goNext(){
     step++;updUI();return;
   }
   if(step===4){
-    if(!document.getElementById('fIdT').value||!idFile){if(e){e.textContent='ID type and upload are required.';e.style.display='block';}return;}
+    var isMale = document.getElementById('fGender') && document.getElementById('fGender').value === 'Male';
+    if(isMale && (!document.getElementById('fIdT').value||!idFile)){
+      if(e){e.textContent='Government ID is required for male profiles.';e.style.display='block';}return;
+    }
     step++;updUI();return;
   }
   var btn=document.getElementById('nxBtn');
