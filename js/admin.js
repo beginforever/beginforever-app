@@ -1,8 +1,13 @@
-// Begin Forever — Admin v24
-// Fix: All tab uses sb.rpc() instead of raw fetch (fixes CORS block)
+// Begin Forever — Admin v25
+// Changes from v24:
+// - Gender split counts on all tabs (M: X · F: X)
+// - Remove ⚠️ No ID warning for female profiles
+// - Show Phone Verified badge for females without ID
+// - Show ID Verified badge for females with ID
+// - Male without ID still flagged ⚠️
 
 async function ldAdmin(filter) {
-  ['all','pending','approved','rejected','founders'].forEach(function(f) {
+  ['all','pending','approved','rejected','founders','male','female'].forEach(function(f) {
     var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
     if (el) el.className = 'btn btn-sm ' + (f === filter ? 'btn-gold' : 'btn-dark');
   });
@@ -14,16 +19,32 @@ async function ldAdmin(filter) {
       var res = await sb.rpc('admin_get_all_users');
       d = res.data || [];
     } catch(e) { d = []; }
+  } else if (filter === 'male') {
+    var q = sb.from('profiles').select('*').eq('gender', 'Male').order('created_at', { ascending: false });
+    var r = await q; d = r.data || [];
+  } else if (filter === 'female') {
+    var q2 = sb.from('profiles').select('*').eq('gender', 'Female').order('created_at', { ascending: false });
+    var r2 = await q2; d = r2.data || [];
   } else {
-    var q = sb.from('profiles').select('*');
-    if (filter === 'founders') q = q.eq('is_founding_member', true).eq('status', 'approved').order('founding_number', { ascending: true });
-    else q = q.eq('status', filter).order('created_at', { ascending: false });
-    var r = await q;
-    d = r.data || [];
+    var q3 = sb.from('profiles').select('*');
+    if (filter === 'founders') q3 = q3.eq('is_founding_member', true).eq('status', 'approved').order('founding_number', { ascending: true });
+    else q3 = q3.eq('status', filter).order('created_at', { ascending: false });
+    var r3 = await q3;
+    d = r3.data || [];
   }
 
+  // Gender split counts
+  var maleCount = d.filter(function(p){ return p.gender === 'Male'; }).length;
+  var femaleCount = d.filter(function(p){ return p.gender === 'Female'; }).length;
+
   var countEl = document.getElementById('adCount' + filter.charAt(0).toUpperCase() + filter.slice(1));
-  if (countEl) countEl.textContent = d.length ? ' (' + d.length + ')' : '';
+  if (countEl) {
+    if (filter === 'male' || filter === 'female') {
+      countEl.textContent = d.length ? ' (' + d.length + ')' : '';
+    } else {
+      countEl.textContent = d.length ? ' (' + d.length + ' · M:' + maleCount + ' F:' + femaleCount + ')' : '';
+    }
+  }
 
   var empty = document.getElementById('adEmpty');
   var list  = document.getElementById('adList');
@@ -39,6 +60,7 @@ async function ldAdmin(filter) {
     card.style.marginBottom = '12px';
 
     var hasProfile = !!p.full_name;
+    var isFemale = p.gender === 'Female';
     var statusColor = { approved: '#27ae60', pending: '#C13DBF', rejected: '#e74c3c', resubmitting: '#9B59B6' }[p.status] || '#888';
     var statusLabel = p.status || (hasProfile ? 'incomplete' : 'no-profile');
 
@@ -46,11 +68,23 @@ async function ldAdmin(filter) {
       ? '<div style="width:56px;height:56px;border-radius:50%;background-image:url('+p.photo_url+');background-size:cover;background-position:center;border:2px solid var(--gold);flex-shrink:0;"></div>'
       : '<div style="width:56px;height:56px;border-radius:50%;background:var(--dark3);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:20px;opacity:.4">👤</span></div>';
 
+    // ID / verification badge logic
     var idHtml = '';
     if (p.id_proof_url) {
-      idHtml = '<div style="margin-top:10px;"><a href="#" onclick="viewIdProof(\''+p.id_proof_url+'\');return false;" style="font-size:11px;color:var(--gold);text-decoration:none;">🪪 View ID: '+(p.id_proof_type||'Document')+'</a></div>';
+      // Has ID — show for both genders
+      idHtml = '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">'
+        + '<span style="font-size:11px;color:#4ade80;font-weight:700;">✅ ID Verified</span>'
+        + '<a href="#" onclick="viewIdProof(\''+p.id_proof_url+'\');return false;" style="font-size:11px;color:var(--gold);text-decoration:none;">View '+(p.id_proof_type||'Document')+'</a>'
+        + '</div>';
+    } else if (isFemale) {
+      // Female without ID — show Phone Verified, no warning
+      idHtml = '<div style="margin-top:8px;">'
+        + '<span style="font-size:11px;color:#60a5fa;font-weight:700;">📱 Phone Verified</span>'
+        + (p.phone_verified ? '' : '<span style="font-size:10px;color:var(--w40);margin-left:6px;">· Phone not verified</span>')
+        + '</div>';
     } else if (hasProfile) {
-      idHtml = '<div style="margin-top:8px;font-size:11px;color:#e74c3c;">⚠️ No ID uploaded</div>';
+      // Male without ID — show warning
+      idHtml = '<div style="margin-top:8px;font-size:11px;color:#e74c3c;">⚠️ No ID uploaded — required for males</div>';
     }
 
     var actionBtns = '';
@@ -64,15 +98,20 @@ async function ldAdmin(filter) {
       actionBtns = '<button class="btn btn-dark btn-sm" style="background:#7B1FA2;color:#fff;" onclick="sendReminder(\''+p.id+'\',\''+(p.email||'')+'\',\''+(p.full_name||'')+'\',this)">📲 Send Reminder</button>';
     }
 
+    // Gender badge
+    var genderBadge = p.gender
+      ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;margin-left:5px;background:' + (isFemale ? 'rgba(244,114,182,.15)' : 'rgba(96,165,250,.15)') + ';color:' + (isFemale ? '#f472b6' : '#60a5fa') + ';">' + (isFemale ? '♀ Female' : '♂ Male') + '</span>'
+      : '';
+
     card.innerHTML =
       '<div style="display:flex;gap:12px;align-items:flex-start;">' +
         photoHtml +
         '<div style="flex:1;min-width:0;">' +
           '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-            '<h3 style="font-size:14px;font-weight:700;margin:0;color:#fff;">' + (p.full_name || p.email || '—') + '</h3>' +
+            '<h3 style="font-size:14px;font-weight:700;margin:0;color:#fff;">' + (p.full_name || p.email || '—') + genderBadge + '</h3>' +
             '<span style="font-size:10px;font-weight:700;color:' + statusColor + ';flex-shrink:0;margin-left:6px;">' + statusLabel + '</span>' +
           '</div>' +
-          (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:3px 0;">'+(p.age||'—')+' · '+(p.gender||'—')+' · '+(p.religion||'—')+(p.denomination?' / '+p.denomination:'')+'</p>' : '') +
+          (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:3px 0;">'+(p.age||'—')+' · '+(p.religion||'—')+(p.denomination?' / '+p.denomination:'')+'</p>' : '') +
           (hasProfile ? '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.city||'')+', '+(p.state||'')+'</p>' : '') +
           '<p style="font-size:11px;color:var(--w50);margin:2px 0;">'+(p.email||'')+(p.phone?' · '+p.phone:'')+'</p>' +
           (p.registered_at ? '<p style="font-size:10px;color:var(--w50);margin:2px 0;">Registered: '+new Date(p.registered_at).toLocaleDateString('en-IN')+'</p>' : '') +
@@ -161,7 +200,7 @@ async function adAct(id, status) {
     }
 
     var activeFilter = 'pending';
-    ['all','pending','approved','rejected','founders'].forEach(function(f) {
+    ['all','pending','approved','rejected','founders','male','female'].forEach(function(f) {
       var el = document.getElementById('adTab' + f.charAt(0).toUpperCase() + f.slice(1));
       if (el && el.classList.contains('btn-gold')) activeFilter = f;
     });
