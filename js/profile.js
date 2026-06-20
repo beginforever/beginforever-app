@@ -452,6 +452,13 @@ function renP() {
     if(d.v) h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span><span style="font-size:13px;color:var(--w80);font-weight:600;text-align:right;max-width:60%;">'+d.v+'</span></div>';
   });
   if(P.bio) h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--w08);"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">About Me</p><p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
+  if(P.gender==='Female'){
+    h+='<div style="margin-top:14px;padding:14px;background:rgba(241,77,150,.08);border:1px solid rgba(241,77,150,.3);border-radius:12px;">'+
+      '<p style="font-size:10px;color:#F24E96;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 8px;">🛡️ Safety</p>'+
+      '<a href="tel:181" style="display:block;text-align:center;padding:12px;background:#F24E96;color:#fff;font-weight:800;font-size:14px;border-radius:10px;text-decoration:none;">🆘 Women\'s Helpline · Call 181</a>'+
+      '<p style="font-size:10px;color:var(--w40);margin:8px 0 0;">'+(P.who_initiates==='me_first'?'Only people you message first can chat with you.':'Anyone you match with can message you.')+'</p>'+
+      '</div>';
+  }
   var mi=document.getElementById('mInfo'); if(mi) mi.innerHTML=h;
   var hobbies=[]; try{hobbies=JSON.parse(P.hobbies||'[]');}catch(e){}
   var hobEl=document.getElementById('profileHobbies');
@@ -653,7 +660,8 @@ async function saveEditInline(){
       pref_denomination:(document.getElementById('e_prefDenom')||{}).value||P.pref_denomination||'Any',
       mother_tongue:(document.getElementById('e_motherTongue')||{}).value||P.mother_tongue||'',
       height_cm:(document.getElementById('e_height')||{}).value?parseInt((document.getElementById('e_height')||{}).value):P.height_cm||null,
-      marital_status:(document.getElementById('e_marital')||{}).value||P.marital_status||''
+      marital_status:(document.getElementById('e_marital')||{}).value||P.marital_status||'',
+      who_initiates:(document.getElementById('e_whoInitiates')||{}).value||P.who_initiates||'both'
     };
     for(var i=0;i<5;i++){
       if(editPhotos[i]){
@@ -864,7 +872,8 @@ if(tp)tp.style.background='#1C0530';
       '<div class="field-group"><label class="field-label">Max Age</label><input class="field" type="number" id="e_prefAgeMax" value="'+(P.pref_age_max||70)+'" min="18" max="70"/></div>'+
     '</div>'+
     '<div class="field-group"><label class="field-label">Preferred Denomination</label><input class="field" id="e_prefDenom" value="'+(P.pref_denomination||'')+'" placeholder="e.g. Any, Catholic"/></div>'+
-    '<div class="field-group"><label class="field-label">Preferred City</label>'+inp('e_prefCity',P.pref_city,'e.g. Pune or Any')+'</div>';
+    '<div class="field-group"><label class="field-label">Preferred City</label>'+inp('e_prefCity',P.pref_city,'e.g. Pune or Any')+'</div>'+
+    (P.gender==='Female'?'<p style="font-size:10px;font-weight:700;color:#9B30C9;text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">🛡️ Safety</p><div class="field-group"><label class="field-label">Who can start a conversation with you?</label><select class="field" id="e_whoInitiates"><option value="both"'+(P.who_initiates!=='me_first'?' selected':'')+'>Anyone I\'ve matched with</option><option value="me_first"'+(P.who_initiates==='me_first'?' selected':'')+'>Only people I message first</option></select></div>':'');
 
   initEditPG();
   renderEditHobbyChips();
