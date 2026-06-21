@@ -4,7 +4,7 @@ var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 var sb = supabase.createClient(SB_URL, SB_KEY);
 
 // Launch date: 21 June 2026 00:00 IST
-var LAUNCH = new Date('2020-01-01T00:00:00Z');
+var LAUNCH = new Date('2026-06-21T18:30:00Z');
 
 function isPreLaunch() { return new Date() < LAUNCH; }
 
