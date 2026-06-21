@@ -9,7 +9,7 @@ var LAUNCH = new Date('2026-06-21T18:30:00Z');
 function isPreLaunch() { return new Date() < LAUNCH; }
 
 // Global state
-var U = null, P = null;
+var U = null, P = null; 
 var photos = [null,null,null,null,null];
 var idFile = null;
 var editPhotos = [null,null,null,null,null];
