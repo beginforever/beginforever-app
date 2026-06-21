@@ -244,6 +244,9 @@ async function ldBrowse() {
 
 // ═══ INTERESTS
 async function ldInt(type) {
+  var _ics = document.getElementById('intComingSoon'), _il = document.getElementById('intLive');
+  if (isPreLaunch()) { if (_ics) _ics.style.display = ''; if (_il) _il.style.display = 'none'; return; }
+  if (_ics) _ics.style.display = 'none'; if (_il) _il.style.display = '';
   ['intRecBtn','intSentBtn','intMutBtn'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.className = 'btn btn-sm btn-dark';
   });
@@ -296,7 +299,9 @@ async function actInt(id, st, fromUserId) {
 
 // ═══ CHAT LIST
 async function ldChats() {
-  if (isPreLaunch()) return;
+  var _ccs = document.getElementById('chatComingSoon'), _cl2 = document.getElementById('chatLive');
+  if (isPreLaunch()) { if (_ccs) _ccs.style.display = ''; if (_cl2) _cl2.style.display = 'none'; return; }
+  if (_ccs) _ccs.style.display = 'none'; if (_cl2) _cl2.style.display = '';
   if (!canChat()) {
     var tChat = document.getElementById('tChat'); if (!tChat) return;
     tChat.innerHTML =
