@@ -105,9 +105,11 @@ select.field option { background: var(--dark2); color: var(--white); }
 .info-label { font-size: 11px; color: var(--w50); text-transform: uppercase; letter-spacing: 0.5px; }
 .info-value { font-size: 13px; color: var(--w80); font-weight: 600; }
 .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 14px; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
-.msg-sent { background: var(--royal-mid); margin-left: auto; border-bottom-right-radius: 4px; }
-.msg-recv { background: var(--white08); border-bottom-left-radius: 4px; }
-.msg-time { font-size: 10px; color: var(--w50); text-align: right; margin-top: 4px; }
+.msg-sent { background: #6B2D8F; color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+.msg-recv { background: #fff; color: #2A1A4A; border: 1px solid #EFE6DA; border-bottom-left-radius: 4px; }
+.msg-time { font-size: 10px; text-align: right; margin-top: 4px; }
+.msg-sent .msg-time { color: rgba(255,255,255,.7); }
+.msg-recv .msg-time { color: rgba(42,26,74,.45); }
 .photo-slot { aspect-ratio: 1; border-radius: 14px; overflow: hidden; cursor: pointer; background: var(--w05); border: 2px dashed var(--w20); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; background-size: cover; background-position: center; }
 .faith-chip { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--w20); cursor: pointer; transition: all .2s; margin-bottom: 8px; }
 .faith-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }
@@ -236,6 +238,17 @@ select.field option { background: var(--dark2); color: var(--white); }
 #intLive .card p { color:rgba(42,26,74,.55) !important; }
 #intLive .card p span { color:rgba(42,26,74,.45) !important; }
 #intLive .card .avatar { border-color:#EFE6DA !important; }
+/* ── Chat list — ivory theme (scoped to #chatLive only) ── */
+#chatLive { background:#FBF7F0; padding:14px 14px 4px; margin:0 -14px; }
+#chatLive .card { background:#fff; border:1px solid #EFE6DA; box-shadow:0 4px 14px rgba(42,26,74,.05); border-radius:16px; }
+#chatLive .card h3 { color:#2A1A4A !important; }
+#chatLive .card p { color:rgba(42,26,74,.45) !important; }
+#chatLive .card p[style*="font-weight:700"] { color:rgba(42,26,74,.75) !important; }
+#chatLive .card span[style*="color:var(--w40)"] { color:rgba(42,26,74,.4) !important; }
+#chatLive .card .avatar { border-color:#EFE6DA !important; }
+/* ── Chat window — ivory theme ── */
+#tChatWin #cwMs { background:#FBF7F0; }
+#tChatWin #cwMs div[style*="color:var(--w40)"] { color:rgba(42,26,74,.45) !important; }
 #intLive .btn-grn { background:#6B2D8F; color:#fff; }
 #intLive .btn-red { background:#fff; color:#9a8fb0; border:1px solid #EFE6DA; }
 </style>
@@ -983,16 +996,16 @@ select.field option { background: var(--dark2); color: var(--white); }
   </div>
 
 <!-- ═══ CHAT WINDOW ═══ -->
-  <div id="tChatWin" style="display:none;flex-direction:column;height:100vh;position:fixed;inset:0;z-index:200;background:var(--black);">
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--dark1);border-bottom:1px solid var(--w08);">
-      <button onclick="goTab('chat')" style="background:none;border:none;color:var(--gold-bright);font-size:20px;cursor:pointer;">←</button>
-      <div class="avatar" id="cwAv" style="width:40px;height:40px;"></div>
-      <div><p id="cwNm" style="font-family:'Cinzel',serif;font-size:14px;margin:0;"></p><p id="cwIn" style="font-size:11px;color:var(--w50);margin:0;"></p></div>
+  <div id="tChatWin" style="display:none;flex-direction:column;height:100vh;position:fixed;inset:0;z-index:200;background:#FBF7F0;">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid #EFE6DA;">
+      <button onclick="goTab('chat')" style="background:none;border:none;color:#6B2D8F;font-size:20px;cursor:pointer;">←</button>
+      <div class="avatar" id="cwAv" style="width:40px;height:40px;border-color:#EFE6DA;"></div>
+      <div><p id="cwNm" style="font-family:'Cinzel',serif;font-size:14px;margin:0;color:#2A1A4A;"></p><p id="cwIn" style="font-size:11px;color:rgba(42,26,74,.5);margin:0;"></p></div>
     </div>
     <div id="cwMs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;padding-bottom:80px;"></div>
-    <div style="display:flex;gap:10px;padding:12px 16px;background:var(--dark1);border-top:1px solid var(--w08);position:fixed;bottom:0;left:0;right:0;">
-      <input id="cwTx" style="flex:1;padding:12px 16px;border-radius:24px;border:1px solid var(--w15);background:var(--w08);color:var(--white);font-size:14px;outline:none;font-family:'Nunito',sans-serif;" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
-      <button onclick="sendMsg()" style="width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;background:var(--gold);color:var(--black);font-size:18px;flex-shrink:0;">➤</button>
+    <div style="display:flex;gap:10px;padding:12px 16px;background:#fff;border-top:1px solid #EFE6DA;position:fixed;bottom:0;left:0;right:0;">
+      <input id="cwTx" style="flex:1;padding:12px 16px;border-radius:24px;border:1px solid #EFE6DA;background:#FBF7F0;color:#2A1A4A;font-size:14px;outline:none;font-family:'Nunito',sans-serif;" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+      <button onclick="sendMsg()" style="width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;background:#6B2D8F;color:#fff;font-size:18px;flex-shrink:0;">➤</button>
     </div>
   </div>
 
@@ -1004,42 +1017,42 @@ select.field option { background: var(--dark2); color: var(--white); }
   </div>
 
   <!-- ═══ PROFILE TAB ═══ -->
-  <div id="tProfile" class="content-area" style="display:none;">
-    <h2 style="font-family:'Cinzel',serif;font-size:20px;color:var(--gold-bright);margin-bottom:16px;">My Profile</h2>
+  <div id="tProfile" class="content-area" style="display:none;background:#FBF7F0;margin:0 -14px;padding:14px 14px 90px;">
+    <h2 style="font-family:'Cinzel',serif;font-size:20px;color:#2A1A4A;margin-bottom:16px;">My Profile</h2>
     <div id="profileHero" style="text-align:center;margin-bottom:20px;"></div>
-    <div style="background:var(--w05);border-radius:16px;padding:16px;margin-bottom:16px;">
+    <div style="background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:16px;padding:16px;margin-bottom:16px;">
       <div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;">
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--gold-bright);" id="pStatViews">—</div><div style="font-size:10px;color:var(--w50);">Views</div></div>
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--gold-bright);" id="pStatInt">—</div><div style="font-size:10px;color:var(--w50);">Interests</div></div>
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:var(--gold-bright);" id="pStatMsg">—</div><div style="font-size:10px;color:var(--w50);">Messages</div></div>
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:#2A1A4A;" id="pStatViews">—</div><div style="font-size:10px;color:rgba(42,26,74,.5);">Views</div></div>
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:#2A1A4A;" id="pStatInt">—</div><div style="font-size:10px;color:rgba(42,26,74,.5);">Interests</div></div>
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:#2A1A4A;" id="pStatMsg">—</div><div style="font-size:10px;color:rgba(42,26,74,.5);">Messages</div></div>
       </div>
     </div>
-    <div id="mInfo"></div>     <div style="background:var(--w05);border-radius:14px;padding:14px;margin-top:14px;" id="profileFaithSummary"></div>
+    <div id="mInfo"></div>     <div style="background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:14px;padding:14px;margin-top:14px;" id="profileFaithSummary"></div>
     <!-- Hobbies & Interests -->
-<div id="profileHobbies" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:14px;">
-  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">🎯 Hobbies & Interests</p>
+<div id="profileHobbies" style="display:none;background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:14px;padding:14px;margin-top:14px;">
+  <p style="font-size:10.5px;font-weight:800;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">🎯 Hobbies & Interests</p>
   <div id="hobbyPills"></div>
 </div>
 
 <!-- What I'm Looking For -->
-<div id="profileLookingFor" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
-  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;">💑 What I'm Looking For</p>
-  <p id="lookingForText" style="font-size:13px;color:var(--w70);line-height:1.7;margin:0;"></p>
+<div id="profileLookingFor" style="display:none;background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:10.5px;font-weight:800;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;">💑 What I'm Looking For</p>
+  <p id="lookingForText" style="font-size:13px;color:rgba(42,26,74,.75);line-height:1.7;margin:0;"></p>
 </div>
 <!-- Partner Preferences (Batch 2) -->
-<div id="profilePartnerPrefs" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
-  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">💑 Partner Preferences</p>
+<div id="profilePartnerPrefs" style="display:none;background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:10.5px;font-weight:800;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">💑 Partner Preferences</p>
   <div id="partnerPrefsContent"></div>
 </div>
 <!-- Faith & Beliefs -->
-<div id="profileFaithBeliefs" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
-  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">✝️ Faith & Beliefs</p>
+<div id="profileFaithBeliefs" style="display:none;background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:10.5px;font-weight:800;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">✝️ Faith & Beliefs</p>
   <div id="faithBeliefsContent"></div>
 </div>
 
 <!-- Lifestyle -->
-<div id="profileLifestyle" style="display:none;background:var(--w05);border-radius:14px;padding:14px;margin-top:10px;">
-  <p style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">🌿 Lifestyle</p>
+<div id="profileLifestyle" style="display:none;background:#fff;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.05);border-radius:14px;padding:14px;margin-top:10px;">
+  <p style="font-size:10.5px;font-weight:800;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">🌿 Lifestyle</p>
   <div id="lifestyleContent"></div>
 </div>
 
@@ -1047,25 +1060,25 @@ select.field option { background: var(--dark2); color: var(--white); }
 <!-- <div id="profileFaithSummary"> already in the file — keep it -->
 
 <!-- Privacy status strip -->
-<div style="background:rgba(155,89,182,.08);border:1px solid rgba(155,89,182,.2);border-radius:12px;padding:10px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+<div style="background:#F3EEF8;border:1px solid #E5DAF1;border-radius:12px;padding:10px 14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
   <div>
-    <p style="font-size:9px;font-weight:700;color:#C39BD3;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">🔒 Privacy</p>
-    <p id="privacyBadge" style="font-size:11px;color:rgba(255,255,255,.5);margin:0;"></p>
+    <p style="font-size:9px;font-weight:700;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">🔒 Privacy</p>
+    <p id="privacyBadge" style="font-size:11px;color:rgba(42,26,74,.55);margin:0;"></p>
   </div>
-  <button onclick="openPrivacySettings()" style="background:rgba(155,89,182,.15);border:1px solid rgba(155,89,182,.3);color:#C39BD3;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;">Edit</button>
+  <button onclick="openPrivacySettings()" style="background:#6B2D8F;border:none;color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;white-space:nowrap;">Edit</button>
 </div>
 <!-- Referral Card — populated by referral.js renderReferralCard() -->
-  <div id="referralCard" style="background:linear-gradient(145deg,var(--royal),var(--royal-mid));border:1px solid rgba(212,160,23,.25);border-radius:16px;padding:16px;margin-top:14px;margin-bottom:4px;cursor:pointer;" onclick="shareApp()">
-    <p style="font-size:12px;color:rgba(212,160,23,.8);margin:0;">Loading referral info…</p>
+  <div id="referralCard" style="background:#fff;border:1px solid rgba(155,48,201,.25);border-radius:16px;padding:16px;margin-top:14px;margin-bottom:4px;cursor:pointer;" onclick="shareApp()">
+    <p style="font-size:12px;color:rgba(42,26,74,.55);margin:0;">Loading referral info…</p>
   </div>
 <!-- Buttons (these replace the old single button) -->
 <!-- 
   REPLACE the existing buttons in tProfile with these:
 -->
-<button class="btn btn-dark" style="margin-top:14px;" onclick="openEdit()">✏️ Edit Profile</button>
-<button class="btn btn-dark" style="margin-top:10px;" onclick="openFaithPrefsGated()">⚙️ Faith Preferences <span style="font-size:10px;color:#F5C842;">✦ Premium</span></button>
-<button class="btn btn-dark" style="margin-top:10px;" onclick="openPrivacySettings()">🔒 Privacy Settings</button>
-<button class="btn btn-dark" style="margin-top:10px;opacity:.6;font-size:12px;" onclick="doSignOut()">Sign Out</button>
+<button class="btn" style="margin-top:14px;background:#fff;border:1px solid #EFE6DA;color:#2A1A4A;" onclick="openEdit()">✏️ Edit Profile</button>
+<button class="btn" style="margin-top:10px;background:#fff;border:1px solid #EFE6DA;color:#2A1A4A;" onclick="openFaithPrefsGated()">⚙️ Faith Preferences <span style="font-size:10px;color:#9B30C9;">✦ Premium</span></button>
+<button class="btn" style="margin-top:10px;background:#fff;border:1px solid #EFE6DA;color:#2A1A4A;" onclick="openPrivacySettings()">🔒 Privacy Settings</button>
+<button class="btn" style="margin-top:10px;opacity:.6;font-size:12px;background:#fff;border:1px solid #EFE6DA;color:#2A1A4A;" onclick="doSignOut()">Sign Out</button>
     <!-- Faith Summary -->
 
   </div>
@@ -1435,10 +1448,10 @@ select.field option { background: var(--dark2); color: var(--white); }
 <script src="js/config.js?v=14"></script>
 <script src="js/safety.js?v=2"></script>
 <script src="js/subscription.js?v=21"></script>
-<script src="js/ui.js?v=26"></script>
+<script src="js/ui.js?v=27"></script>
 <script src="js/auth.js?v=1"></script>
-<script src="js/referral.js?v=2"></script>
-<script src="js/profile.js?v=28"></script>
+<script src="js/referral.js?v=3"></script>
+<script src="js/profile.js?v=29"></script>
 <script src="js/onboarding.js?v=124"></script>
 <script src="js/admin.js?v=27"></script>
 <script src="js/pwa-install.js?v=2"></script>
