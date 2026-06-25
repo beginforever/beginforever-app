@@ -129,23 +129,23 @@ async function renderReferralCard() {
 
   card.innerHTML =
     '<p style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:rgba(155,48,201,.8);margin-bottom:4px;">✦ Refer &amp; Earn</p>' +
-    '<p style="font-family:\'Cinzel\',serif;font-size:14px;color:#fff;font-weight:700;margin-bottom:10px;">Invite friends · unlock <span style="color:var(--gold2);">free premium</span></p>' +
+    '<p style="font-family:\'Cinzel\',serif;font-size:14px;color:#2A1A4A;font-weight:700;margin-bottom:10px;">Invite friends · unlock <span style="color:#6B2D8F;">free premium</span></p>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;">' +
-    '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(155,48,201,.15);border-radius:10px;padding:10px;text-align:center;">' +
-    '<div style="font-family:\'Cinzel\',serif;font-size:22px;font-weight:900;color:var(--gold2);line-height:1;">3</div>' +
-    '<div style="font-size:9px;color:var(--w40);margin:3px 0;">friends join</div>' +
-    '<div style="font-size:10px;font-weight:700;color:#4ade80;">+7 days free</div></div>' +
-    '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(155,48,201,.15);border-radius:10px;padding:10px;text-align:center;">' +
-    '<div style="font-family:\'Cinzel\',serif;font-size:22px;font-weight:900;color:var(--gold2);line-height:1;">5</div>' +
-    '<div style="font-size:9px;color:var(--w40);margin:3px 0;">friends join</div>' +
-    '<div style="font-size:10px;font-weight:700;color:#4ade80;">+10 days free</div></div>' +
+    '<div style="background:#F3EEF8;border:1px solid #E5DAF1;border-radius:10px;padding:10px;text-align:center;">' +
+    '<div style="font-family:\'Cinzel\',serif;font-size:22px;font-weight:900;color:#6B2D8F;line-height:1;">3</div>' +
+    '<div style="font-size:9px;color:rgba(42,26,74,.45);margin:3px 0;">friends join</div>' +
+    '<div style="font-size:10px;font-weight:700;color:#1F8A5B;">+7 days free</div></div>' +
+    '<div style="background:#F3EEF8;border:1px solid #E5DAF1;border-radius:10px;padding:10px;text-align:center;">' +
+    '<div style="font-family:\'Cinzel\',serif;font-size:22px;font-weight:900;color:#6B2D8F;line-height:1;">5</div>' +
+    '<div style="font-size:9px;color:rgba(42,26,74,.45);margin:3px 0;">friends join</div>' +
+    '<div style="font-size:10px;font-weight:700;color:#1F8A5B;">+10 days free</div></div>' +
     '</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">' +
-    '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--gold2);">' + stats.total + '</div><div style="font-size:9px;color:var(--w40);">invited</div></div>' +
-    '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:#4ade80;">' + stats.approved + '</div><div style="font-size:9px;color:var(--w40);">joined</div></div>' +
-    '<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--gold2);">' + stats.earnedDays + 'd</div><div style="font-size:9px;color:var(--w40);">earned</div></div>' +
+    '<div style="background:#FBF7F0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:#6B2D8F;">' + stats.total + '</div><div style="font-size:9px;color:rgba(42,26,74,.45);">invited</div></div>' +
+    '<div style="background:#FBF7F0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:#1F8A5B;">' + stats.approved + '</div><div style="font-size:9px;color:rgba(42,26,74,.45);">joined</div></div>' +
+    '<div style="background:#FBF7F0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:#6B2D8F;">' + stats.earnedDays + 'd</div><div style="font-size:9px;color:rgba(42,26,74,.45);">earned</div></div>' +
     '</div>' +
-    '<div style="background:rgba(155,48,201,.08);border-radius:8px;padding:7px 10px;font-size:11px;color:rgba(255,255,255,.7);text-align:center;margin-bottom:10px;">' + nextMsg + '</div>' +
-    '<p style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px;">🎁 Your friend also gets 1 week free when they join</p>' +
+    '<div style="background:#F3EEF8;border-radius:8px;padding:7px 10px;font-size:11px;color:#6B2D8F;text-align:center;margin-bottom:10px;">' + nextMsg + '</div>' +
+    '<p style="font-size:10px;color:rgba(42,26,74,.4);text-align:center;margin-bottom:8px;">🎁 Your friend also gets 1 week free when they join</p>' +
     '<button style="display:block;width:100%;padding:10px;background:linear-gradient(135deg,#9B30C9,#C13DBF);color:#3B0764;font-weight:800;font-size:12px;border:none;border-radius:50px;cursor:pointer;font-family:\'Nunito\',sans-serif;" onclick="shareApp()">🔗 Copy &amp; Share My Link</button>';
 }
