@@ -417,7 +417,7 @@ async function ldChats() {
       '<div style="text-align:center;padding:40px 20px;">' +
       '<div style="font-size:48px;margin-bottom:16px;">💬</div>' +
       '<h3 style="font-family:Cinzel,serif;color:#C13DBF;font-size:18px;margin-bottom:8px;">Chat requires a subscription</h3>' +
-      '<p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px;">Subscribe to Basic or Premium to chat with your matches.<br/>Sending interests is always free.</p>' +
+      '<p style="font-size:13px;color:rgba(42,26,74,.55);line-height:1.7;margin-bottom:20px;">Subscribe to Basic or Premium to chat with your matches.<br/>Sending interests is always free.</p>' +
       '<button class="btn btn-gold" style="width:auto;padding:12px 28px;" onclick="showSub()">View Plans ✦</button>' +
       '</div>';
     return;
@@ -431,8 +431,8 @@ async function ldChats() {
     if (cl) cl.innerHTML =
       '<div style="text-align:center;padding:40px 20px;">' +
       '<div style="font-size:40px;margin-bottom:12px;">💬</div>' +
-      '<p style="font-size:14px;font-weight:700;color:var(--w70);margin-bottom:8px;">No conversations yet</p>' +
-      '<p style="font-size:12px;color:var(--w40);line-height:1.6;">Accept interests to start chatting.</p>' +
+      '<p style="font-size:14px;font-weight:700;color:#2A1A4A;margin-bottom:8px;">No conversations yet</p>' +
+      '<p style="font-size:12px;color:rgba(42,26,74,.5);line-height:1.6;">Accept interests to start chatting.</p>' +
       '<button class="btn btn-gold" style="margin-top:16px;width:auto;padding:10px 24px;" onclick="goTab(\'interests\')">View Interests 💝</button></div>';
     return;
   }
@@ -462,14 +462,14 @@ async function ldChats() {
         '<div style="display:flex;gap:10px;align-items:center;">' +
           '<div style="position:relative;">' +
             '<div class="avatar" style="' + (p.photo_url ? 'background-image:url(' + p.photo_url + ');background-size:cover;background-position:center' : '') + ';border-color:' + f.color + ';">' + (!p.photo_url ? '<span style="font-size:18px;opacity:.3">👤</span>' : '') + '</div>' +
-            (unread ? '<div style="position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--dark1);"></div>' : '') +
+            (unread ? '<div style="position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:#6B2D8F;border:2px solid #fff;"></div>' : '') +
           '</div>' +
           '<div style="flex:1;min-width:0;">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-              '<h3 style="font-size:14px;margin:0;font-weight:' + (unread ? '800' : '600') + ';">' + p.full_name + '</h3>' +
-              '<span style="font-size:10px;color:var(--w40);flex-shrink:0;margin-left:6px;">' + timeStr + '</span>' +
+              '<h3 style="font-size:14px;margin:0;font-weight:' + (unread ? '800' : '600') + ';color:#2A1A4A;">' + p.full_name + '</h3>' +
+              '<span style="font-size:10px;color:rgba(42,26,74,.4);flex-shrink:0;margin-left:6px;">' + timeStr + '</span>' +
             '</div>' +
-            '<p style="font-size:12px;color:' + (unread ? 'var(--w80)' : 'var(--w40)') + ';margin:3px 0 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:' + (unread ? '700' : '400') + ';">' + preview + '</p>' +
+            '<p style="font-size:12px;color:' + (unread ? 'rgba(42,26,74,.8)' : 'rgba(42,26,74,.45)') + ';margin:3px 0 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:' + (unread ? '700' : '400') + ';">' + preview + '</p>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -551,7 +551,7 @@ async function ldMsgs() {
   var c = document.getElementById('cwMs'); if (!c) return;
   c.innerHTML = '';
   if (d.length === 0) {
-    c.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--w40);"><div style="font-size:32px;margin-bottom:8px;">👋</div><p style="font-size:13px;">Say hello! You\'re now connected.</p></div>';
+    c.innerHTML = '<div style="text-align:center;padding:40px 20px;color:rgba(42,26,74,.45);"><div style="font-size:32px;margin-bottom:8px;">👋</div><p style="font-size:13px;">Say hello! You\'re now connected.</p></div>';
   } else {
     d.forEach(function(m) { _appendMsg(m); });
   }
