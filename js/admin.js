@@ -100,7 +100,7 @@ async function ldAdmin(filter) {
 
     // Gender badge
     var genderBadge = p.gender
-      ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;margin-left:5px;background:' + (isFemale ? 'rgba(244,114,182,.15)' : 'rgba(96,165,250,.15)') + ';color:' + (isFemale ? '#f472b6' : '#60a5fa') + ';">' + (isFemale ? '♀ Female' : '♂ Male') + '</span>'
+      ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;margin-left:5px;background:' + (isFemale ? 'rgba(155,48,201,.15)' : 'rgba(96,165,250,.15)') + ';color:' + (isFemale ? '#9B30C9' : '#60a5fa') + ';">' + (isFemale ? '♀ Female' : '♂ Male') + '</span>'
       : '';
 
     card.innerHTML =
@@ -167,6 +167,20 @@ async function adAct(id, status) {
   if (status === 'approved') {
     updates.approved_at = new Date().toISOString();
     updates.rejection_reason = null;
+    // Free premium grant until 5 July 2026 IST (women: lifetime, men: 1 month from approval)
+    if (new Date() < new Date('2026-07-04T18:30:00Z')) {
+      var gq = await sb.from('profiles').select('gender').eq('id', id).limit(1);
+      var gp = gq.data && gq.data[0];
+      if (gp && gp.gender === 'Female') {
+        updates.is_lifetime = true; updates.is_premium = true;
+        updates.subscription_status = 'active'; updates.subscription_plan = 'lifetime_free';
+        updates.subscription_expires_at = '2099-12-31T00:00:00Z';
+      } else if (gp && gp.gender === 'Male') {
+        updates.is_lifetime = false; updates.is_premium = true;
+        updates.subscription_status = 'active'; updates.subscription_plan = 'monthly_free';
+        updates.subscription_expires_at = new Date(Date.now() + 30*24*60*60*1000).toISOString();
+      }
+    }
   } else {
     updates.approved_at = null;
   }
