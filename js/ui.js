@@ -252,13 +252,28 @@ async function ldInt(type) {
   });
   var activeId = { received: 'intRecBtn', sent: 'intSentBtn', mutual: 'intMutBtn' }[type];
   var activeEl = document.getElementById(activeId); if (activeEl) activeEl.className = 'btn btn-sm btn-gold';
-  var r;
-  if (type === 'received') r = await sb.from('interests').select('*,profiles!interests_from_user_fkey(*)').eq('to_user', U.id).eq('status', 'pending').order('created_at', { ascending: false });
-  else if (type === 'sent') r = await sb.from('interests').select('*,profiles!interests_to_user_fkey(*)').eq('from_user', U.id).order('created_at', { ascending: false });
-  else r = await sb.from('interests').select('*,profiles!interests_from_user_fkey(*)').eq('to_user', U.id).eq('status', 'accepted').order('created_at', { ascending: false });
-  var d = r.data || [];
+
+  var stackEl = document.getElementById('intSwipeStack'), actionsEl = document.getElementById('intSwipeActions'), listEl = document.getElementById('intList');
+
+  if (type === 'received') {
+    if (listEl) { listEl.style.display = 'none'; listEl.innerHTML = ''; }
+    var r = await sb.from('interests').select('*,profiles!interests_from_user_fkey(*)').eq('to_user', U.id).eq('status', 'pending').order('created_at', { ascending: false });
+    intDeck = r.data || [];
+    intDeckIdx = 0;
+    intUndoHistory = [];
+    renderSwipeStack();
+    return;
+  }
+
+  if (stackEl) stackEl.style.display = 'none';
+  if (actionsEl) actionsEl.style.display = 'none';
+  if (listEl) listEl.style.display = '';
+  var r2;
+  if (type === 'sent') r2 = await sb.from('interests').select('*,profiles!interests_to_user_fkey(*)').eq('from_user', U.id).order('created_at', { ascending: false });
+  else r2 = await sb.from('interests').select('*,profiles!interests_from_user_fkey(*)').eq('to_user', U.id).eq('status', 'accepted').order('created_at', { ascending: false });
+  var d = r2.data || [];
   var ie = document.getElementById('intEmpty'); if (ie) ie.style.display = d.length ? 'none' : '';
-  var l = document.getElementById('intList'); if (!l) return; l.innerHTML = '';
+  var l = listEl; if (!l) return; l.innerHTML = '';
   d.forEach(function(i) {
     var p = i.profiles; if (!p) return;
     var f = faithByKey(p.religion || 'Other');
@@ -266,11 +281,106 @@ async function ldInt(type) {
       '<div class="avatar" style="' + (p.photo_url ? 'background-image:url(' + p.photo_url + ');background-size:cover;background-position:center' : '') + ';border-color:' + f.color + '">' + (!p.photo_url ? '<span style="font-size:18px;opacity:.3">👤</span>' : '') + '</div>' +
       '<div style="flex:1"><h3 style="font-size:14px;margin:0;font-weight:600">' + p.full_name + ', ' + p.age + '</h3>' +
       '<p style="font-size:11px;color:' + f.color + '">' + f.icon + ' ' + (p.denomination || p.religion || '') + '<span style="color:var(--w50)"> · ' + p.city + '</span></p></div></div>' +
-      (type === 'received' ? '<div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-grn btn-sm" style="flex:1" onclick="actInt(\'' + i.id + '\',\'accepted\',\'' + (p.id||'') + '\')">✅ Accept</button><button class="btn btn-red btn-sm" style="flex:1" onclick="actInt(\'' + i.id + '\',\'declined\',\'\')">✗ Decline</button></div>' : '') +
       '</div>';
   });
 }
 function showInt(t) { ldInt(t); }
+
+var intDeck = [], intDeckIdx = 0, intUndoHistory = [];
+
+function intCardHTML(p, z, scale, top) {
+  var f = faithByKey(p.religion || 'Other');
+  var photo = p.photo_url ? '<img src="' + p.photo_url + '" style="width:100%;height:68%;object-fit:cover;display:block;" draggable="false"/>' : '<div style="width:100%;height:68%;background:#F3EEF8;display:flex;align-items:center;justify-content:center;"><span style="font-size:40px;opacity:.3;">👤</span></div>';
+  return '<div class="pcard" style="position:absolute;inset:0;background:#fff;border-radius:18px;border:1px solid #EFE6DA;box-shadow:0 4px 14px rgba(42,26,74,.08);overflow:hidden;z-index:' + z + ';transform:translateY(' + top + 'px) scale(' + scale + ');transition:transform .25s;">' +
+    photo +
+    '<div style="padding:14px 16px;">' +
+    '<div style="font-size:17px;font-weight:700;color:#2A1A4A;">' + p.full_name + ', ' + p.age + '</div>' +
+    '<div style="font-size:13px;color:#8a7fa0;margin-top:2px;">' + f.icon + ' ' + (p.denomination || p.religion || '') + ' · ' + p.city + '</div>' +
+    '</div>' +
+    '<div class="stamp stampLike" style="position:absolute;top:18px;left:16px;border:3px solid #3B6D11;color:#3B6D11;font-weight:800;font-size:18px;padding:4px 10px;border-radius:8px;transform:rotate(-18deg);opacity:0;">LIKE</div>' +
+    '<div class="stamp stampNope" style="position:absolute;top:18px;right:16px;border:3px solid #A32D2D;color:#A32D2D;font-weight:800;font-size:18px;padding:4px 10px;border-radius:8px;transform:rotate(18deg);opacity:0;">PASS</div>' +
+    '</div>';
+}
+
+function renderSwipeStack() {
+  var stackEl = document.getElementById('intSwipeStack'), actionsEl = document.getElementById('intSwipeActions'), ie = document.getElementById('intEmpty'), listEl = document.getElementById('intList');
+  if (listEl) listEl.style.display = 'none';
+  var remaining = intDeck.slice(intDeckIdx);
+  var undoBtn = document.getElementById('intUndoBtn');
+  if (undoBtn) { undoBtn.disabled = intUndoHistory.length === 0; undoBtn.style.opacity = intUndoHistory.length ? 1 : .4; }
+  if (!remaining.length) {
+    if (stackEl) stackEl.style.display = 'none';
+    if (actionsEl) actionsEl.style.display = intUndoHistory.length ? 'flex' : 'none';
+    if (ie) ie.style.display = '';
+    return;
+  }
+  if (ie) ie.style.display = 'none';
+  if (stackEl) stackEl.style.display = '';
+  if (actionsEl) actionsEl.style.display = 'flex';
+  var visible = remaining.slice(0, 3);
+  if (stackEl) {
+    stackEl.innerHTML = '';
+    for (var i = visible.length - 1; i >= 0; i--) {
+      var p = visible[i].profiles; if (!p) continue;
+      var scale = 1 - i * 0.04, top = i * 10, z = 10 - i;
+      stackEl.insertAdjacentHTML('beforeend', intCardHTML(p, z, scale, top));
+    }
+  }
+  attachSwipeDrag();
+}
+
+function attachSwipeDrag() {
+  var stackEl = document.getElementById('intSwipeStack');
+  var top = stackEl ? stackEl.querySelector('.pcard:last-child') : null;
+  if (!top) return;
+  var startX = 0, startY = 0, dx = 0, dragging = false;
+  var likeStamp = top.querySelector('.stampLike'), nopeStamp = top.querySelector('.stampNope');
+  function down(x, y) { dragging = true; startX = x; startY = y; top.style.transition = 'none'; }
+  function move(x, y) {
+    if (!dragging) return;
+    dx = x - startX; var dy = (y - startY) * 0.4;
+    top.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + (dx / 18) + 'deg)';
+    var t = Math.min(Math.abs(dx) / 90, 1);
+    if (dx > 0) { likeStamp.style.opacity = t; nopeStamp.style.opacity = 0; }
+    else { nopeStamp.style.opacity = t; likeStamp.style.opacity = 0; }
+  }
+  function up() {
+    if (!dragging) return;
+    dragging = false;
+    top.style.transition = 'transform .25s';
+    if (Math.abs(dx) > 90) { doSwipe(dx > 0 ? 'accept' : 'decline'); }
+    else { top.style.transform = 'translate(0,0) rotate(0)'; likeStamp.style.opacity = 0; nopeStamp.style.opacity = 0; }
+  }
+  top.onpointerdown = function (e) { top.setPointerCapture(e.pointerId); down(e.clientX, e.clientY); };
+  top.onpointermove = function (e) { move(e.clientX, e.clientY); };
+  top.onpointerup = up;
+  top.onpointercancel = up;
+}
+
+function doSwipe(action) {
+  var stackEl = document.getElementById('intSwipeStack');
+  var top = stackEl ? stackEl.querySelector('.pcard:last-child') : null;
+  var entry = intDeck[intDeckIdx]; if (!entry) return;
+  if (top) {
+    var dir = action === 'accept' ? 1 : -1;
+    top.style.transform = 'translate(' + (dir * 480) + 'px,-40px) rotate(' + (dir * 30) + 'deg)';
+    top.style.transition = 'transform .35s ease-out';
+  }
+  var p = entry.profiles || {};
+  actInt(entry.id, action === 'accept' ? 'accepted' : 'declined', action === 'accept' ? (p.id || '') : '');
+  intUndoHistory.push({ id: entry.id, action: action });
+  intDeckIdx++;
+  setTimeout(renderSwipeStack, top ? 220 : 0);
+}
+function swipeAccept() { if (intDeck[intDeckIdx]) doSwipe('accept'); }
+function swipeDecline() { if (intDeck[intDeckIdx]) doSwipe('decline'); }
+async function swipeUndo() {
+  if (!intUndoHistory.length) return;
+  var entry = intUndoHistory.pop();
+  await sb.from('interests').update({ status: 'pending' }).eq('id', entry.id);
+  intDeckIdx--;
+  renderSwipeStack();
+}
 
 async function actInt(id, st, fromUserId) {
   await sb.from('interests').update({ status: st }).eq('id', id);
@@ -294,7 +404,6 @@ async function actInt(id, st, fromUserId) {
       }
     } catch(x) {}
   }
-  ldInt('received');
 }
 
 // ═══ CHAT LIST
