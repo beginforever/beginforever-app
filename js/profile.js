@@ -444,10 +444,10 @@ function renP() {
   var ph=ap[0]?'background-image:url('+ap[0]+');background-size:cover;background-position:center':'';
   var heroEl=document.getElementById('profileHero');
   if(heroEl) heroEl.innerHTML=
-    '<div style="width:88px;height:88px;border-radius:50%;margin:0 auto;border:3px solid '+f.color+';'+ph+';background-color:var(--dark3);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(59,7,100,.4);">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
-    '<h2 style="font-family:Cinzel,serif;font-size:20px;margin-top:10px;color:#fff;">'+P.full_name+'</h2>'+
+    '<div style="width:88px;height:88px;border-radius:50%;margin:0 auto;border:3px solid '+f.color+';'+ph+';background-color:#F3EEF8;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px #EFE6DA;">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
+    '<h2 style="font-family:Cinzel,serif;font-size:20px;margin-top:10px;color:#2A1A4A;">'+P.full_name+'</h2>'+
     '<p style="color:'+f.color+';font-size:12px;margin-top:3px;">'+f.icon+' '+(P.denomination?P.denomination+' · ':'')+P.religion+'</p>'+
-    '<p style="color:var(--w50);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
+    '<p style="color:rgba(42,26,74,.5);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
     '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
     (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'')+
     (isPremiumUser()?'<div style="background:rgba(155,48,201,.1);border:1px solid rgba(155,48,201,.3);border-radius:10px;padding:8px 12px;margin-top:10px;"><p style="font-size:11px;color:#C13DBF;font-weight:700;margin:0;">✦ Premium Active'+(P.subscription_expires_at?' · Expires '+new Date(P.subscription_expires_at).toLocaleDateString('en-IN'):'')+'</p></div>':'')+
@@ -467,14 +467,14 @@ function renP() {
     {l:'Phone',v:P.phone?(P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2')+(P.phone_verified?' <span style="background:rgba(39,174,96,.2);color:#4ade80;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;border:1px solid rgba(39,174,96,.4);">✅ Verified</span>':'')):'' }
   ];
   rows.forEach(function(d){
-    if(d.v) h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span><span style="font-size:13px;color:var(--w80);font-weight:600;text-align:right;max-width:60%;">'+d.v+'</span></div>';
+    if(d.v) h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;text-align:right;max-width:60%;">'+d.v+'</span></div>';
   });
-  if(P.bio) h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--w08);"><p style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">About Me</p><p style="font-size:13px;color:var(--w70);line-height:1.7;">'+P.bio+'</p></div>';
+  if(P.bio) h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid #EFE6DA;"><p style="font-size:9px;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">About Me</p><p style="font-size:13px;color:rgba(42,26,74,.75);line-height:1.7;">'+P.bio+'</p></div>';
   if(P.gender==='Female'){
-    h+='<div style="margin-top:14px;padding:14px;background:rgba(241,77,150,.08);border:1px solid rgba(241,77,150,.3);border-radius:12px;">'+
-      '<p style="font-size:10px;color:#F24E96;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 8px;">🛡️ Safety</p>'+
-      '<a href="tel:181" style="display:block;text-align:center;padding:12px;background:#F24E96;color:#fff;font-weight:800;font-size:14px;border-radius:10px;text-decoration:none;">🆘 Women\'s Helpline · Call 181</a>'+
-      '<p style="font-size:10px;color:var(--w40);margin:8px 0 0;">'+(P.who_initiates==='me_first'?'Only people you message first can chat with you.':'Anyone you match with can message you.')+'</p>'+
+    h+='<div style="margin-top:14px;padding:14px;background:#F3EEF8;border:1px solid #E5DAF1;border-radius:12px;">'+
+      '<p style="font-size:10px;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 8px;">🛡️ Safety</p>'+
+      '<a href="tel:181" style="display:block;text-align:center;padding:12px;background:#6B2D8F;color:#fff;font-weight:800;font-size:14px;border-radius:10px;text-decoration:none;">🆘 Women\'s Helpline · Call 181</a>'+
+      '<p style="font-size:10px;color:rgba(42,26,74,.45);margin:8px 0 0;">'+(P.who_initiates==='me_first'?'Only people you message first can chat with you.':'Anyone you match with can message you.')+'</p>'+
       '</div>';
   }
   var mi=document.getElementById('mInfo'); if(mi) mi.innerHTML=h;
@@ -489,18 +489,18 @@ function renP() {
   var fbEl=document.getElementById('profileFaithBeliefs');
   if(fbEl){
     var frows='';
-    if(P.faith_importance)frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Faith Importance</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.faith_importance+'</span></div>';
-    if(P.home_church)frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Place of Worship</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.home_church+'</span></div>';
-    if(P.scripture)frows+='<div style="margin-top:8px;font-family:\'EB Garamond\',serif;font-style:italic;font-size:13px;color:var(--gold);border-left:3px solid var(--gold);padding-left:10px;">"'+P.scripture+'"</div>';
+    if(P.faith_importance)frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;">Faith Importance</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;">'+P.faith_importance+'</span></div>';
+    if(P.home_church)frows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;">Place of Worship</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;">'+P.home_church+'</span></div>';
+    if(P.scripture)frows+='<div style="margin-top:8px;font-family:\'EB Garamond\',serif;font-style:italic;font-size:13px;color:#6B2D8F;border-left:3px solid #9B30C9;padding-left:10px;">"'+P.scripture+'"</div>';
     fbEl.style.display=frows?'':'none';
     var fbc=document.getElementById('faithBeliefsContent');if(fbc)fbc.innerHTML=frows;
   }
   var lsEl=document.getElementById('profileLifestyle');
   if(lsEl){
     var lrows='';
-    if(P.diet)lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Diet</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.diet+'</span></div>';
-    if(P.smoking)lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Smoking</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.smoking+'</span></div>';
-    if(P.drinking)lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--w05);"><span style="font-size:10px;color:var(--w50);text-transform:uppercase;">Drinking</span><span style="font-size:13px;color:var(--w80);font-weight:600;">'+P.drinking+'</span></div>';
+    if(P.diet)lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;">Diet</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;">'+P.diet+'</span></div>';
+    if(P.smoking)lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;">Smoking</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;">'+P.smoking+'</span></div>';
+    if(P.drinking)lrows+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;">Drinking</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;">'+P.drinking+'</span></div>';
     lsEl.style.display=lrows?'':'none';
     var lsc=document.getElementById('lifestyleContent');if(lsc)lsc.innerHTML=lrows;
   }
@@ -519,10 +519,10 @@ function renderFaithPrefCard(){
     ?'<button onclick="openFaithPrefs()" style="background:rgba(155,48,201,.12);border:1px solid rgba(155,48,201,.3);color:var(--gold2);font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">Edit ✦</button>'
     :'<button onclick="showSubModal(\'Faith filter\')" style="background:rgba(193,61,191,.12);border:1px solid rgba(193,61,191,.4);color:#C13DBF;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:Nunito,sans-serif;">🔒 Unlock</button>';
   el.innerHTML=
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><p style="font-size:13px;font-weight:700;color:#fff;margin:0;">Faith Preferences'+lockBadge+'</p><p style="font-size:11px;color:var(--w40);margin:3px 0 0;">Who you see &amp; who can reach you</p></div>'+editBtn+'</div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><p style="font-size:13px;font-weight:700;color:#2A1A4A;margin:0;">Faith Preferences'+lockBadge+'</p><p style="font-size:11px;color:rgba(42,26,74,.45);margin:3px 0 0;">Who you see &amp; who can reach you</p></div>'+editBtn+'</div>'+
     '<div style="'+(premium?'':'opacity:.45;filter:grayscale(.4);')+'">'+
-    '<div style="margin-bottom:10px;"><p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browsing from</p><div id="fpBrowsePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div></div>'+
-    '<div><p style="font-size:9px;font-weight:700;color:var(--w40);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receiving from</p><div id="fpReceivePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div></div>'+
+    '<div style="margin-bottom:10px;"><p style="font-size:9px;font-weight:700;color:rgba(42,26,74,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">🔍 Browsing from</p><div id="fpBrowsePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div></div>'+
+    '<div><p style="font-size:9px;font-weight:700;color:rgba(42,26,74,.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">💌 Receiving from</p><div id="fpReceivePills" style="display:flex;flex-wrap:wrap;gap:5px;"></div></div>'+
     '</div>';
   renderFpPills('fpBrowsePills',fpBrowse);
   renderFpPills('fpReceivePills',fpReceive);
@@ -530,8 +530,8 @@ function renderFaithPrefCard(){
 
 function renderFpPills(containerId,arr){
   var el=document.getElementById(containerId);if(!el)return;
-  if(!arr||arr.length===0){el.innerHTML='<span style="font-size:12px;color:#ff6b6b;font-style:italic;">None selected</span>';return;}
-  if(arr.length>=FAITHS.length){el.innerHTML='<span style="font-size:12px;color:var(--w50);font-style:italic;">All faiths</span>';return;}
+  if(!arr||arr.length===0){el.innerHTML='<span style="font-size:12px;color:#A32D2D;font-style:italic;">None selected</span>';return;}
+  if(arr.length>=FAITHS.length){el.innerHTML='<span style="font-size:12px;color:rgba(42,26,74,.5);font-style:italic;">All faiths</span>';return;}
   el.innerHTML=arr.map(function(k){var f=faithByKey(k);return '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+f.color+';background:'+f.bg+';color:'+f.color+';">'+f.icon+' '+k+'</span>';}).join('');
 }
 
