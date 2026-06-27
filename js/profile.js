@@ -444,14 +444,33 @@ function renP() {
   var ph=ap[0]?'background-image:url('+ap[0]+');background-size:cover;background-position:center':'';
   var heroEl=document.getElementById('profileHero');
   if(heroEl) heroEl.innerHTML=
-    '<div style="width:88px;height:88px;border-radius:50%;margin:0 auto;border:3px solid '+f.color+';'+ph+';background-color:#F3EEF8;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px #EFE6DA;">'+(ap[0]?'':'<span style="font-size:32px;opacity:.3">👤</span>')+'</div>'+
-    '<h2 style="font-family:Cinzel,serif;font-size:20px;margin-top:10px;color:#2A1A4A;">'+P.full_name+'</h2>'+
-    '<p style="color:'+f.color+';font-size:12px;margin-top:3px;">'+f.icon+' '+(P.denomination?P.denomination+' · ':'')+P.religion+'</p>'+
-    '<p style="color:rgba(42,26,74,.5);font-size:11px;margin-top:2px;">'+P.city+', '+P.state+'</p>'+
-    '<span style="display:inline-block;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+(P.status==='approved'?'var(--green)':'var(--gold)')+';color:'+(P.status==='approved'?'#fff':'#1A0830')+';">'+(P.status==='approved'?'✅ Verified Member':'⏳ Pending Review')+'</span>'+
-    (P.founding_number?'<p style="font-size:10px;color:var(--gold);margin-top:6px;">✦ Founding Member #'+P.founding_number+'</p>':'')+
-    (isPremiumUser()?'<div style="background:rgba(155,48,201,.1);border:1px solid rgba(155,48,201,.3);border-radius:10px;padding:8px 12px;margin-top:10px;"><p style="font-size:11px;color:#C13DBF;font-weight:700;margin:0;">✦ Premium Active'+(P.subscription_expires_at?' · Expires '+new Date(P.subscription_expires_at).toLocaleDateString('en-IN'):'')+'</p></div>':'')+
-    (ap.length>1?'<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;">'+ap.slice(1).map(function(u){return '<div style="width:56px;height:56px;border-radius:10px;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid '+f.color+'"></div>';}).join('')+'</div>':'');
+    '<div style="position:relative;border-radius:18px;overflow:hidden;height:200px;'+(ap[0]?ph+';':'background:#F3EEF8;')+'box-shadow:0 8px 24px rgba(42,26,74,.12);">'+
+      (!ap[0]?'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><span style="font-size:48px;opacity:.3;">👤</span></div>':'')+
+      '<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(20,10,40,.82) 100%);"></div>'+
+      '<div style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,.95);border-radius:20px;padding:5px 11px;font-size:11px;font-weight:800;color:'+(P.status==='approved'?'#1F8A5B':'#6B2D8F')+';display:flex;align-items:center;gap:4px;">'+(P.status==='approved'?'✓ Verified':'⏳ Pending')+'</div>'+
+      '<div style="position:absolute;bottom:12px;left:14px;right:14px;color:#fff;text-align:left;">'+
+        '<div style="font-family:Cinzel,serif;font-size:19px;font-weight:700;">'+P.full_name+'</div>'+
+        '<div style="font-size:12px;opacity:.9;margin-top:2px;">'+f.icon+' '+(P.denomination?P.denomination+' · ':'')+P.religion+' · '+P.city+', '+P.state+'</div>'+
+      '</div>'+
+    '</div>'+
+    (P.founding_number||isPremiumUser()?
+      '<div style="position:relative;background:linear-gradient(135deg,#1C0F2E 0%,#2A1A4A 55%,#3C2A66 100%);border-radius:16px;padding:16px;color:#fff;margin-top:10px;overflow:hidden;border:1px solid rgba(212,175,120,.35);">'+
+        '<div style="position:absolute;top:-40%;left:-10%;width:70%;height:200%;background:linear-gradient(120deg,rgba(255,255,255,0) 40%,rgba(212,175,120,.08) 50%,rgba(255,255,255,0) 60%);transform:rotate(8deg);"></div>'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;position:relative;">'+
+          '<div style="font-size:9px;letter-spacing:2px;color:#D9B988;font-weight:700;">'+(isPremiumUser()?'PREMIUM MEMBER':'MEMBER')+'</div>'+
+          '<span style="font-size:15px;color:#D9B988;">♦</span>'+
+        '</div>'+
+        '<div style="height:1px;background:linear-gradient(90deg,rgba(212,175,120,.5),rgba(212,175,120,0));margin:10px 0;position:relative;"></div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;position:relative;flex-wrap:wrap;gap:6px;">'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+            (P.status==='approved'?'<div style="border:1px solid rgba(212,175,120,.5);border-radius:8px;padding:3px 9px;font-size:9px;color:#D9B988;">✓ Verified</div>':'')+
+            (P.founding_number?'<div style="border:1px solid rgba(212,175,120,.5);border-radius:8px;padding:3px 9px;font-size:9px;color:#D9B988;">Founding #'+P.founding_number+'</div>':'')+
+          '</div>'+
+          (isPremiumUser()&&P.subscription_expires_at?'<div style="font-size:9px;color:rgba(255,255,255,.55);">Exp. '+new Date(P.subscription_expires_at).toLocaleDateString('en-IN',{month:'2-digit',year:'numeric'})+'</div>':'')+
+        '</div>'+
+      '</div>'
+    :'')+
+    (ap.length>1?'<div style="display:flex;gap:6px;margin-top:10px;overflow-x:auto;">'+ap.slice(1).map(function(u){return '<div style="width:64px;height:64px;border-radius:10px;flex-shrink:0;background-image:url('+u+');background-size:cover;background-position:center;border:2px solid #EFE6DA"></div>';}).join('')+'</div>':'');
   var h='';
   var rows=[
     {l:'Profile For',v:P.profile_for||P.registered_by},
@@ -467,8 +486,9 @@ function renP() {
     {l:'Phone',v:P.phone?(P.phone.replace(/(\d{2})\d+(\d{2})/,'$1*****$2')+(P.phone_verified?' <span style="background:rgba(39,174,96,.2);color:#4ade80;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;border:1px solid rgba(39,174,96,.4);">✅ Verified</span>':'')):'' }
   ];
   rows.forEach(function(d){
-    if(d.v) h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #EFE6DA;"><span style="font-size:10px;color:rgba(42,26,74,.5);text-transform:uppercase;letter-spacing:.5px;">'+d.l+'</span><span style="font-size:13px;color:#2A1A4A;font-weight:600;text-align:right;max-width:60%;">'+d.v+'</span></div>';
+    if(d.v) h+='<div style="background:#2A1A4A;border:1px solid rgba(212,175,120,.25);border-radius:10px;padding:8px 12px;flex:1;min-width:130px;"><div style="font-size:8px;color:#D9B988;letter-spacing:.5px;text-transform:uppercase;">'+d.l+'</div><div style="font-size:13px;color:#fff;font-weight:600;margin-top:2px;">'+d.v+'</div></div>';
   });
+  h='<div style="display:flex;flex-wrap:wrap;gap:8px;">'+h+'</div>';
   if(P.bio) h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid #EFE6DA;"><p style="font-size:9px;color:#6B2D8F;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">About Me</p><p style="font-size:13px;color:rgba(42,26,74,.75);line-height:1.7;">'+P.bio+'</p></div>';
   if(P.gender==='Female'){
     h+='<div style="margin-top:14px;padding:14px;background:#F3EEF8;border:1px solid #E5DAF1;border-radius:12px;">'+
